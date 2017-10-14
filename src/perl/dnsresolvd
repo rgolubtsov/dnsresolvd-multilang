@@ -19,7 +19,7 @@ use v5.10;
 
 use FindBin;
 
-BEGIN { unshift @INC, "$FindBin::Bin/../lib" }
+BEGIN { unshift @INC, "$FindBin::Bin/lib" }
 
 use Try::Tiny;
 use Mojolicious::Commands;
