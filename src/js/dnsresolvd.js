@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-/* content/dev/misc/dnsresolvd/js/dnsresolvd.js
+/* src/js/dnsresolvd.js
  * ============================================================================
  * DNS Resolver Daemon (dnsresolvd). Version 0.1
  * ============================================================================
- * A Node.js-boosted daemon for performing DNS lookups.
+ * A daemon that performs DNS lookups for the given hostname
+ * passed in an HTTP request, with the focus on its implementation
+ * using various programming languages. (Node.js-boosted impl.)
  * ============================================================================
  * Copyright (C) 2017 Radislav (Radicchio) Golubtsov
  *
