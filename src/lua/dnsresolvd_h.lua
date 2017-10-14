@@ -1,9 +1,11 @@
 --[[
- * content/dev/misc/dnsresolvd/lua/dnsresolvd_h.lua
+ * src/lua/dnsresolvd_h.lua
  * ============================================================================
  * DNS Resolver Daemon (dnsresolvd). Version 0.1
  * ============================================================================
- * A Luvit (Lua)-boosted daemon for performing DNS lookups.
+ * A daemon that performs DNS lookups for the given hostname
+ * passed in an HTTP request, with the focus on its implementation
+ * using various programming languages. (Luvit-boosted impl.)
  * ============================================================================
  * Copyright (C) 2017 Radislav (Radicchio) Golubtsov
  *
