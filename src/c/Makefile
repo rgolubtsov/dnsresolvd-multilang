@@ -1,9 +1,11 @@
 #
-# content/dev/misc/dnsresolvd/c/Makefile
+# src/c/Makefile
 # =============================================================================
 # DNS Resolver Daemon (dnsresolvd). Version 0.1
 # =============================================================================
-# A GNU libmicrohttpd-boosted daemon for performing DNS lookups.
+# A daemon that performs DNS lookups for the given hostname
+# passed in an HTTP request, with the focus on its implementation
+# using various programming languages. (GNU libmicrohttpd-boosted impl.)
 # =============================================================================
 # Copyright (C) 2017 Radislav (Radicchio) Golubtsov
 #
