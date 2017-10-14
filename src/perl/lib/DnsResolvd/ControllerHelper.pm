@@ -1,9 +1,11 @@
 #
-# content/dev/misc/dnsresolvd/perl/lib/DnsResolvd/ControllerHelper.pm
+# src/perl/lib/DnsResolvd/ControllerHelper.pm
 # =============================================================================
 # DNS Resolver Daemon (dnsresolvd). Version 0.1
 # =============================================================================
-# A Mojolicious-boosted daemon for performing DNS lookups.
+# A daemon that performs DNS lookups for the given hostname
+# passed in an HTTP request, with the focus on its implementation
+# using various programming languages. (Mojolicious-boosted impl.)
 # =============================================================================
 # Copyright (C) 2017 Radislav (Radicchio) Golubtsov
 #
