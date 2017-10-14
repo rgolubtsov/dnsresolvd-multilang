@@ -1,0 +1,130 @@
+#!/usr/bin/env perl
+# content/dev/misc/dnsresolvd/perl/script/dnsresolvd
+# =============================================================================
+# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# =============================================================================
+# A Mojolicious-boosted daemon for performing DNS lookups.
+# =============================================================================
+# Copyright (C) 2017 Radislav (Radicchio) Golubtsov
+#
+# (See the LICENSE file at the top of the source tree.)
+#
+
+use strict;
+use warnings;
+use utf8;
+use v5.10;
+
+use FindBin;
+
+BEGIN { unshift @INC, "$FindBin::Bin/../lib" }
+
+use Try::Tiny;
+use Mojolicious::Commands;
+
+use DnsResolvd::ControllerHelper
+    "_EXIT_FAILURE",
+    "_EXIT_SUCCESS",
+    "_ONE_SPACE_STRING",
+    "_COMMA_SPACE_SEP",
+    "_NEW_LINE",
+# -----------------------------------------------------------------------------
+    "_ERR_PORT_MUST_BE_POSITIVE_INT",
+    "_ERR_CANNOT_START_SERVER",
+    "_ERR_SRV_UNKNOWN_REASON",
+    "_ERR_SRV_PORT_IS_IN_USE",
+    "_ERR_ADDR_ALREADY_IN_USE",
+# -----------------------------------------------------------------------------
+    "_ERR_MUST_BE_THE_ONLY_ARG_1",
+    "_ERR_MUST_BE_THE_ONLY_ARG_2",
+# -----------------------------------------------------------------------------
+    "_MSG_USAGE_TEMPLATE_1",
+    "_MSG_USAGE_TEMPLATE_2",
+# -----------------------------------------------------------------------------
+    "_MIN_PORT",
+    "_MAX_PORT",
+# -----------------------------------------------------------------------------
+    "_MSG_SERVER_STARTED_1",
+    "_MSG_SERVER_STARTED_2",
+# -----------------------------------------------------------------------------
+    "_DMN_NAME",
+    "_DMN_DESCRIPTION",
+    "_DMN_VERSION_S__",
+    "_DMN_VERSION",
+    "_DMN_COPYRIGHT__",
+    "_DMN_AUTHOR";
+
+## Constant: The main daemon class name.
+use constant DMN_CLASS_NAME => "DnsResolvd";
+
+my $ret = _EXIT_SUCCESS;
+
+my $argc        = @ARGV;
+my $daemon_name = $0;
+my $port_number = $ARGV[0];
+
+# Instantiating the controller helper class.
+my $aux = DnsResolvd::ControllerHelper->new();
+
+$aux->_separator_draw(_DMN_DESCRIPTION);
+
+say(_DMN_NAME         . _COMMA_SPACE_SEP  . _DMN_VERSION_S__
+  . _ONE_SPACE_STRING . _DMN_VERSION      . _NEW_LINE
+  . _DMN_DESCRIPTION                      . _NEW_LINE
+  . _DMN_COPYRIGHT__  . _ONE_SPACE_STRING . _DMN_AUTHOR);
+
+$aux->_separator_draw(_DMN_DESCRIPTION);
+
+# Checking for args presence.
+if ($argc != 1) {
+    $ret = _EXIT_FAILURE;
+
+    say($daemon_name . _ERR_MUST_BE_THE_ONLY_ARG_1
+             . $argc . _ERR_MUST_BE_THE_ONLY_ARG_2
+                     . _NEW_LINE);
+
+    say(_MSG_USAGE_TEMPLATE_1 . $daemon_name
+      . _MSG_USAGE_TEMPLATE_2 . _NEW_LINE);
+
+    exit($ret);
+}
+
+# Checking for port correctness.
+if (($port_number < _MIN_PORT) || ($port_number > _MAX_PORT)) {
+    $ret = _EXIT_FAILURE;
+
+    say($daemon_name . _ERR_PORT_MUST_BE_POSITIVE_INT
+                     . _NEW_LINE);
+
+    say(_MSG_USAGE_TEMPLATE_1 . $daemon_name
+      . _MSG_USAGE_TEMPLATE_2 . _NEW_LINE);
+
+    exit($ret);
+}
+
+# Trying to start up the daemon.
+try {
+    say(_MSG_SERVER_STARTED_1 . $port_number . _NEW_LINE
+      . _MSG_SERVER_STARTED_2);
+
+    Mojolicious::Commands->start_app(DMN_CLASS_NAME, "daemon",
+                                               "-l", "http://*:" . $port_number);
+    #                                          "-l", "http://*:" . $port_number,
+    #                                          "-m", "production");
+} catch {
+    $ret = _EXIT_FAILURE;
+
+    if ($_ =~ _ERR_ADDR_ALREADY_IN_USE) {
+        say($daemon_name . _ERR_CANNOT_START_SERVER
+                         . _ERR_SRV_PORT_IS_IN_USE
+                         . _NEW_LINE);
+    } else {
+        say($daemon_name . _ERR_CANNOT_START_SERVER
+                         . _ERR_SRV_UNKNOWN_REASON
+                         . _NEW_LINE);
+    }
+};
+
+exit($ret);
+
+# vim:set nu:et:ts=4:sw=4:
