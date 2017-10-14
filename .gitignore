@@ -1,52 +1,20 @@
-# Prerequisites
-*.d
+#
+# .gitignore
+# =============================================================================
+# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# =============================================================================
+# A daemon that performs DNS lookups for the given hostname
+# passed in an HTTP request, with the focus on its implementation
+# using various programming languages.
+#
+# This is the configuration of the project Git ignorables,
+# i.e. objects that should not be put into the repository.
+#
 
-# Object files
+# === Object files ============================================================
 *.o
-*.ko
-*.obj
-*.elf
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# === Executables =============================================================
+src/c/dnsresolvd
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# vim:set nu:et:ts=4:sw=4:
