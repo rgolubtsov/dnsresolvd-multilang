@@ -123,9 +123,8 @@ try {
       . _MSG_SERVER_STARTED_2);
 
     Mojolicious::Commands->start_app(DMN_CLASS_NAME, DMN_DAEMON_CMD,
-                     DMN_LISTEN_OPT, DMN_LISTEN_HTTP . $port_number);
-    #                DMN_LISTEN_OPT, DMN_LISTEN_HTTP . $port_number,
-    #                DMN_OP_MOD_OPT, DMN_OP_MOD_PROD);
+                     DMN_LISTEN_OPT, DMN_LISTEN_HTTP . $port_number,
+                     DMN_OP_MOD_OPT, DMN_OP_MOD_PROD);
 } catch {
     $ret = _EXIT_FAILURE;
 
