@@ -21,6 +21,7 @@ use FindBin;
 
 BEGIN { unshift @INC, "$FindBin::Bin/lib" }
 
+use Scalar::Util "looks_like_number";
 use Try::Tiny;
 use Mojolicious::Commands;
 
@@ -89,6 +90,11 @@ if ($argc != 1) {
       . _MSG_USAGE_TEMPLATE_2 . _NEW_LINE);
 
     exit($ret);
+}
+
+# Validating the port number and discarding any rubbish it may contain.
+if (!looks_like_number($port_number)) {
+    $port_number = 0;
 }
 
 # Checking for port correctness.
