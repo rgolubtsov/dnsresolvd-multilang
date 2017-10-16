@@ -17,6 +17,8 @@ local http = require("http")
 local url  = require("url")
 local dns  = require("dns")
 
+local pp   = require("pretty-print")
+
 local aux  = require("dnsresolvh")
 
 --[[
@@ -37,7 +39,7 @@ local dns_lookup = function(_ret, port_number, daemon_name)
     --[[
      * Creating, configuring, and starting the server.
      *
-     * @param req  The HTTP request object.
+     * @param req  The HTTP request  object.
      * @param resp The HTTP response object.
      *
      * @return The HTTP server object.
@@ -55,21 +57,13 @@ local dns_lookup = function(_ret, port_number, daemon_name)
         end
 
         --[[
-         * Performing DNS lookup for the given hostname
-         * and writing the response out.
+         * Writes the response with the DNS record retrieved.
          *
          * @param hostname The effective hostname to look up for.
          * @param e        The Error object (if any error occurs).
-         * @param addr     The IP address retrieved.
-         * @param ver      The IP version (family) used to look up in DNS.
+         * @param rec      The DNS record retrieved.
         --]]
---      dns.lookup(hostname, function(e, addr, ver)
-        --- Debug vars - Begin ------------------------------------------------
-            local e    = nil
-            local addr = "129.128.5.194"
-            local ver  = 4
-        --- Debug vars - End --------------------------------------------------
-
+        local resp_write = function(hostname, e, rec)
             local resp_buffer = "<!DOCTYPE html>"                                                                               .. aux._NEW_LINE
 .. "<html lang=\"en-US\" dir=\"ltr\">" .. aux._NEW_LINE .. "<head>"                                                             .. aux._NEW_LINE
 .. "<meta http-equiv=\"Content-Type\"    content=\"" .. aux._HDR_CONTENT_TYPE .. "\" />"                                        .. aux._NEW_LINE
@@ -89,7 +83,24 @@ local dns_lookup = function(_ret, port_number, daemon_name)
                                           .. aux._COLON_SPACE_SEP
                                           .. aux._ERR_COULD_NOT_LOOKUP
             else
-                resp_buffer = resp_buffer .. addr .. " (IPv" .. ver .. ")"
+                pp.prettyPrint(rec)
+
+                if (#rec == 0) then
+                    ret = aux._EXIT_FAILURE
+
+                    return ret
+                else
+                    local addr = rec[1].address --> The IP address for host.
+                    local ver  = rec[1].type    --> The IP version (family).
+
+                        if (ver == dns.TYPE_A   ) then
+                        ver = 4
+                    elseif (ver == dns.TYPE_AAAA) then
+                        ver = 6
+                    end
+
+                    resp_buffer = resp_buffer .. addr .. " (IPv" .. ver .. ")"
+                end
             end
 
             resp_buffer = resp_buffer .. "</p>"    .. aux._NEW_LINE
@@ -109,7 +120,27 @@ local dns_lookup = function(_ret, port_number, daemon_name)
 
             -- Closing the response stream.
             resp:finish()
---      end)
+        end
+
+        --[[
+         * Performing DNS lookup for the given hostname
+         * and writing the response out.
+         *
+         * Since Luvit actually doesn't have the dns.lookup() method,
+         * it needs to perform a so-called two-stage lookup operation:
+         *
+         *     If the host doesn't have the A record (IPv4),
+         *     trying to find its AAAA record (IPv6).
+        --]]
+        dns.resolve4        (hostname, function(e, rec)
+            ret = resp_write(hostname,          e, rec)
+
+            if (ret == aux._EXIT_FAILURE) then
+                dns.resolve6  (hostname, function(e, rec)
+                    resp_write(hostname,          e, rec)
+                end)
+            end
+        end)
     end):listen(port_number)
 
     -- FIXME: Ported one-to-one from Node.js impl. Not working.
