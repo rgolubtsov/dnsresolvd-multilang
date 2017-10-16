@@ -13,7 +13,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 
 * :small_blue_diamond: **C ([GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd"))**: `src/c/`
 * :small_blue_diamond: **JavaScript ([Node.js](https://nodejs.org "Node.js"))**: `src/js/`
-* :cd: :small_orange_diamond: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
+* :cd: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
 * :small_blue_diamond: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
 
 ## Building
