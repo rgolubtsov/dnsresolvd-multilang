@@ -17,7 +17,7 @@ local http = require("http")
 local url  = require("url")
 local dns  = require("dns")
 
-local aux  = require("dnsresolvd_h")
+local aux  = require("dnsresolvh")
 
 --[[
  * Performs DNS lookup action for the given hostname,
