@@ -21,6 +21,7 @@ local _h = {}
     -- Helper constants.
     _h._EXIT_FAILURE     =    1 --    Failing exit status.
     _h._EXIT_SUCCESS     =    0 -- Successful exit status.
+    _h._EMPTY_STRING     =   ""
     _h._ONE_SPACE_STRING =  " "
     _h._COLON_SPACE_SEP  = ": "
     _h._COMMA_SPACE_SEP  = ", "
