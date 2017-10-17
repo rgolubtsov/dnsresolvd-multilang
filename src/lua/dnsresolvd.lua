@@ -182,12 +182,9 @@ end
 -- Helper function. Draws a horizontal separator banner.
 local _separator_draw = function(banner_text)
     local i = banner_text:len()
+    local s = aux._EMPTY_STRING
 
-    while (i > 0) do
-        process.stdout:write('='); i = i - 1
-    end
-
-    print()
+    repeat s = s .. '=' i = i - 1 until (i == 0) print(s)
 end
 
 -- The daemon entry point.
@@ -197,14 +194,14 @@ local main = function(argc, argv)
     local daemon_name = path.basename(argv[1])
     local port_number = tonumber(argv[2], 10)
 
---  _separator_draw(aux._DMN_DESCRIPTION)
+    _separator_draw(aux._DMN_DESCRIPTION)
 
     print(aux._DMN_NAME         .. aux._COMMA_SPACE_SEP .. aux._DMN_VERSION_S__
        .. aux._ONE_SPACE_STRING .. aux._DMN_VERSION      .. aux._NEW_LINE
        .. aux._DMN_DESCRIPTION                           .. aux._NEW_LINE
        .. aux._DMN_COPYRIGHT__  .. aux._ONE_SPACE_STRING .. aux._DMN_AUTHOR)
 
---  _separator_draw(aux._DMN_DESCRIPTION)
+    _separator_draw(aux._DMN_DESCRIPTION)
 
     -- Checking for args presence.
     if (argc ~= 2) then
