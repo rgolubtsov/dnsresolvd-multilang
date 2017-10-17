@@ -143,6 +143,8 @@ local dns_lookup = function(_ret, port_number, daemon_name)
         end)
     end):listen(port_number)
 
+    pp.prettyPrint(daemon)
+
     -- FIXME: Ported one-to-one from Node.js impl. Not working.
     daemon:on(aux._EVE_ERROR, function(e)
         ret = aux._EXIT_FAILURE
