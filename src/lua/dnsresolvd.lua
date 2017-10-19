@@ -21,6 +21,19 @@ local pp   = require("pretty-print")
 
 local aux  = require("dnsresolvh")
 
+-- Helper function. Draws a horizontal separator banner.
+local _separator_draw = function(banner_text)
+    local i = banner_text:len()
+    local s = aux._EMPTY_STRING
+
+    repeat s = s .. '=' i = i - 1 until (i == 0) print(s)
+end
+
+-- Helper function. Makes final buffer cleanups, closes streams, etc.
+local _cleanups_fixate = function()
+    -- TODO: Implement cleanup stuff.
+end
+
 --[[
  * Performs DNS lookup action for the given hostname,
  * i.e. (in this case) IP address retrieval by hostname.
@@ -45,6 +58,12 @@ local dns_lookup = function(_ret, port_number, daemon_name)
      * @return The HTTP server object.
     --]]
     local daemon = http.createServer(function(req, resp)
+        _separator_draw(aux._DMN_DESCRIPTION)
+
+        pp.prettyPrint(req)
+
+        _separator_draw(aux._DMN_DESCRIPTION)
+
         -- Parsing and validating query params.
         local query = url.parse(req.url, true).query
 
@@ -143,13 +162,10 @@ local dns_lookup = function(_ret, port_number, daemon_name)
         end)
     end):listen(port_number)
 
-    pp.prettyPrint(daemon)
-
-    -- FIXME: Ported one-to-one from Node.js impl. Not working.
     daemon:on(aux._EVE_ERROR, function(e)
         ret = aux._EXIT_FAILURE
 
-        if (e.code == aux._ERR_EADDRINUSE) then
+        if (e == aux._ERR_EADDRINUSE) then
             print(daemon_name .. aux._ERR_CANNOT_START_SERVER
                               .. aux._ERR_SRV_PORT_IS_IN_USE
                               .. aux._NEW_LINE)
@@ -164,29 +180,20 @@ local dns_lookup = function(_ret, port_number, daemon_name)
         return ret
     end)
 
-    -- FIXME: Ported one-to-one from Node.js impl. Not working.
     daemon:on(aux._EVE_LISTENING, function(e)
         print(aux._MSG_SERVER_STARTED_1 .. port_number .. aux._NEW_LINE
            .. aux._MSG_SERVER_STARTED_2)
     end)
 
-    print(aux._MSG_SERVER_STARTED_1 .. port_number .. aux._NEW_LINE
-       .. aux._MSG_SERVER_STARTED_2)
+    pp.prettyPrint(daemon)
+
+    -- FIXME: Investigate why do we need emitting events explicitly?
+    --        This does not affect error events anyway, perplexedly.
+    daemon:emit(aux._EVE_LISTENING                 )
+--  daemon:emit(aux._EVE_ERROR, aux._ERR_EADDRINUSE)
+--  daemon:emit(aux._EVE_ERROR                     )
 
     return ret
-end
-
--- Helper function. Makes final buffer cleanups, closes streams, etc.
-local _cleanups_fixate = function()
-    -- TODO: Implement cleanup stuff.
-end
-
--- Helper function. Draws a horizontal separator banner.
-local _separator_draw = function(banner_text)
-    local i = banner_text:len()
-    local s = aux._EMPTY_STRING
-
-    repeat s = s .. '=' i = i - 1 until (i == 0) print(s)
 end
 
 -- The daemon entry point.
