@@ -187,7 +187,7 @@ local dns_lookup = function(_ret, port_number, daemon_name)
 
     pp.prettyPrint(daemon)
 
-    -- FIXME: Investigate why we do need emitting events explicitly?
+    -- FIXME: Investigate why do we need emitting events explicitly?
     --        This does not affect error events anyway, perplexedly.
     daemon:emit(aux._EVE_LISTENING                 )
 --  daemon:emit(aux._EVE_ERROR, aux._ERR_EADDRINUSE)
