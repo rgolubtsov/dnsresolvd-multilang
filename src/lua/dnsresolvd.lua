@@ -60,7 +60,7 @@ local dns_lookup = function(_ret, port_number, daemon_name)
     local daemon = http.createServer(function(req, resp)
         _separator_draw(aux._DMN_DESCRIPTION)
 
-        pp.prettyPrint(req)
+--      pp.prettyPrint(req)
 
         _separator_draw(aux._DMN_DESCRIPTION)
 
