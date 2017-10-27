@@ -17,7 +17,7 @@ local http = require("http")
 local url  = require("url")
 local dns  = require("dns")
 
-local pp   = require("pretty-print")
+--local pp = require("pretty-print")
 
 local aux  = require("dnsresolvh")
 
@@ -58,11 +58,9 @@ local dns_lookup = function(_ret, port_number, daemon_name)
      * @return The HTTP server object.
     --]]
     local daemon = http.createServer(function(req, resp)
-        _separator_draw(aux._DMN_DESCRIPTION)
-
+--      _separator_draw(aux._DMN_DESCRIPTION)
 --      pp.prettyPrint(req)
-
-        _separator_draw(aux._DMN_DESCRIPTION)
+--      _separator_draw(aux._DMN_DESCRIPTION)
 
         -- Parsing and validating query params.
         local query = url.parse(req.url, true).query
@@ -102,7 +100,7 @@ local dns_lookup = function(_ret, port_number, daemon_name)
                                           .. aux._COLON_SPACE_SEP
                                           .. aux._ERR_COULD_NOT_LOOKUP
             else
-                pp.prettyPrint(rec)
+--              pp.prettyPrint(rec)
 
                 if (#rec == 0) then
                     ret = aux._EXIT_FAILURE
@@ -185,7 +183,7 @@ local dns_lookup = function(_ret, port_number, daemon_name)
            .. aux._MSG_SERVER_STARTED_2)
     end)
 
-    pp.prettyPrint(daemon)
+--  pp.prettyPrint(daemon)
 
     -- FIXME: Investigate why do we need emitting events explicitly?
     --        This does not affect error events anyway, perplexedly.
