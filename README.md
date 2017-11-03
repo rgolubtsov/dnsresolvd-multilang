@@ -15,6 +15,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **JavaScript ([Node.js](https://nodejs.org "Node.js"))**: `src/js/`
 * :small_blue_diamond: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
 * :small_blue_diamond: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
+* :cd: **Python 3 ([Twisted](http://twistedmatrix.com "Twisted"))**: `src/python/`
 
 ## Building
 
@@ -235,6 +236,12 @@ dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically lin
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
 
 ### Perl 5 (Mojolicious)
+
+#### Building/installing dependencies
+
+**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
+
+### Python 3 (Twisted)
 
 #### Building/installing dependencies
 
