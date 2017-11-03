@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# src/python/dnsresolvd
+# =============================================================================
+# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# =============================================================================
+# A daemon that performs DNS lookups for the given hostname
+# passed in an HTTP request, with the focus on its implementation
+# using various programming languages. (Twisted-boosted impl.)
+# =============================================================================
+# Copyright (C) 2017 Radislav (Radicchio) Golubtsov
+#
+# (See the LICENSE file at the top of the source tree.)
+#
+
+import sys
+import re
+
+from dns_resolv.controller_helper import ControllerHelper
+
+## The daemon main function.
+def main(argc, argv):
+    # Instantiating the controller helper class.
+    aux = ControllerHelper()
+
+    ret = aux._EXIT_SUCCESS
+
+    daemon_name = argv[0]
+
+    if (argc > 0):
+        port_number = argv[1]
+    else:
+        port_number = 0
+
+    aux._separator_draw(aux._DMN_DESCRIPTION)
+
+    print(aux._DMN_NAME         + aux._COMMA_SPACE_SEP  + aux._DMN_VERSION_S__
+        + aux._ONE_SPACE_STRING + aux._DMN_VERSION      + aux._NEW_LINE
+        + aux._DMN_DESCRIPTION                          + aux._NEW_LINE
+        + aux._DMN_COPYRIGHT__  + aux._ONE_SPACE_STRING + aux._DMN_AUTHOR)
+
+    aux._separator_draw(aux._DMN_DESCRIPTION)
+
+    # Checking for args presence.
+    if (argc != 1):
+        ret = aux._EXIT_FAILURE
+
+        print(daemon_name + aux._ERR_MUST_BE_THE_ONLY_ARG_1
+              + str(argc) + aux._ERR_MUST_BE_THE_ONLY_ARG_2
+                          + aux._NEW_LINE)
+
+        print(aux._MSG_USAGE_TEMPLATE_1 + daemon_name
+            + aux._MSG_USAGE_TEMPLATE_2 + aux._NEW_LINE)
+
+        return ret
+
+    # Validating the port number and discarding any rubbish it may contain.
+    try:
+        port_number = int(port_number)
+    except:
+        port_number = 0
+
+    # Checking for port correctness.
+    if ((port_number < aux._MIN_PORT) or (port_number > aux._MAX_PORT)):
+        ret = aux._EXIT_FAILURE
+
+        print(daemon_name + aux._ERR_PORT_MUST_BE_POSITIVE_INT
+                          + aux._NEW_LINE)
+
+        print(aux._MSG_USAGE_TEMPLATE_1 + daemon_name
+            + aux._MSG_USAGE_TEMPLATE_2 + aux._NEW_LINE)
+
+        return ret
+
+    # Trying to start up the daemon.
+    try:
+        print(aux._MSG_SERVER_STARTED_1 + str(port_number) + aux._NEW_LINE
+            + aux._MSG_SERVER_STARTED_2)
+
+        # TODO: Implement calling a daemon startup method.
+    except Exception as e:
+        ret = aux._EXIT_FAILURE
+
+        if (not re.search(aux._ERR_ADDR_ALREADY_IN_USE, str(e))):
+            print(daemon_name + aux._ERR_CANNOT_START_SERVER
+                              + aux._ERR_SRV_PORT_IS_IN_USE
+                              + aux._NEW_LINE)
+        else:
+            print(daemon_name + aux._ERR_CANNOT_START_SERVER
+                              + aux._ERR_SRV_UNKNOWN_REASON
+                              + aux._NEW_LINE)
+
+        return ret
+
+    return ret
+
+# The daemon entry point.
+if (__name__ == "__main__"):
+    argv = sys.argv
+    argc = len(argv) - 1
+
+    ret = main(argc, argv)
+
+    exit(ret)
+
+# vim:set nu:et:ts=4:sw=4:
