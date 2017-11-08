@@ -17,6 +17,7 @@ import sys
 import re
 
 from dns_resolv.controller_helper import ControllerHelper
+from dnsresolvd                   import DnsResolvd
 
 ## The daemon main function.
 def main(argc, argv):
@@ -77,9 +78,15 @@ def main(argc, argv):
         print(aux._MSG_SERVER_STARTED_1 + str(port_number) + aux._NEW_LINE
             + aux._MSG_SERVER_STARTED_2)
 
-        # TODO: Implement calling a daemon startup method.
+        # Instantiating the main daemon class.
+        dmn = DnsResolvd()
+
+        # Starting up the daemon.
+        ret = dmn.startup(port_number, daemon_name)
     except Exception as e:
         ret = aux._EXIT_FAILURE
+
+        print(e)
 
         if (not re.search(aux._ERR_ADDR_ALREADY_IN_USE, str(e))):
             print(daemon_name + aux._ERR_CANNOT_START_SERVER
