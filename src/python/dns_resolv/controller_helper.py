@@ -57,12 +57,15 @@ class ControllerHelper:
     _MSG_SERVER_STARTED_1 = "Server started on port "
     _MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it."
 
-    # HTTP response headers and status codes.
-    _HDR_CONTENT_TYPE  = "text/html; charset=UTF-8"
-    _HDR_CACHE_CONTROL = "no-cache, no-store, must-revalidate"
-    _HDR_EXPIRES       = "Thu, 01 Dec 1994 16:00:00 GMT"
-    _HDR_PRAGMA        = "no-cache"
-    _RSC_HTTP_200_OK   = 200
+    # HTTP response headers.
+    _HDR_CONTENT_TYPE_N  = "Content-Type"
+    _HDR_CONTENT_TYPE_V  = "text/html; charset=UTF-8"
+    _HDR_CACHE_CONTROL_N = "Cache-Control"
+    _HDR_CACHE_CONTROL_V = "no-cache, no-store, must-revalidate"
+    _HDR_EXPIRES_N       = "Expires"
+    _HDR_EXPIRES_V       = "Thu, 01 Dec 1994 16:00:00 GMT"
+    _HDR_PRAGMA_N        = "Pragma"
+    _HDR_PRAGMA_V        = "no-cache"
 
     # Daemon name, version, and copyright banners.
     _DMN_NAME        =  "DNS Resolver Daemon (dnsresolvd)"
@@ -75,6 +78,17 @@ class ControllerHelper:
 
     ## Constant: The default hostname to look up for.
     _DEF_HOSTNAME = "openbsd.org"
+
+    ##
+    # Adds headers to the response.
+    #
+    # @param req The incoming HTTP request object.
+    #
+    def add_response_headers(self, req):
+        req.setHeader(self._HDR_CONTENT_TYPE_N,  self._HDR_CONTENT_TYPE_V )
+        req.setHeader(self._HDR_CACHE_CONTROL_N, self._HDR_CACHE_CONTROL_V)
+        req.setHeader(self._HDR_EXPIRES_N,       self._HDR_EXPIRES_V      )
+        req.setHeader(self._HDR_PRAGMA_N,        self._HDR_PRAGMA_V       )
 
     # Helper method. Draws a horizontal separator banner.
     def _separator_draw(self, banner_text):
