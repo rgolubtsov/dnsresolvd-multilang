@@ -18,6 +18,11 @@ class DnsLookupController:
     # Performs DNS lookup action for the given hostname,
     # i.e. (in this case) IP address retrieval by hostname.
     #
+    # @param port_number The server port number to listen on.
+    # @param daemon_name The daemon name (executable/script name).
+    #
+    # @return The IP address retrieved for the host analyzed.
+    #
     def dns_lookup(self, port_number, daemon_name):
         # TODO: Implement performing DNS lookup.
 
