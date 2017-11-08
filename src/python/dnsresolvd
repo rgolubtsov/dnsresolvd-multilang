@@ -86,6 +86,8 @@ def main(argc, argv):
     except Exception as e:
         ret = aux._EXIT_FAILURE
 
+        print(e)
+
         if (not re.search(aux._ERR_ADDR_ALREADY_IN_USE, str(e))):
             print(daemon_name + aux._ERR_CANNOT_START_SERVER
                               + aux._ERR_SRV_PORT_IS_IN_USE
