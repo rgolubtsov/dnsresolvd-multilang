@@ -19,38 +19,45 @@ from twisted.web.server         import Site
 
 from dns_resolv.dns_lookup_controller import DnsLookupController
 
-## The main class of the daemon.
 class DnsResolvd:
-    ##
-    # Starts up the daemon.
-    #
-    # @param port_number The server port number to listen on.
-    # @param aux         The controller helper object instance.
-    #
-    # @return The server exit code when interrupted.
-    #
+    """The main class of the daemon."""
+
     def startup(self, port_number, aux):
+        """Starts up the daemon.
+
+        Args:
+            port_number: The server port number to listen on.
+            aux:         The controller helper object instance.
+
+        Returns:
+            The server exit code when interrupted.
+        """
+
         ret = aux._EXIT_SUCCESS
 
-        ##
-        # The server class of the daemon.
-        # Used by Twisted engine to run an event loop.
-        #
-        # @extends Resource The Twisted web-accessible resource class.
-        #
         class Daemon(Resource):
+            """The server class of the daemon.
+            Used by Twisted engine to run an event loop.
+
+            Extends:
+                Resource: The Twisted web-accessible resource class.
+            """
+
             isLeaf = True
 
-            ##
-            # Renders the HTTP response based on the incoming HTTP request.
-            # It also calls the method to perform DNS lookup for a hostname
-            # passed in the HTTP request.
-            #
-            # @param req The incoming HTTP request object.
-            #
-            # @return The HTTP response has to be rendered.
-            #
             def render_GET(self, req):
+                """Renders the HTTP response based on the incoming HTTP
+                request.
+                It also calls the method to perform DNS lookup for a hostname
+                passed in the HTTP request.
+
+                Args:
+                    req: The incoming HTTP request object.
+
+                Returns:
+                    The HTTP response has to be rendered.
+                """
+
                 query = req.args
                 h     = b"h"
 
@@ -115,8 +122,9 @@ class DnsResolvd:
 
         return ret
 
-    ## Default constructor.
     def __init__(self):
+        """Default constructor."""
+
         self = []
 
         return None

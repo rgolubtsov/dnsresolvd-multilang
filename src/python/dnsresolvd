@@ -19,8 +19,17 @@ import re
 from dns_resolv.controller_helper import ControllerHelper
 from dnsresolvd                   import DnsResolvd
 
-## The daemon main function.
 def main(argc, argv):
+    """The daemon main function.
+
+    Args:
+        argc: The number of command-line arguments.
+        argv: The list   of command-line arguments.
+
+    Returns:
+        The exit code indicating the daemon overall execution status.
+    """
+
     # Instantiating the controller helper class.
     aux = ControllerHelper()
 
@@ -85,8 +94,6 @@ def main(argc, argv):
         ret = dmn.startup(port_number, aux)
     except Exception as e:
         ret = aux._EXIT_FAILURE
-
-        print(e)
 
         if (not re.search(aux._ERR_ADDR_ALREADY_IN_USE, str(e))):
             print(daemon_name + aux._ERR_CANNOT_START_SERVER

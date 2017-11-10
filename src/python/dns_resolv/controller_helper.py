@@ -12,8 +12,9 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-## The helper for the controller class and related ones.
 class ControllerHelper:
+    """The helper for the controller class and related ones."""
+
     # Helper constants.
     _EXIT_FAILURE     =    1 #    Failing exit status.
     _EXIT_SUCCESS     =    0 # Successful exit status.
@@ -79,12 +80,13 @@ class ControllerHelper:
     ## Constant: The default hostname to look up for.
     _DEF_HOSTNAME = "openbsd.org"
 
-    ##
-    # Adds headers to the response.
-    #
-    # @param req The incoming HTTP request object.
-    #
     def add_response_headers(self, req):
+        """Adds headers to the response.
+
+        Args:
+            req: The incoming HTTP request object.
+        """
+
         req.setHeader(self._HDR_CONTENT_TYPE_N,  self._HDR_CONTENT_TYPE_V )
         req.setHeader(self._HDR_CACHE_CONTROL_N, self._HDR_CACHE_CONTROL_V)
         req.setHeader(self._HDR_EXPIRES_N,       self._HDR_EXPIRES_V      )
@@ -107,8 +109,9 @@ class ControllerHelper:
         exec("while (True):\n\tprint('=', end=self._EMPTY_STRING)\n\ti -= 1\n"
            + "\tif (not i):\n\t\tbreak\nprint()")
 
-    ## Default constructor.
     def __init__(self):
+        """Default constructor."""
+
         self = []
 
         return None
