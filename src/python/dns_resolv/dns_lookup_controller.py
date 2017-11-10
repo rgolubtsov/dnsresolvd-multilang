@@ -12,31 +12,36 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
+from dns.resolver import Resolver, NoAnswer
+
 ## The controller class of the daemon.
 class DnsLookupController:
     ##
     # Performs DNS lookup action for the given hostname,
     # i.e. (in this case) IP address retrieval by hostname.
     #
-    # @param port_number The server port number to listen on.
-    # @param daemon_name The daemon name (executable/script name).
+    # @param hostname The effective hostname to look up for.
+    # @param aux      The controller helper object instance.
     #
-    # @return The IP address retrieved for the host analyzed.
+    # @return The IP address retrieved for the host analyzed
+    #         and the IP version (family) used to look up in DNS.
     #
-    def dns_lookup(self, port_number, daemon_name):
-        # TODO: Implement performing DNS lookup.
+    def dns_lookup(self, hostname, aux):
+        resolver = Resolver()
 
-        # ---------------------------------------------------------------------
-        # --- Debug output - Begin --------------------------------------------
-        # ---------------------------------------------------------------------
-        dbg = daemon_name + ":" + str(port_number)
+        # If the host doesn't have the A record (IPv4),
+        # trying to find its AAAA record (IPv6).
+        try:
+            addr     = resolver.query(hostname,    "A")[0] # <---+
+            ver      = 4       #                                 |
+        except Exception as e: # From the dnspython lib. --------+
+            try:               #                                 |
+                addr = resolver.query(hostname, "AAAA")[0] # <---+
+                ver  = 6
+            except Exception as e:
+                addr = ver = aux._ERR_PREFIX
 
-        print(dbg)
-        # ---------------------------------------------------------------------
-        # --- Debug output - End ----------------------------------------------
-        # ---------------------------------------------------------------------
-
-        return dbg
+        return (addr, ver)
 
     ## Default constructor.
     def __init__(self):

@@ -82,7 +82,7 @@ def main(argc, argv):
         dmn = DnsResolvd()
 
         # Starting up the daemon.
-        ret = dmn.startup(port_number, daemon_name)
+        ret = dmn.startup(port_number, aux)
     except Exception as e:
         ret = aux._EXIT_FAILURE
 
