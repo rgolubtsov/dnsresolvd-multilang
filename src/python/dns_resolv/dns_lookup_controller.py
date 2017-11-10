@@ -14,19 +14,22 @@
 
 from dns.resolver import Resolver, NoAnswer
 
-## The controller class of the daemon.
 class DnsLookupController:
-    ##
-    # Performs DNS lookup action for the given hostname,
-    # i.e. (in this case) IP address retrieval by hostname.
-    #
-    # @param hostname The effective hostname to look up for.
-    # @param aux      The controller helper object instance.
-    #
-    # @return The IP address retrieved for the host analyzed
-    #         and the IP version (family) used to look up in DNS.
-    #
+    """The controller class of the daemon."""
+
     def dns_lookup(self, hostname, aux):
+        """Performs DNS lookup action for the given hostname,
+        i.e. (in this case) IP address retrieval by hostname.
+
+        Args:
+            hostname: The effective hostname to look up for.
+            aux:      The controller helper object instance.
+
+        Returns:
+            The IP address retrieved for the host analyzed
+            and the IP version (family) used to look up in DNS.
+        """
+
         resolver = Resolver()
 
         # If the host doesn't have the A record (IPv4),
@@ -43,8 +46,9 @@ class DnsLookupController:
 
         return (addr, ver)
 
-    ## Default constructor.
     def __init__(self):
+        """Default constructor."""
+
         self = []
 
         return None

@@ -19,8 +19,17 @@ import re
 from dns_resolv.controller_helper import ControllerHelper
 from dnsresolvd                   import DnsResolvd
 
-## The daemon main function.
 def main(argc, argv):
+    """The daemon main function.
+
+    Args:
+        argc: The number of command-line arguments.
+        argv: The list   of command-line arguments.
+
+    Returns:
+        The exit code indicating the daemon overall execution status.
+    """
+
     # Instantiating the controller helper class.
     aux = ControllerHelper()
 
