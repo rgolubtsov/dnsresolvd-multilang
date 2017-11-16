@@ -12,6 +12,8 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
+import syslog
+
 class ControllerHelper:
     """The helper for the controller class and related ones."""
 
@@ -91,6 +93,11 @@ class ControllerHelper:
         req.setHeader(self._HDR_CACHE_CONTROL_N, self._HDR_CACHE_CONTROL_V)
         req.setHeader(self._HDR_EXPIRES_N,       self._HDR_EXPIRES_V      )
         req.setHeader(self._HDR_PRAGMA_N,        self._HDR_PRAGMA_V       )
+
+    # Helper method. Makes final buffer cleanups, closes streams, etc.
+    def _cleanups_fixate(self):
+        # Closing the system logger.
+        syslog.closelog()
 
     # Helper method. Draws a horizontal separator banner.
     def _separator_draw(self, banner_text):

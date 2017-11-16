@@ -15,6 +15,7 @@
 
 import sys
 import re
+import syslog
 
 from dns_resolv.controller_helper import ControllerHelper
 from dnsresolvd                   import DnsResolvd
@@ -42,6 +43,10 @@ def main(argc, argv):
     else:
         port_number = 0
 
+    # Opening the system logger.
+    syslog.openlog(daemon_name,
+                  (syslog.LOG_CONS | syslog.LOG_PID), syslog.LOG_DAEMON)
+
     aux._separator_draw(aux._DMN_DESCRIPTION)
 
     print(aux._DMN_NAME         + aux._COMMA_SPACE_SEP  + aux._DMN_VERSION_S__
@@ -59,8 +64,15 @@ def main(argc, argv):
               + str(argc) + aux._ERR_MUST_BE_THE_ONLY_ARG_2
                           + aux._NEW_LINE)
 
+        syslog.syslog(syslog.LOG_ERR,
+              daemon_name + aux._ERR_MUST_BE_THE_ONLY_ARG_1
+              + str(argc) + aux._ERR_MUST_BE_THE_ONLY_ARG_2
+                          + aux._NEW_LINE)
+
         print(aux._MSG_USAGE_TEMPLATE_1 + daemon_name
             + aux._MSG_USAGE_TEMPLATE_2 + aux._NEW_LINE)
+
+        aux._cleanups_fixate()
 
         return ret
 
@@ -77,8 +89,14 @@ def main(argc, argv):
         print(daemon_name + aux._ERR_PORT_MUST_BE_POSITIVE_INT
                           + aux._NEW_LINE)
 
+        syslog.syslog(syslog.LOG_ERR,
+              daemon_name + aux._ERR_PORT_MUST_BE_POSITIVE_INT
+                          + aux._NEW_LINE)
+
         print(aux._MSG_USAGE_TEMPLATE_1 + daemon_name
             + aux._MSG_USAGE_TEMPLATE_2 + aux._NEW_LINE)
+
+        aux._cleanups_fixate()
 
         return ret
 
@@ -86,6 +104,9 @@ def main(argc, argv):
     try:
         print(aux._MSG_SERVER_STARTED_1 + str(port_number) + aux._NEW_LINE
             + aux._MSG_SERVER_STARTED_2)
+
+        syslog.syslog(syslog.LOG_INFO,       aux._MSG_SERVER_STARTED_1
+        + str(port_number) + aux._NEW_LINE + aux._MSG_SERVER_STARTED_2)
 
         # Instantiating the main daemon class.
         dmn = DnsResolvd()
@@ -99,12 +120,27 @@ def main(argc, argv):
             print(daemon_name + aux._ERR_CANNOT_START_SERVER
                               + aux._ERR_SRV_PORT_IS_IN_USE
                               + aux._NEW_LINE)
+
+            syslog.syslog(syslog.LOG_ERR,
+                  daemon_name + aux._ERR_CANNOT_START_SERVER
+                              + aux._ERR_SRV_PORT_IS_IN_USE
+                              + aux._NEW_LINE)
         else:
             print(daemon_name + aux._ERR_CANNOT_START_SERVER
                               + aux._ERR_SRV_UNKNOWN_REASON
                               + aux._NEW_LINE)
 
+            syslog.syslog(syslog.LOG_ERR,
+                  daemon_name + aux._ERR_CANNOT_START_SERVER
+                              + aux._ERR_SRV_UNKNOWN_REASON
+                              + aux._NEW_LINE)
+
+        aux._cleanups_fixate()
+
         return ret
+
+    # Making final cleanups.
+    aux._cleanups_fixate()
 
     return ret
 
