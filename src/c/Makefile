@@ -26,7 +26,7 @@ CFLAGS = -Wall -pedantic -std=$(C_STD) -O3 \
          -march=x86-64 -mtune=generic -pipe -fstack-protector-strong
 
 # Telling the compiler to use additional set of features including those
-# from BSD and SVID, e.g. this flag explicitly declares the gethostbyname2()
+# from BSD and SVID, e.g. this macro explicitly declares the gethostbyname2()
 # function -- very important when building for Linux.
 CFLAGS += -D_DEFAULT_SOURCE
 

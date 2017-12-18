@@ -140,7 +140,7 @@ $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=624598826a0b72c42479fa6bfaa18a12a5716358, not stripped
 ```
 
-#### Building under Arch Linux (kernel 4.11.3-1-ARCH x86-64)
+#### Building under Arch Linux (kernel 4.13.9-1-ARCH x86-64)
 
 This is quite equal to the process of building the daemon under Ubuntu. Install the necessary dependencies:
 
@@ -154,7 +154,7 @@ $ sudo pacman -S gcc    (or $ sudo pacman -S gcc-multilib)
 $ sudo pacman -S libmicrohttpd
 ```
 
-The version of the compiler GCC used is 7.1.1. The version of the library GNU libmicrohttpd used is 0.9.55.
+The version of the compiler GCC used is 7.2.0. The version of the library GNU libmicrohttpd used is 0.9.58.
 
 Now let's build the daemon.
 
@@ -162,36 +162,26 @@ Now let's build the daemon.
 $ cd src/c
 $ make clean && make all
 rm -f dnsresolvd dnsresolvd.o
-cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong   -c -o dnsresolvd.o dnsresolvd.c
+cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
 dnsresolvd.c: In function ‘_query_params_iterator’:
-dnsresolvd.c:51:26: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+dnsresolvd.c:53:26: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
                  hostname = value;
                           ^
 dnsresolvd.c: In function ‘dns_lookup’:
-dnsresolvd.c:228:12: warning: implicit declaration of function ‘gethostbyname2’; did you mean ‘gethostbyname’? [-Wimplicit-function-declaration]
-     hent = gethostbyname2(hostname, AF_INET);
-            ^~~~~~~~~~~~~~
-            gethostbyname
-dnsresolvd.c:228:10: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
-     hent = gethostbyname2(hostname, AF_INET);
-          ^
-dnsresolvd.c:235:14: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
-         hent = gethostbyname2(hostname, AF_INET6);
-              ^
-dnsresolvd.c:240:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifier ]
+dnsresolvd.c:242:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
              addr = inet_ntop(AF_INET6, hent->h_addr_list[0], addr,
                   ^
-dnsresolvd.c:246:14: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifier ]
+dnsresolvd.c:248:14: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
          addr = inet_ntop(AF_INET, hent->h_addr_list[0], addr,
               ^
 dnsresolvd.c: In function ‘_request_handler’:
-dnsresolvd.c:138:27: warning: ‘%u’ directive writing between 1 and 5 bytes into a region of size 2 [-Wformat-overflow=]
+dnsresolvd.c:140:27: warning: ‘%u’ directive writing between 1 and 5 bytes into a region of size 2 [-Wformat-overflow=]
          sprintf(ver_str, "%u", ver);
                            ^~
-dnsresolvd.c:138:26: note: directive argument in the range [0, 65535]
+dnsresolvd.c:140:26: note: directive argument in the range [0, 65535]
          sprintf(ver_str, "%u", ver);
                           ^~~~
-dnsresolvd.c:138:9: note: ‘sprintf’ output between 2 and 6 bytes into a destination of size 2
+dnsresolvd.c:140:9: note: ‘sprintf’ output between 2 and 6 bytes into a destination of size 2
          sprintf(ver_str, "%u", ver);
          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 cc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
@@ -201,17 +191,17 @@ Once this is done, check it out... just for fun:))
 
 ```
 $ ls -al
-total 60
-drwxr-xr-x 2 radic radic  4096 Jun 24 13:30 .
-drwxr-xr-x 5 radic radic  4096 Jun 24 13:17 ..
--rwxr-xr-x 1 radic radic 13936 Jun 24 13:30 dnsresolvd
--rw-r--r-- 1 radic radic 13176 Jun 24 13:17 dnsresolvd.c
--rw-r--r-- 1 radic radic  3267 Jun 22 01:25 dnsresolvd.h
--rw-r--r-- 1 radic radic  9520 Jun 24 13:30 dnsresolvd.o
--rw-r--r-- 1 radic radic  1038 Jun 22 01:25 Makefile
+total 64
+drwxr-xr-x 2 radic radic  4096 Dec 18 19:45 .
+drwxr-xr-x 7 radic radic  4096 Nov 10 19:20 ..
+-rwxr-xr-x 1 radic radic 18152 Dec 18 19:45 dnsresolvd
+-rw-r--r-- 1 radic radic 13288 Oct 14 23:15 dnsresolvd.c
+-rw-r--r-- 1 radic radic  3379 Oct 14 23:15 dnsresolvd.h
+-rw-r--r-- 1 radic radic 10328 Dec 18 19:45 dnsresolvd.o
+-rw-r--r-- 1 radic radic  1382 Dec 18 19:40 Makefile
 $
 $ file dnsresolvd
-dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=0baa436fc9efa4ee5ea40d925950522d4811a01d, not stripped
+dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=ec3612f676b40e5114fc5bd92fbf04868a5dc9ab, not stripped
 ```
 
 ### JavaScript (Node.js)
