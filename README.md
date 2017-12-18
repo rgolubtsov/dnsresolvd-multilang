@@ -91,7 +91,7 @@ $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1
 ```
 
-#### Building under Ubuntu Server (Ubuntu 16.04.2 LTS x86-64)
+#### Building under Ubuntu Server (Ubuntu 16.04.3 LTS x86-64)
 
 **Dependencies:** The only build and runtime dependency is the main library &ndash; **GNU libmicrohttpd**. It has to be installed from packages:
 
@@ -108,25 +108,16 @@ Now let's build the daemon.
 $ cd src/c
 $ make clean && make all
 rm -f dnsresolvd dnsresolvd.o
-cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong   -c -o dnsresolvd.o dnsresolvd.c
+cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
 dnsresolvd.c: In function ‘_query_params_iterator’:
-dnsresolvd.c:51:26: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+dnsresolvd.c:53:26: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
                  hostname = value;
                           ^
 dnsresolvd.c: In function ‘dns_lookup’:
-dnsresolvd.c:228:12: warning: implicit declaration of function ‘gethostbyname2’ [-Wimplicit-function-declaration]
-     hent = gethostbyname2(hostname, AF_INET);
-            ^
-dnsresolvd.c:228:10: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
-     hent = gethostbyname2(hostname, AF_INET);
-          ^
-dnsresolvd.c:235:14: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
-         hent = gethostbyname2(hostname, AF_INET6);
-              ^
-dnsresolvd.c:240:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+dnsresolvd.c:242:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
              addr = inet_ntop(AF_INET6, hent->h_addr_list[0], addr,
                   ^
-dnsresolvd.c:246:14: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+dnsresolvd.c:248:14: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
          addr = inet_ntop(AF_INET, hent->h_addr_list[0], addr,
               ^
 cc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
@@ -137,16 +128,16 @@ Once this is done, check it out... just for fun:))
 ```
 $ ls -al
 total 64
-drwxrwxr-x 2 radic radic  4096 Jun 22 16:40 .
-drwxrwxr-x 4 radic radic  4096 Jun 22 15:05 ..
--rwxrwxr-x 1 radic radic 18456 Jun 22 16:40 dnsresolvd
--rw-rw-r-- 1 radic radic 13176 Jun 22 16:35 dnsresolvd.c
--rw-rw-r-- 1 radic radic  3267 Jun 22 15:05 dnsresolvd.h
--rw-rw-r-- 1 radic radic  9488 Jun 22 16:40 dnsresolvd.o
--rw-rw-r-- 1 radic radic  1038 Jun 22 15:05 Makefile
+drwxrwxr-x 2 radic radic  4096 Dec 18 18:50 .
+drwxrwxr-x 7 radic radic  4096 Nov  3 02:55 ..
+-rwxrwxr-x 1 radic radic 18456 Dec 18 18:50 dnsresolvd
+-rw-rw-r-- 1 radic radic 13288 Oct 14 08:50 dnsresolvd.c
+-rw-rw-r-- 1 radic radic  3379 Oct 14 08:50 dnsresolvd.h
+-rw-rw-r-- 1 radic radic  9488 Dec 18 18:50 dnsresolvd.o
+-rw-rw-r-- 1 radic radic  1381 Dec 18 18:43 Makefile
 $
 $ file dnsresolvd
-dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=438019fc2026fa3374d8dd612a25b10b078b0a1a, not stripped
+dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=624598826a0b72c42479fa6bfaa18a12a5716358, not stripped
 ```
 
 #### Building under Arch Linux (kernel 4.11.3-1-ARCH x86-64)
