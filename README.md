@@ -14,8 +14,8 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **C ([GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd"))**: `src/c/`
 * :small_blue_diamond: **JavaScript ([Node.js](https://nodejs.org "Node.js"))**: `src/js/`
 * :small_blue_diamond: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
-* :small_blue_diamond: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
-* :cd: **Python 3 ([Twisted](http://twistedmatrix.com "Twisted"))**: `src/python/`
+* :cd: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
+* :small_blue_diamond: **Python 3 ([Twisted](http://twistedmatrix.com "Twisted"))**: `src/python/`
 
 ## Building
 
@@ -218,12 +218,38 @@ dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically 
 
 ### Perl 5 (Mojolicious)
 
-#### Building/installing dependencies
+#### Building under Ubuntu Server (Ubuntu 16.04.3 LTS x86-64)
+
+```
+$ sudo apt-get update && sudo apt-get install -y cpanminus && sudo cpanm App::cpanminus
+```
+```
+$ sudo cpanm Mojolicious Net::DNS::Native
+```
+```
+$ mojo version
+CORE
+  Perl        (v5.22.1, linux)
+  Mojolicious (7.59, Doughnut)
+
+OPTIONAL
+  EV 4.0+                 (n/a)
+  IO::Socket::Socks 0.64+ (n/a)
+  IO::Socket::SSL 1.94+   (n/a)
+  Net::DNS::Native 0.15+  (0.15)
+  Role::Tiny 2.000001+    (2.000001)
+
+This version is up to date, have fun!
+```
 
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
 
 ### Python 3 (Twisted)
 
-#### Building/installing dependencies
+#### Building under Ubuntu Server (Ubuntu 16.04.3 LTS x86-64)
+
+```
+$ sudo apt-get update && sudo apt-get install -y python3-twisted python3-dnspython
+```
 
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
