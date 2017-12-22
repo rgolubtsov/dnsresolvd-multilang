@@ -21,6 +21,7 @@ use FindBin;
 
 BEGIN { unshift @INC, "$FindBin::Bin/lib" }
 
+use Sys::Syslog;
 use Scalar::Util "looks_like_number";
 use Try::Tiny;
 use Mojolicious::Commands;
@@ -67,11 +68,20 @@ use constant DMN_OP_MOD_OPT  => "-m";
 use constant DMN_LISTEN_HTTP => "http://*:";
 use constant DMN_OP_MOD_PROD => "production";
 
+# Helper function. Makes final buffer cleanups, closes streams, etc.
+sub _cleanups_fixate {
+    # Closing the system logger.
+    closelog();
+}
+
 my $ret = _EXIT_SUCCESS;
 
 my $argc        = @ARGV;
 my $daemon_name = $0;
 my $port_number = $ARGV[0];
+
+# Opening the system logger.
+openlog($daemon_name, "pid", Sys::Syslog::LOG_DAEMON);
 
 # Instantiating the controller helper class.
 my $aux = DnsResolvd::ControllerHelper->new();
@@ -93,8 +103,15 @@ if ($argc != 1) {
              . $argc . _ERR_MUST_BE_THE_ONLY_ARG_2
                      . _NEW_LINE);
 
+    syslog(Sys::Syslog::LOG_ERR,
+        $daemon_name . _ERR_MUST_BE_THE_ONLY_ARG_1
+             . $argc . _ERR_MUST_BE_THE_ONLY_ARG_2
+                     . _NEW_LINE);
+
     say(_MSG_USAGE_TEMPLATE_1 . $daemon_name
       . _MSG_USAGE_TEMPLATE_2 . _NEW_LINE);
+
+    _cleanups_fixate();
 
     exit($ret);
 }
@@ -111,8 +128,14 @@ if (($port_number < _MIN_PORT) || ($port_number > _MAX_PORT)) {
     say($daemon_name . _ERR_PORT_MUST_BE_POSITIVE_INT
                      . _NEW_LINE);
 
+    syslog(Sys::Syslog::LOG_ERR,
+        $daemon_name . _ERR_PORT_MUST_BE_POSITIVE_INT
+                     . _NEW_LINE);
+
     say(_MSG_USAGE_TEMPLATE_1 . $daemon_name
       . _MSG_USAGE_TEMPLATE_2 . _NEW_LINE);
+
+    _cleanups_fixate();
 
     exit($ret);
 }
@@ -120,6 +143,10 @@ if (($port_number < _MIN_PORT) || ($port_number > _MAX_PORT)) {
 # Trying to start up the daemon.
 try {
     say(_MSG_SERVER_STARTED_1 . $port_number . _NEW_LINE
+      . _MSG_SERVER_STARTED_2);
+
+    syslog(Sys::Syslog::LOG_INFO,
+        _MSG_SERVER_STARTED_1 . $port_number . _NEW_LINE
       . _MSG_SERVER_STARTED_2);
 
     Mojolicious::Commands->start_app(DMN_CLASS_NAME, DMN_DAEMON_CMD,
@@ -132,12 +159,25 @@ try {
         say($daemon_name . _ERR_CANNOT_START_SERVER
                          . _ERR_SRV_PORT_IS_IN_USE
                          . _NEW_LINE);
+
+        syslog(Sys::Syslog::LOG_ERR,
+            $daemon_name . _ERR_CANNOT_START_SERVER
+                         . _ERR_SRV_PORT_IS_IN_USE
+                         . _NEW_LINE);
     } else {
         say($daemon_name . _ERR_CANNOT_START_SERVER
                          . _ERR_SRV_UNKNOWN_REASON
                          . _NEW_LINE);
+
+        syslog(Sys::Syslog::LOG_ERR,
+            $daemon_name . _ERR_CANNOT_START_SERVER
+                         . _ERR_SRV_UNKNOWN_REASON
+                         . _NEW_LINE);
     }
 };
+
+# Making final cleanups.
+_cleanups_fixate();
 
 exit($ret);
 
