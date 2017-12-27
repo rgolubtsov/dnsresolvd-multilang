@@ -206,7 +206,24 @@ dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically 
 
 ### JavaScript (Node.js)
 
-#### Building/installing dependencies
+#### Building under Ubuntu Server (Ubuntu 16.04.3 LTS x86-64)
+
+```
+$ sudo apt-get update && sudo apt-get install -y nodejs npm
+$
+$ sudo ln -sfnv /usr/bin/nodejs /usr/local/bin/node
+'/usr/local/bin/node' -> '/usr/bin/nodejs'
+```
+```
+$ sudo npm i posix -g
+$
+$ npm ln posix
+/home/radic/dev/misc/github/dnsresolvd-multilang/src/js/node_modules/posix -> /usr/local/lib/node_modules/posix
+```
+```
+$ node -v
+v4.2.6
+```
 
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
 
