@@ -23,4 +23,4 @@ src/c/dnsresolvd
 # === Node modules ============================================================
 node_modules/
 
-# vim:set nu:et:ts=4:sw=4:
+# vim:set nu et ts=4 sw=4:

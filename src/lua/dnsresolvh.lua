@@ -87,4 +87,4 @@ local _h = {}
     _h._DEF_HOSTNAME = "openbsd.org"
 return _h
 
--- vim:set nu:et:ts=4:sw=4:
+-- vim:set nu et ts=4 sw=4:

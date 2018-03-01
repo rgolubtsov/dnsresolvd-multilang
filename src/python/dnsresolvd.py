@@ -129,4 +129,4 @@ class DnsResolvd:
 
         return None
 
-# vim:set nu:et:ts=4:sw=4:
+# vim:set nu et ts=4 sw=4:
