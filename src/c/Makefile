@@ -43,4 +43,4 @@ all: $(EXEC)
 clean:
 	$(RM) $(EXEC) $(DEPS)
 
-# vim:set nu:et:ts=4:sw=4:
+# vim:set nu ts=4 sw=4:
