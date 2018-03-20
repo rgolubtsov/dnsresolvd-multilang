@@ -7,7 +7,7 @@
  * passed in an HTTP request, with the focus on its implementation
  * using various programming languages. (GNU libmicrohttpd-boosted impl.)
  * ============================================================================
- * Copyright (C) 2017 Radislav (Radicchio) Golubtsov
+ * Copyright (C) 2017-2018 Radislav (Radicchio) Golubtsov
  *
  * (See the LICENSE file at the top of the source tree.)
  */

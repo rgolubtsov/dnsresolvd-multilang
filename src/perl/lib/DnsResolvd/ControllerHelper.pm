@@ -7,7 +7,7 @@
 # passed in an HTTP request, with the focus on its implementation
 # using various programming languages. (Mojolicious-boosted impl.)
 # =============================================================================
-# Copyright (C) 2017 Radislav (Radicchio) Golubtsov
+# Copyright (C) 2017-2018 Radislav (Radicchio) Golubtsov
 #
 # (See the LICENSE file at the top of the source tree.)
 #
@@ -76,7 +76,7 @@ use constant _DMN_DESCRIPTION => "Performs DNS lookups for the given hostname "
                                . "passed in an HTTP request";
 use constant _DMN_VERSION_S__ => "Version";
 use constant _DMN_VERSION     => "0.1";
-use constant _DMN_COPYRIGHT__ => "Copyright (C) 2017";
+use constant _DMN_COPYRIGHT__ => "Copyright (C) 2017-2018";
 use constant _DMN_AUTHOR      => "Radislav Golubtsov <ragolubtsov\@my.com>";
 
 ## Constant: The default hostname to look up for.
