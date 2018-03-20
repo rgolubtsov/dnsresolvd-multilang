@@ -33,13 +33,13 @@
 #define _NEW_LINE         "\n"
 
 /* Common error messages. */
-#define _ERR_PREFIX                    "Error"
+#define _ERR_PREFIX                    "error"
 #define _ERR_PORT_MUST_BE_POSITIVE_INT "%s: <port_number> must be "      \
                                        "a positive integer value, "      \
                                        "in the range 1024-49151."
 #define _ERR_CANNOT_START_SERVER       "%s: FATAL: Cannot start server " \
                                        "for an unknown reason. Exiting..."
-#define _ERR_COULD_NOT_LOOKUP          "Could not lookup hostname."
+#define _ERR_COULD_NOT_LOOKUP          "could not lookup hostname"
 
 /* Print this error message when there are no any args passed. */
 #define _ERR_MUST_BE_THE_ONLY_ARG "%s: There must be exactly one arg " \

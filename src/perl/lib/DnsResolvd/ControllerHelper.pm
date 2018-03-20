@@ -31,7 +31,7 @@ use constant _COMMA_SPACE_SEP  => ", ";
 use constant _NEW_LINE         => "\n";
 
 # Common error messages and codes.
-use constant _ERR_PREFIX                    => "Error";
+use constant _ERR_PREFIX                    => "error";
 use constant _ERR_PORT_MUST_BE_POSITIVE_INT => ": <port_number> must be "
                                              . "a positive integer value, "
                                              . "in the range 1024-49151.";
@@ -40,7 +40,7 @@ use constant _ERR_SRV_UNKNOWN_REASON        => "for an unknown reason. "
                                              . "Exiting...";
 use constant _ERR_SRV_PORT_IS_IN_USE        => "due to the port requested "
                                              . "is in use. Exiting...";
-use constant _ERR_COULD_NOT_LOOKUP          => "Could not lookup hostname.";
+use constant _ERR_COULD_NOT_LOOKUP          => "could not lookup hostname";
 use constant _ERR_ADDR_ALREADY_IN_USE       =>
                                           qr/^.*Address\ already\ in\ use.*$/;
 

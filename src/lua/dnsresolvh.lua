@@ -28,7 +28,7 @@ local _h = {}
     _h._NEW_LINE         = "\n"
 
     -- Common error messages and codes.
-    _h._ERR_PREFIX                    = "Error"
+    _h._ERR_PREFIX                    = "error"
     _h._ERR_PORT_MUST_BE_POSITIVE_INT = ": <port_number> must be "
                                      .. "a positive integer value, "
                                      .. "in the range 1024-49151."
@@ -36,7 +36,7 @@ local _h = {}
     _h._ERR_SRV_UNKNOWN_REASON        = "for an unknown reason. Exiting..."
     _h._ERR_SRV_PORT_IS_IN_USE        = "due to the port requested "
                                      .. "is in use. Exiting..."
-    _h._ERR_COULD_NOT_LOOKUP          = "Could not lookup hostname."
+    _h._ERR_COULD_NOT_LOOKUP          = "could not lookup hostname"
     _h._ERR_EADDRINUSE                = "EADDRINUSE"
 
     -- Print this error message when there are no any args passed.

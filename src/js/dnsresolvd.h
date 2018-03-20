@@ -32,7 +32,7 @@ var __DNSRESOLVD_H = function() {
     this._NEW_LINE         = os.EOL;
 
     /* Common error messages and codes. */
-    this._ERR_PREFIX                    = "Error";
+    this._ERR_PREFIX                    = "error";
     this._ERR_PORT_MUST_BE_POSITIVE_INT = ": <port_number> must be "
                                         + "a positive integer value, "
                                         + "in the range 1024-49151.";
@@ -40,7 +40,7 @@ var __DNSRESOLVD_H = function() {
     this._ERR_SRV_UNKNOWN_REASON        = "for an unknown reason. Exiting...";
     this._ERR_SRV_PORT_IS_IN_USE        = "due to the port requested "
                                         + "is in use. Exiting...";
-    this._ERR_COULD_NOT_LOOKUP          = "Could not lookup hostname.";
+    this._ERR_COULD_NOT_LOOKUP          = "could not lookup hostname";
     this._ERR_EADDRINUSE                = "EADDRINUSE";
 
     /* Print this error message when there are no any args passed. */

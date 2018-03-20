@@ -27,7 +27,7 @@ class ControllerHelper:
     _NEW_LINE         = "\n"
 
     # Common error messages and codes.
-    _ERR_PREFIX                    =  "Error"
+    _ERR_PREFIX                    =  "error"
     _ERR_PORT_MUST_BE_POSITIVE_INT = (": <port_number> must be "
                                    +  "a positive integer value, "
                                    +  "in the range 1024-49151.")
@@ -36,7 +36,7 @@ class ControllerHelper:
                                    +  "Exiting...")
     _ERR_SRV_PORT_IS_IN_USE        = ("due to the port requested "
                                    +  "is in use. Exiting...")
-    _ERR_COULD_NOT_LOOKUP          =  "Could not lookup hostname."
+    _ERR_COULD_NOT_LOOKUP          =  "could not lookup hostname"
 #   _ERR_ADDR_ALREADY_IN_USE       =  "Address already in use."
     _ERR_ADDR_ALREADY_IN_USE       =  r"^.*(is|in).*$"
     _ERR_EADDRINUSE                =  "EADDRINUSE"
