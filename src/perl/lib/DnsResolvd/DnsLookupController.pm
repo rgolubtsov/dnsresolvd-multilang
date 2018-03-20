@@ -45,18 +45,16 @@ use DnsResolvd::ControllerHelper
     "_DEF_HOSTNAME";
 
 # HTTP response buffer template chunks.
-use constant RESP_TEMPLATE_1 => "<!DOCTYPE html>"                                                                        . _NEW_LINE
-. "<html lang=\"en-US\" dir=\"ltr\">" . _NEW_LINE . "<head>"                                                             . _NEW_LINE
-. "<meta http-equiv=\"Content-Type\"    content=\"" . _HDR_CONTENT_TYPE . "\" />"                                        . _NEW_LINE
-. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\" />"                                                 . _NEW_LINE
-. "<!-- No caching at all for:                                                                       -->"                . _NEW_LINE
-. "<meta http-equiv=\"Cache-Control\"   content=\"" . _HDR_CACHE_CONTROL . "\" /> <!-- HTTP/1.1 -->"                     . _NEW_LINE
-. "<meta http-equiv=\"Expires\"         content=\"" . _HDR_EXPIRES . "\"       /> <!-- Proxies  -->"                     . _NEW_LINE
-. "<meta http-equiv=\"Pragma\"          content=\"" . _HDR_PRAGMA . "\"                            /> <!-- HTTP/1.0 -->" . _NEW_LINE
-. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"                               . _NEW_LINE
-. "<meta       name=\"description\"     content=\"" . _DMN_DESCRIPTION . "\" />"                                         . _NEW_LINE
-. "<title>" . _DMN_NAME . "</title>" . _NEW_LINE . "</head>"                                                             . _NEW_LINE
-. "<body id=\"dnsresolvd\">"         . _NEW_LINE . "<p>";
+use constant RESP_TEMPLATE_1 => "<!DOCTYPE html>"                                           . _NEW_LINE
+. "<html lang=\"en-US\" dir=\"ltr\">"                                                       . _NEW_LINE
+. "<head>"                                                                                  . _NEW_LINE
+. "<meta http-equiv=\"Content-Type\"    content=\"" . _HDR_CONTENT_TYPE . "\"           />" . _NEW_LINE
+. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  . _NEW_LINE
+. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  . _NEW_LINE
+. "<title>" . _DMN_NAME . "</title>"                                                        . _NEW_LINE
+. "</head>"                                                                                 . _NEW_LINE
+. "<body>"                                                                                  . _NEW_LINE
+. "<p>";
 
 use constant RESP_TEMPLATE_2A => " ==&gt; ";
 use constant RESP_TEMPLATE_2B => " (IPv";
@@ -65,8 +63,9 @@ use constant RESP_TEMPLATE_2C => ")";
 use constant RESP_TEMPLATE_3 => _ERR_PREFIX . _COLON_SPACE_SEP
                               . _ERR_COULD_NOT_LOOKUP;
 
-use constant RESP_TEMPLATE_4 => "</p>" . _NEW_LINE . "</body>" . _NEW_LINE
-                                                   . "</html>" . _NEW_LINE;
+use constant RESP_TEMPLATE_4 => "</p>"    . _NEW_LINE
+                              . "</body>" . _NEW_LINE
+                              . "</html>" . _NEW_LINE;
 
 ##
 # Performs DNS lookup action for the given hostname,

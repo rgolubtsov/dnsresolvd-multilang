@@ -81,19 +81,16 @@ local dns_lookup = function(_ret, port_number, daemon_name)
          * @param rec      The DNS record retrieved.
         --]]
         local resp_write = function(hostname, e, rec)
-            local resp_buffer = "<!DOCTYPE html>"                                                                               .. aux._NEW_LINE
-.. "<html lang=\"en-US\" dir=\"ltr\">" .. aux._NEW_LINE .. "<head>"                                                             .. aux._NEW_LINE
-.. "<meta http-equiv=\"Content-Type\"    content=\"" .. aux._HDR_CONTENT_TYPE .. "\" />"                                        .. aux._NEW_LINE
-.. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\" />"                                                       .. aux._NEW_LINE
-.. "<!-- No caching at all for:                                                                       -->"                      .. aux._NEW_LINE
-.. "<meta http-equiv=\"Cache-Control\"   content=\"" .. aux._HDR_CACHE_CONTROL .. "\" /> <!-- HTTP/1.1 -->"                     .. aux._NEW_LINE
-.. "<meta http-equiv=\"Expires\"         content=\"" .. aux._HDR_EXPIRES .. "\"       /> <!-- Proxies  -->"                     .. aux._NEW_LINE
-.. "<meta http-equiv=\"Pragma\"          content=\"" .. aux._HDR_PRAGMA .. "\"                            /> <!-- HTTP/1.0 -->" .. aux._NEW_LINE
-.. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"                                     .. aux._NEW_LINE
-.. "<meta       name=\"description\"     content=\"" .. aux._DMN_DESCRIPTION .. "\" />"                                         .. aux._NEW_LINE
-.. "<title>" .. aux._DMN_NAME .. "</title>" .. aux._NEW_LINE .. "</head>"                                                       .. aux._NEW_LINE
-.. "<body id=\"dnsresolvd\">"             .. aux._NEW_LINE .. "<p>"
-.. hostname .. " ==&gt; "
+            local resp_buffer = "<!DOCTYPE html>"                                                  .. aux._NEW_LINE
+.. "<html lang=\"en-US\" dir=\"ltr\">"                                                             .. aux._NEW_LINE
+.. "<head>"                                                                                        .. aux._NEW_LINE
+.. "<meta http-equiv=\"Content-Type\"    content=\"" .. aux._HDR_CONTENT_TYPE .. "\"           />" .. aux._NEW_LINE
+.. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"        .. aux._NEW_LINE
+.. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"        .. aux._NEW_LINE
+.. "<title>" .. aux._DMN_NAME .. "</title>"                                                        .. aux._NEW_LINE
+.. "</head>"                                                                                       .. aux._NEW_LINE
+.. "<body>"                                                                                        .. aux._NEW_LINE
+.. "<p>"     .. hostname      .. " ==&gt; "
 
             if (e ~= nil) then
                 resp_buffer = resp_buffer .. aux._ERR_PREFIX
