@@ -88,16 +88,16 @@ class DnsResolvd:
 + "<title>" + aux._DMN_NAME + "</title>"                                                    + aux._NEW_LINE
 + "</head>"                                                                                 + aux._NEW_LINE
 + "<body>"                                                                                  + aux._NEW_LINE
-+ "<p>"     + hostname      + " ==&gt; ")
++ "<div>"   + hostname      + aux._ONE_SPACE_STRING)
 
                 if (addr == aux._ERR_PREFIX):
                     resp_buffer += (aux._ERR_PREFIX
                                 +   aux._COLON_SPACE_SEP
                                 +   aux._ERR_COULD_NOT_LOOKUP)
                 else:
-                    resp_buffer +=  str(addr) + " (IPv" + str(ver) + ")"
+                    resp_buffer +=  str(addr) + " IPv" + str(ver)
 
-                resp_buffer += ("</p>"    + aux._NEW_LINE
+                resp_buffer += ("</div>"  + aux._NEW_LINE
                             +   "</body>" + aux._NEW_LINE
                             +   "</html>" + aux._NEW_LINE)
 

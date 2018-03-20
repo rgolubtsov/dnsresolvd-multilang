@@ -79,17 +79,17 @@ var dns_lookup = function(_ret, port_number, daemon_name) {
 + "<title>" + aux._DMN_NAME + "</title>"                                                        + aux._NEW_LINE
 + "</head>"                                                                                     + aux._NEW_LINE
 + "<body>"                                                                                      + aux._NEW_LINE
-+ "<p>"     + hostname      + " ==&gt; ";
++ "<div>"   + hostname      + aux._ONE_SPACE_STRING;
 
             if (e) {
                 resp_buffer += aux._ERR_PREFIX
                             +  aux._COLON_SPACE_SEP
                             +  aux._ERR_COULD_NOT_LOOKUP;
             } else {
-                resp_buffer += addr + " (IPv" + ver + ")";
+                resp_buffer += addr + " IPv" + ver;
             }
 
-            resp_buffer += "</p>"    + aux._NEW_LINE
+            resp_buffer += "</div>"  + aux._NEW_LINE
                         +  "</body>" + aux._NEW_LINE
                         +  "</html>" + aux._NEW_LINE;
 

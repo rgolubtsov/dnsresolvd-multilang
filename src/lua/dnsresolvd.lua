@@ -90,7 +90,7 @@ local dns_lookup = function(_ret, port_number, daemon_name)
 .. "<title>" .. aux._DMN_NAME .. "</title>"                                                        .. aux._NEW_LINE
 .. "</head>"                                                                                       .. aux._NEW_LINE
 .. "<body>"                                                                                        .. aux._NEW_LINE
-.. "<p>"     .. hostname      .. " ==&gt; "
+.. "<div>"   .. hostname      .. aux._ONE_SPACE_STRING
 
             if (e ~= nil) then
                 resp_buffer = resp_buffer .. aux._ERR_PREFIX
@@ -113,11 +113,11 @@ local dns_lookup = function(_ret, port_number, daemon_name)
                         ver = 6
                     end
 
-                    resp_buffer = resp_buffer .. addr .. " (IPv" .. ver .. ")"
+                    resp_buffer = resp_buffer .. addr .. " IPv" .. ver
                 end
             end
 
-            resp_buffer = resp_buffer .. "</p>"    .. aux._NEW_LINE
+            resp_buffer = resp_buffer .. "</div>"  .. aux._NEW_LINE
                                       .. "</body>" .. aux._NEW_LINE
                                       .. "</html>" .. aux._NEW_LINE
 

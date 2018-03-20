@@ -81,15 +81,13 @@ int _request_handler(       void            *cls,
 "<title>" _DMN_NAME "</title>"                                                                            _NEW_LINE \
 "</head>"                                                                                                 _NEW_LINE \
 "<body>"                                                                                                  _NEW_LINE \
-"<p>"
+"<div>"
 
-    #define RESP_TEMPLATE_2A " ==&gt; "
-    #define RESP_TEMPLATE_2B " (IPv"
-    #define RESP_TEMPLATE_2C ")"
+    #define RESP_TEMPLATE_2 " IPv"
 
     #define RESP_TEMPLATE_3 _ERR_PREFIX _COLON_SPACE_SEP _ERR_COULD_NOT_LOOKUP
 
-    #define RESP_TEMPLATE_4 "</p>"    _NEW_LINE \
+    #define RESP_TEMPLATE_4 "</div>"  _NEW_LINE \
                             "</body>" _NEW_LINE \
                             "</html>" _NEW_LINE
 
@@ -142,31 +140,29 @@ int _request_handler(       void            *cls,
     if (lookup_error) {
         resp_buffer = malloc(sizeof(RESP_TEMPLATE_1)
                            + strlen(hostname)
-                           + sizeof(RESP_TEMPLATE_2A)
+                           + sizeof(_ONE_SPACE_STRING)
                            + sizeof(RESP_TEMPLATE_3)
                            + sizeof(RESP_TEMPLATE_4));
     } else {
         resp_buffer = malloc(sizeof(RESP_TEMPLATE_1)
                            + strlen(hostname)
-                           + sizeof(RESP_TEMPLATE_2A)
+                           + sizeof(_ONE_SPACE_STRING)
                            + strlen(addr)
-                           + sizeof(RESP_TEMPLATE_2B)
+                           + sizeof(RESP_TEMPLATE_2)
                            + strlen(ver_str)
-                           + sizeof(RESP_TEMPLATE_2C)
                            + sizeof(RESP_TEMPLATE_4));
     }
 
     resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1);
     resp_buffer = strcat(resp_buffer, hostname);
-    resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2A);
+    resp_buffer = strcat(resp_buffer, _ONE_SPACE_STRING);
 
     if (lookup_error) {
         resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
     } else {
         resp_buffer = strcat(resp_buffer, addr);
-        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2B);
+        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2);
         resp_buffer = strcat(resp_buffer, ver_str);
-        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2C);
     }
 
     resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4);

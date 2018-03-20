@@ -28,6 +28,7 @@ use Socket;
 
 use DnsResolvd::ControllerHelper
     "_EXIT_SUCCESS",
+    "_ONE_SPACE_STRING",
     "_COLON_SPACE_SEP",
     "_NEW_LINE",
 # -----------------------------------------------------------------------------
@@ -54,16 +55,14 @@ use constant RESP_TEMPLATE_1 => "<!DOCTYPE html>"                               
 . "<title>" . _DMN_NAME . "</title>"                                                        . _NEW_LINE
 . "</head>"                                                                                 . _NEW_LINE
 . "<body>"                                                                                  . _NEW_LINE
-. "<p>";
+. "<div>";
 
-use constant RESP_TEMPLATE_2A => " ==&gt; ";
-use constant RESP_TEMPLATE_2B => " (IPv";
-use constant RESP_TEMPLATE_2C => ")";
+use constant RESP_TEMPLATE_2 => " IPv";
 
 use constant RESP_TEMPLATE_3 => _ERR_PREFIX . _COLON_SPACE_SEP
                               . _ERR_COULD_NOT_LOOKUP;
 
-use constant RESP_TEMPLATE_4 => "</p>"    . _NEW_LINE
+use constant RESP_TEMPLATE_4 => "</div>"  . _NEW_LINE
                               . "</body>" . _NEW_LINE
                               . "</html>" . _NEW_LINE;
 
@@ -135,12 +134,12 @@ sub dns_lookup {
         }       #                                   |
     }           # From the Socket lib. -------------+
 
-    my $resp_buffer = RESP_TEMPLATE_1 . $hostname . RESP_TEMPLATE_2A;
+    my $resp_buffer = RESP_TEMPLATE_1 . $hostname . _ONE_SPACE_STRING;
 
     if ($addr eq _ERR_PREFIX) {
         $resp_buffer .= RESP_TEMPLATE_3;
     } else {
-        $resp_buffer .= $addr . RESP_TEMPLATE_2B . $ver . RESP_TEMPLATE_2C;
+        $resp_buffer .= $addr . RESP_TEMPLATE_2 . $ver;
     }
 
     $resp_buffer .= RESP_TEMPLATE_4;
