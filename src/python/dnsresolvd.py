@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#
 # src/python/dnsresolvd.py
 # =============================================================================
 # DNS Resolver Daemon (dnsresolvd). Version 0.1
