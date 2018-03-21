@@ -35,8 +35,11 @@ use DnsResolvd::ControllerHelper
     "_ERR_PREFIX",
     "_ERR_COULD_NOT_LOOKUP",
 # -----------------------------------------------------------------------------
+    "_PRM_FMT_HTML",
+    "_PRM_FMT_JSON",
+# -----------------------------------------------------------------------------
     "_HDR_CONTENT_TYPE_HTML",
-    "_HDR_CONTENT_TYPE_JSON",
+#    "_HDR_CONTENT_TYPE_JSON",
 # -----------------------------------------------------------------------------
     "_DMN_NAME",
     "_DMN_DESCRIPTION",
@@ -86,8 +89,28 @@ sub dns_lookup {
     #                             V
     my $hostname = $query->param("h");
 
+    # http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+    #                                              |
+    #                        +---------------------+
+    #                        |
+    #                        V
+    my $fmt = $query->param("f");
+
     if (!$hostname) {
         $hostname = _DEF_HOSTNAME;
+    }
+
+    if (!$fmt) {
+        $fmt = _PRM_FMT_JSON;
+    } else {
+        $fmt = lc($fmt);
+
+        if (!grep(/^$fmt$/, (
+            _PRM_FMT_HTML,
+            _PRM_FMT_JSON,
+        ))) {
+            $fmt = _PRM_FMT_JSON;
+        }
     }
 
     # Performing DNS lookup for the given hostname
