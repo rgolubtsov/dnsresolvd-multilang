@@ -35,10 +35,8 @@ use DnsResolvd::ControllerHelper
     "_ERR_PREFIX",
     "_ERR_COULD_NOT_LOOKUP",
 # -----------------------------------------------------------------------------
-    "_HDR_CONTENT_TYPE",
-    "_HDR_CACHE_CONTROL",
-    "_HDR_EXPIRES",
-    "_HDR_PRAGMA",
+    "_HDR_CONTENT_TYPE_HTML",
+    "_HDR_CONTENT_TYPE_JSON",
 # -----------------------------------------------------------------------------
     "_DMN_NAME",
     "_DMN_DESCRIPTION",
@@ -49,7 +47,7 @@ use DnsResolvd::ControllerHelper
 use constant RESP_TEMPLATE_1 => "<!DOCTYPE html>"                                           . _NEW_LINE
 . "<html lang=\"en-US\" dir=\"ltr\">"                                                       . _NEW_LINE
 . "<head>"                                                                                  . _NEW_LINE
-. "<meta http-equiv=\"Content-Type\"    content=\"" . _HDR_CONTENT_TYPE . "\"           />" . _NEW_LINE
+. "<meta http-equiv=\"Content-Type\"    content=\"" . _HDR_CONTENT_TYPE_HTML . "\"           />" . _NEW_LINE
 . "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  . _NEW_LINE
 . "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  . _NEW_LINE
 . "<title>" . _DMN_NAME . "</title>"                                                        . _NEW_LINE

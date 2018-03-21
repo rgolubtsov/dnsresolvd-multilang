@@ -29,6 +29,7 @@ use constant _ONE_SPACE_STRING =>  " ";
 use constant _COLON_SPACE_SEP  => ": ";
 use constant _COMMA_SPACE_SEP  => ", ";
 use constant _NEW_LINE         => "\n";
+use constant _PRINT_BANNER_OPT => "-V";
 
 # Common error messages and codes.
 use constant _ERR_PREFIX                    => "error";
@@ -45,13 +46,13 @@ use constant _ERR_ADDR_ALREADY_IN_USE       =>
                                           qr/^.*Address\ already\ in\ use.*$/;
 
 # Print this error message when there are no any args passed.
-use constant _ERR_MUST_BE_THE_ONLY_ARG_1 => ": There must be exactly one arg "
+use constant _ERR_MUST_BE_ONE_TWO_ARGS_1 => ": There must be one or two args "
                                           . "passed: ";
-use constant _ERR_MUST_BE_THE_ONLY_ARG_2 => " args found";
+use constant _ERR_MUST_BE_ONE_TWO_ARGS_2 => " args found";
 
 # Print this usage info just after any inappropriate input.
 use constant _MSG_USAGE_TEMPLATE_1 => "Usage: ";
-use constant _MSG_USAGE_TEMPLATE_2 => " <port_number>";
+use constant _MSG_USAGE_TEMPLATE_2 => " <port_number> [-V]";
 
 ## Constant: The minimum port number allowed.
 use constant _MIN_PORT => 1024;
@@ -63,12 +64,17 @@ use constant _MAX_PORT => 49151;
 use constant _MSG_SERVER_STARTED_1 => "Server started on port ";
 use constant _MSG_SERVER_STARTED_2 => "=== Hit Ctrl+C to terminate it.";
 
+# HTTP request params.
+use constant _PRM_FMT_HTML => "html";
+use constant _PRM_FMT_JSON => "json";
+
 # HTTP response headers and status codes.
-use constant _HDR_CONTENT_TYPE  => "text/html; charset=UTF-8";
-use constant _HDR_CACHE_CONTROL => "no-cache, no-store, must-revalidate";
-use constant _HDR_EXPIRES       => "Thu, 01 Dec 1994 16:00:00 GMT";
-use constant _HDR_PRAGMA        => "no-cache";
-use constant _RSC_HTTP_200_OK   => 200;
+use constant _HDR_CONTENT_TYPE_HTML => "text/html; charset=UTF-8";
+use constant _HDR_CONTENT_TYPE_JSON => "application/json";
+use constant _HDR_CACHE_CONTROL     => "no-cache, no-store, must-revalidate";
+use constant _HDR_EXPIRES           => "Thu, 01 Dec 1994 16:00:00 GMT";
+use constant _HDR_PRAGMA            => "no-cache";
+use constant _RSC_HTTP_200_OK       => 200;
 
 # Daemon name, version, and copyright banners.
 use constant _DMN_NAME        => "DNS Resolver Daemon (dnsresolvd)";
@@ -86,10 +92,12 @@ use constant _DEF_HOSTNAME => "openbsd.org";
 our @EXPORT_OK = (
     "_EXIT_FAILURE",
     "_EXIT_SUCCESS",
+    "_EMPTY_STRING",
     "_ONE_SPACE_STRING",
     "_COLON_SPACE_SEP",
     "_COMMA_SPACE_SEP",
     "_NEW_LINE",
+    "_PRINT_BANNER_OPT",
 # -----------------------------------------------------------------------------
     "_ERR_PREFIX",
     "_ERR_PORT_MUST_BE_POSITIVE_INT",
@@ -99,8 +107,8 @@ our @EXPORT_OK = (
     "_ERR_COULD_NOT_LOOKUP",
     "_ERR_ADDR_ALREADY_IN_USE",
 # -----------------------------------------------------------------------------
-    "_ERR_MUST_BE_THE_ONLY_ARG_1",
-    "_ERR_MUST_BE_THE_ONLY_ARG_2",
+    "_ERR_MUST_BE_ONE_TWO_ARGS_1",
+    "_ERR_MUST_BE_ONE_TWO_ARGS_2",
 # -----------------------------------------------------------------------------
     "_MSG_USAGE_TEMPLATE_1",
     "_MSG_USAGE_TEMPLATE_2",
@@ -111,7 +119,11 @@ our @EXPORT_OK = (
     "_MSG_SERVER_STARTED_1",
     "_MSG_SERVER_STARTED_2",
 # -----------------------------------------------------------------------------
-    "_HDR_CONTENT_TYPE",
+    "_PRM_FMT_HTML",
+    "_PRM_FMT_JSON",
+# -----------------------------------------------------------------------------
+    "_HDR_CONTENT_TYPE_HTML",
+    "_HDR_CONTENT_TYPE_JSON",
     "_HDR_CACHE_CONTROL",
     "_HDR_EXPIRES",
     "_HDR_PRAGMA",
@@ -138,7 +150,7 @@ sub add_response_headers {
 
     my $headers = $ctrl->res()->headers();
 
-    $headers->content_type (          _HDR_CONTENT_TYPE );
+    $headers->content_type (      _HDR_CONTENT_TYPE_HTML);
     $headers->cache_control(          _HDR_CACHE_CONTROL);
     $headers->expires      (          _HDR_EXPIRES      );
     $headers->header       (Pragma => _HDR_PRAGMA       );
