@@ -25,6 +25,7 @@ class ControllerHelper:
     _COLON_SPACE_SEP  = ": "
     _COMMA_SPACE_SEP  = ", "
     _NEW_LINE         = "\n"
+    _PRINT_BANNER_OPT = "-V"
 
     # Common error messages and codes.
     _ERR_PREFIX                    =  "error"
@@ -42,13 +43,13 @@ class ControllerHelper:
     _ERR_EADDRINUSE                =  "EADDRINUSE"
 
     # Print this error message when there are no any args passed.
-    _ERR_MUST_BE_THE_ONLY_ARG_1 = (": There must be exactly one arg "
+    _ERR_MUST_BE_ONE_TWO_ARGS_1 = (": There must be one or two args "
                                 +  "passed: ")
-    _ERR_MUST_BE_THE_ONLY_ARG_2 =  " args found"
+    _ERR_MUST_BE_ONE_TWO_ARGS_2 =  " args found"
 
     # Print this usage info just after any inappropriate input.
     _MSG_USAGE_TEMPLATE_1 = "Usage: "
-    _MSG_USAGE_TEMPLATE_2 = " <port_number>"
+    _MSG_USAGE_TEMPLATE_2 = " <port_number> [-V]"
 
     ## Constant: The minimum port number allowed.
     _MIN_PORT = 1024

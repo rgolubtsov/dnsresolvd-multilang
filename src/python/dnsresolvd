@@ -37,8 +37,13 @@ def main(argc, argv):
 
     daemon_name = argv[0]
 
+    print_banner_opt = aux._EMPTY_STRING
+
     if (argc > 0):
         port_number = argv[1]
+
+        if (argc > 1):
+            print_banner_opt = argv[2]
     else:
         port_number = 0
 
@@ -46,26 +51,27 @@ def main(argc, argv):
     syslog.openlog(daemon_name,
                   (syslog.LOG_CONS | syslog.LOG_PID), syslog.LOG_DAEMON)
 
-    aux._separator_draw(aux._DMN_DESCRIPTION)
+    if (print_banner_opt == aux._PRINT_BANNER_OPT):
+        aux._separator_draw(aux._DMN_DESCRIPTION)
 
-    print(aux._DMN_NAME         + aux._COMMA_SPACE_SEP  + aux._DMN_VERSION_S__
-        + aux._ONE_SPACE_STRING + aux._DMN_VERSION      + aux._NEW_LINE
-        + aux._DMN_DESCRIPTION                          + aux._NEW_LINE
-        + aux._DMN_COPYRIGHT__  + aux._ONE_SPACE_STRING + aux._DMN_AUTHOR)
+        print(aux._DMN_NAME       + aux._COMMA_SPACE_SEP + aux._DMN_VERSION_S__
+            + aux._ONE_SPACE_STRING + aux._DMN_VERSION      + aux._NEW_LINE
+            + aux._DMN_DESCRIPTION                          + aux._NEW_LINE
+            + aux._DMN_COPYRIGHT__  + aux._ONE_SPACE_STRING + aux._DMN_AUTHOR)
 
-    aux._separator_draw(aux._DMN_DESCRIPTION)
+        aux._separator_draw(aux._DMN_DESCRIPTION)
 
     # Checking for args presence.
-    if (argc != 1):
+    if (argc == 0):
         ret = aux._EXIT_FAILURE
 
-        print(daemon_name + aux._ERR_MUST_BE_THE_ONLY_ARG_1
-              + str(argc) + aux._ERR_MUST_BE_THE_ONLY_ARG_2
+        print(daemon_name + aux._ERR_MUST_BE_ONE_TWO_ARGS_1
+              + str(argc) + aux._ERR_MUST_BE_ONE_TWO_ARGS_2
                           + aux._NEW_LINE)
 
         syslog.syslog(syslog.LOG_ERR,
-              daemon_name + aux._ERR_MUST_BE_THE_ONLY_ARG_1
-              + str(argc) + aux._ERR_MUST_BE_THE_ONLY_ARG_2
+              daemon_name + aux._ERR_MUST_BE_ONE_TWO_ARGS_1
+              + str(argc) + aux._ERR_MUST_BE_ONE_TWO_ARGS_2
                           + aux._NEW_LINE)
 
         print(aux._MSG_USAGE_TEMPLATE_1 + daemon_name
