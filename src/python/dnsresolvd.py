@@ -49,7 +49,7 @@ class DnsResolvd:
 
             def render_GET(self, req):
                 """Renders the HTTP response based on the incoming HTTP
-                request.
+                request using the HTTP GET method.
                 It also calls the method to perform DNS lookup for a hostname
                 passed in the HTTP request.
 
@@ -141,6 +141,21 @@ class DnsResolvd:
                 aux.add_response_headers(req, fmt)
 
                 return resp_buffer.encode()
+
+            def render_POST(self, req):
+                """Renders the HTTP response based on the incoming HTTP
+                request using the HTTP POST method.
+                It simply calls its "GET" counterpart
+                <code>render_GET()</code>.
+
+                Args:
+                    req: The incoming HTTP request object.
+
+                Returns:
+                    The HTTP response has to be rendered.
+                """
+
+                return self.render_GET(req)
 
             ## Default constructor.
             def __init__(self):
