@@ -14,11 +14,6 @@
 
 package DnsResolvd;
 
-use strict;
-use warnings;
-use utf8;
-use v5.10;
-
 use Mojo::Base "Mojolicious";
 
 ## Constant: The root route to make GET requests.
