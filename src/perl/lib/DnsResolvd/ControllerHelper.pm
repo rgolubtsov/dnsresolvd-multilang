@@ -76,6 +76,9 @@ use constant _HDR_EXPIRES           => "Thu, 01 Dec 1994 16:00:00 GMT";
 use constant _HDR_PRAGMA            => "no-cache";
 use constant _RSC_HTTP_200_OK       => 200;
 
+# Response data names.
+use constant _DAT_VERSION_V  => "IPv";
+
 # Daemon name, version, and copyright banners.
 use constant _DMN_NAME        => "DNS Resolver Daemon (dnsresolvd)";
 use constant _DMN_DESCRIPTION => "Performs DNS lookups for the given hostname "
@@ -129,6 +132,8 @@ our @EXPORT_OK = (
     "_HDR_PRAGMA",
     "_RSC_HTTP_200_OK",
 # -----------------------------------------------------------------------------
+    "_DAT_VERSION_V",
+# -----------------------------------------------------------------------------
     "_DMN_NAME",
     "_DMN_DESCRIPTION",
     "_DMN_VERSION_S__",
@@ -143,17 +148,26 @@ our @EXPORT_OK = (
 # Adds headers to the response.
 #
 # @param ctrl The controller instance object.
+# @param fmt  The response format selector.
 #
 sub add_response_headers {
-    my  $self  = shift();
-    my ($ctrl) = @_;
+    my  $self        = shift();
+    my ($ctrl, $fmt) = @_;
 
     my $headers = $ctrl->res()->headers();
 
-    $headers->content_type (      _HDR_CONTENT_TYPE_HTML);
-    $headers->cache_control(          _HDR_CACHE_CONTROL);
-    $headers->expires      (          _HDR_EXPIRES      );
-    $headers->header       (Pragma => _HDR_PRAGMA       );
+    my $HDR_CONTENT_TYPE_V;
+
+         if ($fmt eq _PRM_FMT_HTML) {
+        $HDR_CONTENT_TYPE_V = _HDR_CONTENT_TYPE_HTML;
+    } elsif ($fmt eq _PRM_FMT_JSON) {
+        $HDR_CONTENT_TYPE_V = _HDR_CONTENT_TYPE_JSON;
+    }
+
+    $headers->content_type (          $HDR_CONTENT_TYPE_V);
+    $headers->cache_control(          _HDR_CACHE_CONTROL );
+    $headers->expires      (          _HDR_EXPIRES       );
+    $headers->header       (Pragma => _HDR_PRAGMA        );
 }
 
 # Helper method. Draws a horizontal separator banner.
