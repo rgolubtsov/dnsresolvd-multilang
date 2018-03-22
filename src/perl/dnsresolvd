@@ -64,11 +64,13 @@ use DnsResolvd::ControllerHelper
 use constant DMN_CLASS_NAME => "DnsResolvd";
 
 # Constants: Server start parameters.
-use constant DMN_DAEMON_CMD  => "daemon";
-use constant DMN_LISTEN_OPT  => "-l";
-use constant DMN_OP_MOD_OPT  => "-m";
-use constant DMN_LISTEN_HTTP => "http://*:";
-use constant DMN_OP_MOD_PROD => "production";
+use constant {
+    DMN_DAEMON_CMD  => "daemon",
+    DMN_LISTEN_OPT  => "-l",
+    DMN_OP_MOD_OPT  => "-m",
+    DMN_LISTEN_HTTP => "http://*:",
+    DMN_OP_MOD_PROD => "production",
+};
 
 # Helper function. Makes final buffer cleanups, closes streams, etc.
 sub _cleanups_fixate {
