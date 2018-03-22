@@ -16,7 +16,13 @@ package DnsResolvd;
 
 use Mojo::Base "Mojolicious";
 
-## Constant: The root route to make GET requests.
+# HTTP request methods.
+use constant {
+    HTTP_GET  => "GET",
+    HTTP_POST => "POST",
+};
+
+## Constant: The root route to make HTTP requests.
 use constant ROOT_ROUTE => "/";
 
 ## Constant: The controller route to make DNS lookup actions.
@@ -33,8 +39,10 @@ sub startup {
     my $router = $self->routes();
 
     # Routing to the DNS lookup controller and action route.
-    $router->get(ROOT_ROUTE)->to(DNS_LOOKUP_CONTROLLER_ROUTE
-                               . DNS_LOOKUP_ACTION_ROUTE);
+    $router->any([
+        HTTP_GET,
+        HTTP_POST,
+    ] =>ROOT_ROUTE)->to(DNS_LOOKUP_CONTROLLER_ROUTE . DNS_LOOKUP_ACTION_ROUTE);
 }
 
 1;
