@@ -21,8 +21,6 @@ use Net::DNS::Native;
 use IO::Select;
 use Socket;
 
-#use Data::Dumper;
-
 use DnsResolvd::ControllerHelper
     "_EXIT_SUCCESS",
     "_ONE_SPACE_STRING",
@@ -36,12 +34,10 @@ use DnsResolvd::ControllerHelper
     "_PRM_FMT_JSON",
 # -----------------------------------------------------------------------------
     "_HDR_CONTENT_TYPE_HTML",
-#    "_HDR_CONTENT_TYPE_JSON",
 # -----------------------------------------------------------------------------
     "_DAT_VERSION_V",
 # -----------------------------------------------------------------------------
     "_DMN_NAME",
-    "_DMN_DESCRIPTION",
 # -----------------------------------------------------------------------------
     "_DEF_HOSTNAME";
 
@@ -127,8 +123,6 @@ sub dns_lookup {
 
     # Waiting until resolving done.
     $sel->can_read();
-
-#   print(Dumper($sel));
 
     my $addr;
     my $ver;
