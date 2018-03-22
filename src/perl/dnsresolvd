@@ -29,9 +29,11 @@ use Mojolicious::Commands;
 use DnsResolvd::ControllerHelper
     "_EXIT_FAILURE",
     "_EXIT_SUCCESS",
+    "_EMPTY_STRING",
     "_ONE_SPACE_STRING",
     "_COMMA_SPACE_SEP",
     "_NEW_LINE",
+    "_PRINT_BANNER_OPT",
 # -----------------------------------------------------------------------------
     "_ERR_PORT_MUST_BE_POSITIVE_INT",
     "_ERR_CANNOT_START_SERVER",
@@ -39,8 +41,8 @@ use DnsResolvd::ControllerHelper
     "_ERR_SRV_PORT_IS_IN_USE",
     "_ERR_ADDR_ALREADY_IN_USE",
 # -----------------------------------------------------------------------------
-    "_ERR_MUST_BE_THE_ONLY_ARG_1",
-    "_ERR_MUST_BE_THE_ONLY_ARG_2",
+    "_ERR_MUST_BE_ONE_TWO_ARGS_1",
+    "_ERR_MUST_BE_ONE_TWO_ARGS_2",
 # -----------------------------------------------------------------------------
     "_MSG_USAGE_TEMPLATE_1",
     "_MSG_USAGE_TEMPLATE_2",
@@ -62,11 +64,13 @@ use DnsResolvd::ControllerHelper
 use constant DMN_CLASS_NAME => "DnsResolvd";
 
 # Constants: Server start parameters.
-use constant DMN_DAEMON_CMD  => "daemon";
-use constant DMN_LISTEN_OPT  => "-l";
-use constant DMN_OP_MOD_OPT  => "-m";
-use constant DMN_LISTEN_HTTP => "http://*:";
-use constant DMN_OP_MOD_PROD => "production";
+use constant {
+    DMN_DAEMON_CMD  => "daemon",
+    DMN_LISTEN_OPT  => "-l",
+    DMN_OP_MOD_OPT  => "-m",
+    DMN_LISTEN_HTTP => "http://*:",
+    DMN_OP_MOD_PROD => "production",
+};
 
 # Helper function. Makes final buffer cleanups, closes streams, etc.
 sub _cleanups_fixate {
@@ -80,32 +84,40 @@ my $argc        = @ARGV;
 my $daemon_name = $0;
 my $port_number = $ARGV[0];
 
+my $print_banner_opt = _EMPTY_STRING;
+
+if ($argc > 1) {
+    $print_banner_opt = $ARGV[1];
+}
+
 # Opening the system logger.
 openlog($daemon_name, "pid", Sys::Syslog::LOG_DAEMON);
 
 # Instantiating the controller helper class.
 my $aux = DnsResolvd::ControllerHelper->new();
 
-$aux->_separator_draw(_DMN_DESCRIPTION);
+if ($print_banner_opt eq _PRINT_BANNER_OPT) {
+    $aux->_separator_draw(_DMN_DESCRIPTION);
 
-say(_DMN_NAME         . _COMMA_SPACE_SEP  . _DMN_VERSION_S__
-  . _ONE_SPACE_STRING . _DMN_VERSION      . _NEW_LINE
-  . _DMN_DESCRIPTION                      . _NEW_LINE
-  . _DMN_COPYRIGHT__  . _ONE_SPACE_STRING . _DMN_AUTHOR);
+    say(_DMN_NAME         . _COMMA_SPACE_SEP  . _DMN_VERSION_S__
+      . _ONE_SPACE_STRING . _DMN_VERSION      . _NEW_LINE
+      . _DMN_DESCRIPTION                      . _NEW_LINE
+      . _DMN_COPYRIGHT__  . _ONE_SPACE_STRING . _DMN_AUTHOR);
 
-$aux->_separator_draw(_DMN_DESCRIPTION);
+    $aux->_separator_draw(_DMN_DESCRIPTION);
+}
 
 # Checking for args presence.
-if ($argc != 1) {
+if ($argc == 0) {
     $ret = _EXIT_FAILURE;
 
-    say($daemon_name . _ERR_MUST_BE_THE_ONLY_ARG_1
-             . $argc . _ERR_MUST_BE_THE_ONLY_ARG_2
+    say($daemon_name . _ERR_MUST_BE_ONE_TWO_ARGS_1
+             . $argc . _ERR_MUST_BE_ONE_TWO_ARGS_2
                      . _NEW_LINE);
 
     syslog(Sys::Syslog::LOG_ERR,
-        $daemon_name . _ERR_MUST_BE_THE_ONLY_ARG_1
-             . $argc . _ERR_MUST_BE_THE_ONLY_ARG_2
+        $daemon_name . _ERR_MUST_BE_ONE_TWO_ARGS_1
+             . $argc . _ERR_MUST_BE_ONE_TWO_ARGS_2
                      . _NEW_LINE);
 
     say(_MSG_USAGE_TEMPLATE_1 . $daemon_name

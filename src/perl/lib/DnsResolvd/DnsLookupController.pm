@@ -14,17 +14,12 @@
 
 package DnsResolvd::DnsLookupController;
 
-use strict;
-use warnings;
-use utf8;
-use v5.10;
-
 use Mojo::Base "Mojolicious::Controller";
+use Mojo::JSON "encode_json";
+
 use Net::DNS::Native;
 use IO::Select;
 use Socket;
-
-#use Data::Dumper;
 
 use DnsResolvd::ControllerHelper
     "_EXIT_SUCCESS",
@@ -35,36 +30,41 @@ use DnsResolvd::ControllerHelper
     "_ERR_PREFIX",
     "_ERR_COULD_NOT_LOOKUP",
 # -----------------------------------------------------------------------------
-    "_HDR_CONTENT_TYPE",
-    "_HDR_CACHE_CONTROL",
-    "_HDR_EXPIRES",
-    "_HDR_PRAGMA",
+    "_PRM_FMT_HTML",
+    "_PRM_FMT_JSON",
+# -----------------------------------------------------------------------------
+    "_HDR_CONTENT_TYPE_HTML",
+# -----------------------------------------------------------------------------
+    "_DAT_VERSION_V",
 # -----------------------------------------------------------------------------
     "_DMN_NAME",
-    "_DMN_DESCRIPTION",
 # -----------------------------------------------------------------------------
     "_DEF_HOSTNAME";
 
 # HTTP response buffer template chunks.
-use constant RESP_TEMPLATE_1 => "<!DOCTYPE html>"                                           . _NEW_LINE
-. "<html lang=\"en-US\" dir=\"ltr\">"                                                       . _NEW_LINE
-. "<head>"                                                                                  . _NEW_LINE
-. "<meta http-equiv=\"Content-Type\"    content=\"" . _HDR_CONTENT_TYPE . "\"           />" . _NEW_LINE
-. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  . _NEW_LINE
-. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  . _NEW_LINE
-. "<title>" . _DMN_NAME . "</title>"                                                        . _NEW_LINE
-. "</head>"                                                                                 . _NEW_LINE
-. "<body>"                                                                                  . _NEW_LINE
-. "<div>";
+use constant {
+    RESP_TEMPLATE_HTML_1 => "<!DOCTYPE html>"                                                    . _NEW_LINE
+. "<html lang=\"en-US\" dir=\"ltr\">"                                                            . _NEW_LINE
+. "<head>"                                                                                       . _NEW_LINE
+. "<meta http-equiv=\"Content-Type\"    content=\"" . _HDR_CONTENT_TYPE_HTML . "\"           />" . _NEW_LINE
+. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"       . _NEW_LINE
+. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"       . _NEW_LINE
+. "<title>" . _DMN_NAME . "</title>"                                                             . _NEW_LINE
+. "</head>"                                                                                      . _NEW_LINE
+. "<body>"                                                                                       . _NEW_LINE
+. "<div>",
 
-use constant RESP_TEMPLATE_2 => " IPv";
+    RESP_TEMPLATE_HTML_2 => _ONE_SPACE_STRING
+                          . _DAT_VERSION_V,
 
-use constant RESP_TEMPLATE_3 => _ERR_PREFIX . _COLON_SPACE_SEP
-                              . _ERR_COULD_NOT_LOOKUP;
+    RESP_TEMPLATE_HTML_3 => _ERR_PREFIX
+                          . _COLON_SPACE_SEP
+                          . _ERR_COULD_NOT_LOOKUP,
 
-use constant RESP_TEMPLATE_4 => "</div>"  . _NEW_LINE
-                              . "</body>" . _NEW_LINE
-                              . "</html>" . _NEW_LINE;
+    RESP_TEMPLATE_HTML_4 => "</div>"  . _NEW_LINE
+                          . "</body>" . _NEW_LINE
+                          . "</html>" . _NEW_LINE,
+};
 
 ##
 # Performs DNS lookup action for the given hostname,
@@ -88,8 +88,28 @@ sub dns_lookup {
     #                             V
     my $hostname = $query->param("h");
 
+    # http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+    #                                              |
+    #                        +---------------------+
+    #                        |
+    #                        V
+    my $fmt = $query->param("f");
+
     if (!$hostname) {
         $hostname = _DEF_HOSTNAME;
+    }
+
+    if (!$fmt) {
+        $fmt = _PRM_FMT_JSON;
+    } else {
+        $fmt = lc($fmt);
+
+        if (!grep(/^$fmt$/, (
+            _PRM_FMT_HTML,
+            _PRM_FMT_JSON,
+        ))) {
+            $fmt = _PRM_FMT_JSON;
+        }
     }
 
     # Performing DNS lookup for the given hostname
@@ -103,8 +123,6 @@ sub dns_lookup {
 
     # Waiting until resolving done.
     $sel->can_read();
-
-#   print(Dumper($sel));
 
     my $addr;
     my $ver;
@@ -134,21 +152,38 @@ sub dns_lookup {
         }       #                                   |
     }           # From the Socket lib. -------------+
 
-    my $resp_buffer = RESP_TEMPLATE_1 . $hostname . _ONE_SPACE_STRING;
+    my $resp_buffer;
 
-    if ($addr eq _ERR_PREFIX) {
-        $resp_buffer .= RESP_TEMPLATE_3;
-    } else {
-        $resp_buffer .= $addr . RESP_TEMPLATE_2 . $ver;
+         if ($fmt eq _PRM_FMT_HTML) {
+        $resp_buffer = RESP_TEMPLATE_HTML_1 . $hostname . _ONE_SPACE_STRING;
+
+        if ($addr eq _ERR_PREFIX) {
+            $resp_buffer .= RESP_TEMPLATE_HTML_3;
+        } else {
+            $resp_buffer .= $addr . RESP_TEMPLATE_HTML_2 . $ver;
+        }
+
+        $resp_buffer .= RESP_TEMPLATE_HTML_4;
+    } elsif ($fmt eq _PRM_FMT_JSON) {
+        if ($addr eq _ERR_PREFIX) {
+            $resp_buffer = encode_json({
+                hostname => $hostname,
+                error    => _ERR_COULD_NOT_LOOKUP,
+            });
+        } else {
+            $resp_buffer = encode_json({
+                hostname => $hostname,
+                address  => $addr,
+                version  => _DAT_VERSION_V . $ver,
+            });
+        }
     }
-
-    $resp_buffer .= RESP_TEMPLATE_4;
 
     # Instantiating the controller helper class.
     my $aux = DnsResolvd::ControllerHelper->new();
 
     # Adding headers to the response.
-    $aux->add_response_headers($self);
+    $aux->add_response_headers($self, $fmt);
 
     # Rendering the response buffer.
     $ret = $self->render(inline => $resp_buffer);
