@@ -79,9 +79,9 @@ class DnsResolvd:
 
                 if (f in query):
                     fmt = query[f][0].decode().lower()
-                    #              ^
-                    #              |
-                    #              +-------------------------------+
+                    #           ^
+                    #           |
+                    #           +----------------------------------+
                     #                                              |
                     # http://localhost:<port_number>/?h=<hostname>&f=<fmt>
 
