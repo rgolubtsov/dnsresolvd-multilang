@@ -26,6 +26,7 @@ local _h = {}
     _h._COLON_SPACE_SEP  = ": "
     _h._COMMA_SPACE_SEP  = ", "
     _h._NEW_LINE         = "\n"
+    _h._PRINT_BANNER_OPT = "-V"
 
     -- Common error messages and codes.
     _h._ERR_PREFIX                    = "error"
@@ -40,12 +41,12 @@ local _h = {}
     _h._ERR_EADDRINUSE                = "EADDRINUSE"
 
     -- Print this error message when there are no any args passed.
-    _h._ERR_MUST_BE_THE_ONLY_ARG_1 = ": There must be exactly one arg passed: "
-    _h._ERR_MUST_BE_THE_ONLY_ARG_2 = " args found"
+    _h._ERR_MUST_BE_ONE_TWO_ARGS_1 = ": There must be one or two args passed: "
+    _h._ERR_MUST_BE_ONE_TWO_ARGS_2 = " args found"
 
     -- Print this usage info just after any inappropriate input.
     _h._MSG_USAGE_TEMPLATE_1 = "Usage: "
-    _h._MSG_USAGE_TEMPLATE_2 = " <port_number>"
+    _h._MSG_USAGE_TEMPLATE_2 = " <port_number> [-V]"
 
     -- Syslog-related constants.
     _h._LOG_DAEMON_EXT      = ".lua"

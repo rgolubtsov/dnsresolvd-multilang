@@ -198,21 +198,29 @@ local main = function(argc, argv)
     local daemon_name = path.basename(argv[1])
     local port_number = tonumber(argv[2], 10)
 
-    _separator_draw(aux._DMN_DESCRIPTION)
+    local print_banner_opt = aux._EMPTY_STRING
 
-    print(aux._DMN_NAME         .. aux._COMMA_SPACE_SEP .. aux._DMN_VERSION_S__
-       .. aux._ONE_SPACE_STRING .. aux._DMN_VERSION      .. aux._NEW_LINE
-       .. aux._DMN_DESCRIPTION                           .. aux._NEW_LINE
-       .. aux._DMN_COPYRIGHT__  .. aux._ONE_SPACE_STRING .. aux._DMN_AUTHOR)
+    if (argc > 2) then
+        print_banner_opt = argv[3]
+    end
 
-    _separator_draw(aux._DMN_DESCRIPTION)
+    if (print_banner_opt == aux._PRINT_BANNER_OPT) then
+        _separator_draw(aux._DMN_DESCRIPTION)
+
+        print(aux._DMN_NAME     .. aux._COMMA_SPACE_SEP .. aux._DMN_VERSION_S__
+           .. aux._ONE_SPACE_STRING .. aux._DMN_VERSION     .. aux._NEW_LINE
+           .. aux._DMN_DESCRIPTION                          .. aux._NEW_LINE
+           .. aux._DMN_COPYRIGHT__ .. aux._ONE_SPACE_STRING .. aux._DMN_AUTHOR)
+
+        _separator_draw(aux._DMN_DESCRIPTION)
+    end
 
     -- Checking for args presence.
-    if (argc ~= 2) then
+    if (argc == 1) then
         ret = aux._EXIT_FAILURE
 
-        print(daemon_name .. aux._ERR_MUST_BE_THE_ONLY_ARG_1
-            .. (argc - 1) .. aux._ERR_MUST_BE_THE_ONLY_ARG_2
+        print(daemon_name .. aux._ERR_MUST_BE_ONE_TWO_ARGS_1
+            .. (argc - 1) .. aux._ERR_MUST_BE_ONE_TWO_ARGS_2
             .. aux._NEW_LINE)
 
         print(aux._MSG_USAGE_TEMPLATE_1 .. daemon_name
