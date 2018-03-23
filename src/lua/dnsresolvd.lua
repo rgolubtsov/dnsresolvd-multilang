@@ -14,8 +14,9 @@
 
 local path = require("path")
 local http = require("http")
-local url  = require("url")
-local dns  = require("dns")
+local url  = require("url" )
+local dns  = require("dns" )
+local json = require("json")
 
 --local pp = require("pretty-print")
 
@@ -65,12 +66,38 @@ local dns_lookup = function(_ret, port_number, daemon_name)
         -- Parsing and validating query params.
         local query = url.parse(req.url, true).query
 
-        -- http://localhost:<port_number>/?h=<hostname>
-        --                                 |
         local hostname = query.h -- <------+
+        --                                 |
+        -- http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+        --                                              |
+        local fmt      = query.f -- <-------------------+
 
         if (hostname == nil) then
             hostname = aux._DEF_HOSTNAME
+        end
+
+        if (fmt == nil) then
+            fmt = aux._PRM_FMT_JSON
+        else
+            local fmt_ = {
+                aux._PRM_FMT_HTML,
+                aux._PRM_FMT_JSON,
+            }
+
+             fmt = fmt:lower()
+            _fmt = false
+
+            for i = 1, #fmt_ do
+                if (fmt == fmt_[i]) then
+                    _fmt = true
+
+                    break
+                end
+            end
+
+            if (not _fmt) then
+                fmt = aux._PRM_FMT_JSON
+            end
         end
 
         --[[
@@ -79,23 +106,36 @@ local dns_lookup = function(_ret, port_number, daemon_name)
          * @param hostname The effective hostname to look up for.
          * @param e        The Error object (if any error occurs).
          * @param rec      The DNS record retrieved.
+         * @param fmt      The response format selector.
         --]]
-        local resp_write = function(hostname, e, rec)
-            local resp_buffer = "<!DOCTYPE html>"                                                  .. aux._NEW_LINE
-.. "<html lang=\"en-US\" dir=\"ltr\">"                                                             .. aux._NEW_LINE
-.. "<head>"                                                                                        .. aux._NEW_LINE
-.. "<meta http-equiv=\"Content-Type\"    content=\"" .. aux._HDR_CONTENT_TYPE .. "\"           />" .. aux._NEW_LINE
-.. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"        .. aux._NEW_LINE
-.. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"        .. aux._NEW_LINE
-.. "<title>" .. aux._DMN_NAME .. "</title>"                                                        .. aux._NEW_LINE
-.. "</head>"                                                                                       .. aux._NEW_LINE
-.. "<body>"                                                                                        .. aux._NEW_LINE
+        local resp_write = function(hostname, e, rec, fmt)
+            local resp_buffer
+
+            if (fmt == aux._PRM_FMT_HTML) then
+                resp_buffer = "<!DOCTYPE html>"                                              .. aux._NEW_LINE
+.. "<html lang=\"en-US\" dir=\"ltr\">"                                                       .. aux._NEW_LINE
+.. "<head>"                                                                                  .. aux._NEW_LINE
+.. "<meta http-equiv=\""      .. aux._HDR_CONTENT_TYPE_N      ..          "\"    content=\""
+                              .. aux._HDR_CONTENT_TYPE_V_HTML ..          "\"           />"  .. aux._NEW_LINE
+.. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  .. aux._NEW_LINE
+.. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  .. aux._NEW_LINE
+.. "<title>" .. aux._DMN_NAME .. "</title>"                                                  .. aux._NEW_LINE
+.. "</head>"                                                                                 .. aux._NEW_LINE
+.. "<body>"                                                                                  .. aux._NEW_LINE
 .. "<div>"   .. hostname      .. aux._ONE_SPACE_STRING
+            end
 
             if (e ~= nil) then
-                resp_buffer = resp_buffer .. aux._ERR_PREFIX
-                                          .. aux._COLON_SPACE_SEP
-                                          .. aux._ERR_COULD_NOT_LOOKUP
+                    if (fmt == aux._PRM_FMT_HTML) then
+                    resp_buffer = resp_buffer .. aux._ERR_PREFIX
+                                              .. aux._COLON_SPACE_SEP
+                                              .. aux._ERR_COULD_NOT_LOOKUP
+                elseif (fmt == aux._PRM_FMT_JSON) then
+                    resp_buffer = json.encode({
+                        [aux._DAT_HOSTNAME_N] = hostname,
+                        [aux._ERR_PREFIX    ] = aux._ERR_COULD_NOT_LOOKUP,
+                    })
+                end
             else
 --              pp.prettyPrint(rec)
 
@@ -113,20 +153,41 @@ local dns_lookup = function(_ret, port_number, daemon_name)
                         ver = 6
                     end
 
-                    resp_buffer = resp_buffer .. addr .. " IPv" .. ver
+                        if (fmt == aux._PRM_FMT_HTML) then
+                        resp_buffer = resp_buffer .. addr
+                                                  .. aux._ONE_SPACE_STRING
+                                                  .. aux._DAT_VERSION_V
+                                                  .. ver
+                    elseif (fmt == aux._PRM_FMT_JSON) then
+                        resp_buffer = json.encode({
+                            [aux._DAT_HOSTNAME_N] = hostname,
+                            [aux._DAT_ADDRESS_N ] = addr,
+                            [aux._DAT_VERSION_N ] = aux._DAT_VERSION_V .. ver,
+                        })
+                    end
                 end
             end
 
-            resp_buffer = resp_buffer .. "</div>"  .. aux._NEW_LINE
-                                      .. "</body>" .. aux._NEW_LINE
-                                      .. "</html>" .. aux._NEW_LINE
+            if (fmt == aux._PRM_FMT_HTML) then
+                resp_buffer = resp_buffer .. "</div>"  .. aux._NEW_LINE
+                                          .. "</body>" .. aux._NEW_LINE
+                                          .. "</html>" .. aux._NEW_LINE
+            end
 
             -- Adding headers to the response.
+            local HDR_CONTENT_TYPE_V
+
+                if (fmt == aux._PRM_FMT_HTML) then
+                HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_HTML
+            elseif (fmt == aux._PRM_FMT_JSON) then
+                HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_JSON
+            end
+
             resp:writeHead(aux._RSC_HTTP_200_OK, {
-                ["Content-Type"]  = aux._HDR_CONTENT_TYPE,
-                ["Cache-Control"] = aux._HDR_CACHE_CONTROL,
-                ["Expires"]       = aux._HDR_EXPIRES,
-                ["Pragma"]        = aux._HDR_PRAGMA
+                [aux._HDR_CONTENT_TYPE_N ] =      HDR_CONTENT_TYPE_V,
+                [aux._HDR_CACHE_CONTROL_N] = aux._HDR_CACHE_CONTROL_V,
+                [aux._HDR_EXPIRES_N      ] = aux._HDR_EXPIRES_V,
+                [aux._HDR_PRAGMA_N       ] = aux._HDR_PRAGMA_V,
             })
 
             -- Writing the response out.
@@ -146,12 +207,12 @@ local dns_lookup = function(_ret, port_number, daemon_name)
          *     If the host doesn't have the A record (IPv4),
          *     trying to find its AAAA record (IPv6).
         --]]
-        dns.resolve4        (hostname, function(e, rec)
-            ret = resp_write(hostname,          e, rec)
+        dns.resolve4        (hostname, function(e, rec     )
+            ret = resp_write(hostname,          e, rec, fmt)
 
             if (ret == aux._EXIT_FAILURE) then
-                dns.resolve6  (hostname, function(e, rec)
-                    resp_write(hostname,          e, rec)
+                dns.resolve6  (hostname, function(e, rec     )
+                    resp_write(hostname,          e, rec, fmt)
                 end)
             end
         end)
