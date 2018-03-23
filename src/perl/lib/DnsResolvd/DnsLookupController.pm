@@ -81,19 +81,11 @@ sub dns_lookup {
     # Parsing and validating query params.
     my $query = $self->req()->query_params();
 
-    # http://localhost:<port_number>/?h=<hostname>
-    #                                 |
-    #                             +---+
-    #                             |
-    #                             V
-    my $hostname = $query->param("h");
-
-    # http://localhost:<port_number>/?h=<hostname>&f=<fmt>
-    #                                              |
-    #                        +---------------------+
-    #                        |
-    #                        V
-    my $fmt = $query->param("f");
+    my $hostname = $query->param("h"); # <---+
+    #                                        |
+    #        http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+    #                                                     |
+    my $fmt      = $query->param("f"); # <----------------+
 
     if (!$hostname) {
         $hostname = _DEF_HOSTNAME;

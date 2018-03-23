@@ -64,26 +64,23 @@ class DnsResolvd:
                 h     = b"h"
                 f     = b"f"
 
+                fmt = aux._PRM_FMT_JSON
+
                 # Parsing and validating query params.
                 if (h in query):
                     hostname = query[h][0].decode()
                     #                ^
                     #                |
                     #                +----------------+
+                else: #                               |
+                    hostname = aux._DEF_HOSTNAME #    |
                     #                                 |
-                    # http://localhost:<port_number>/?h=<hostname>
-                else:
-                    hostname = aux._DEF_HOSTNAME
-
-                fmt = aux._PRM_FMT_JSON
-
-                if (f in query):
-                    fmt = query[f][0].decode().lower()
-                    #           ^
-                    #           |
-                    #           +----------------------------------+
-                    #                                              |
                     # http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+                    #                                              |
+                    #                +-----------------------------+
+                    #                |
+                if (f in query): #   v
+                    fmt      = query[f][0].decode().lower()
 
                     if (fmt not in {
                         aux._PRM_FMT_HTML,
