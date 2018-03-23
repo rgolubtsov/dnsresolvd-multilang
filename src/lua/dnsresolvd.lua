@@ -18,7 +18,7 @@ local url  = require("url" )
 local dns  = require("dns" )
 local json = require("json")
 
---local pp = require("pretty-print")
+--local pp = require("pretty-print") --> Don't remove, keep it disabled.
 
 local aux  = require("dnsresolvh")
 
@@ -59,10 +59,6 @@ local dns_lookup = function(_ret, port_number, daemon_name)
      * @return The HTTP server object.
     --]]
     local daemon = http.createServer(function(req, resp)
---      _separator_draw(aux._DMN_DESCRIPTION)
---      pp.prettyPrint(req)
---      _separator_draw(aux._DMN_DESCRIPTION)
-
         -- Parsing and validating query params.
         local query = url.parse(req.url, true).query
 
@@ -137,7 +133,7 @@ local dns_lookup = function(_ret, port_number, daemon_name)
                     })
                 end
             else
---              pp.prettyPrint(rec)
+--              pp.prettyPrint(rec) --> Don't remove, keep it disabled.
 
                 if (#rec == 0) then
                     ret = aux._EXIT_FAILURE
