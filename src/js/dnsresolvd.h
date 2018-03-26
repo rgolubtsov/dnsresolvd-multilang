@@ -24,12 +24,14 @@ var os = require("os");
  */
 var __DNSRESOLVD_H = function() {
     /* Helper constants. */
-    this._EXIT_FAILURE     =    1; //    Failing exit status.
-    this._EXIT_SUCCESS     =    0; // Successful exit status.
-    this._ONE_SPACE_STRING =  " ";
-    this._COLON_SPACE_SEP  = ": ";
-    this._COMMA_SPACE_SEP  = ", ";
+    this._EXIT_FAILURE     =      1; //    Failing exit status.
+    this._EXIT_SUCCESS     =      0; // Successful exit status.
+    this._EMPTY_STRING     =     "";
+    this._ONE_SPACE_STRING =    " ";
+    this._COLON_SPACE_SEP  =   ": ";
+    this._COMMA_SPACE_SEP  =   ", ";
     this._NEW_LINE         = os.EOL;
+    this._PRINT_BANNER_OPT =   "-V";
 
     /* Common error messages and codes. */
     this._ERR_PREFIX                    = "error";
@@ -44,13 +46,13 @@ var __DNSRESOLVD_H = function() {
     this._ERR_EADDRINUSE                = "EADDRINUSE";
 
     /* Print this error message when there are no any args passed. */
-    this._ERR_MUST_BE_THE_ONLY_ARG_1 = ": There must be exactly one arg passed"
+    this._ERR_MUST_BE_ONE_TWO_ARGS_1 = ": There must be one or two args passed"
                                      + ": ";
-    this._ERR_MUST_BE_THE_ONLY_ARG_2 = " args found";
+    this._ERR_MUST_BE_ONE_TWO_ARGS_2 = " args found";
 
     /* Print this usage info just after any inappropriate input. */
     this._MSG_USAGE_TEMPLATE_1 = "Usage: ";
-    this._MSG_USAGE_TEMPLATE_2 = " <port_number>";
+    this._MSG_USAGE_TEMPLATE_2 = " <port_number> [-V]";
 
     /* Syslog-related constants. */
     this._LOG_DAEMON_EXT      = ".js";
@@ -72,12 +74,27 @@ var __DNSRESOLVD_H = function() {
     this._MSG_SERVER_STARTED_1 = "Server started on port ";
     this._MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it.";
 
+    /* HTTP request params. */
+    this._PRM_FMT_HTML = "html";
+    this._PRM_FMT_JSON = "json";
+
     /* HTTP response headers and status codes. */
-    this._HDR_CONTENT_TYPE  = "text/html; charset=UTF-8";
-    this._HDR_CACHE_CONTROL = "no-cache, no-store, must-revalidate";
-    this._HDR_EXPIRES       = "Thu, 01 Dec 1994 16:00:00 GMT";
-    this._HDR_PRAGMA        = "no-cache";
-    this._RSC_HTTP_200_OK   = 200;
+    this._HDR_CONTENT_TYPE_N      = "Content-Type";
+    this._HDR_CONTENT_TYPE_V_HTML = "text/html; charset=UTF-8";
+    this._HDR_CONTENT_TYPE_V_JSON = "application/json";
+    this._HDR_CACHE_CONTROL_N     = "Cache-Control";
+    this._HDR_CACHE_CONTROL_V     = "no-cache, no-store, must-revalidate";
+    this._HDR_EXPIRES_N           = "Expires";
+    this._HDR_EXPIRES_V           = "Thu, 01 Dec 1994 16:00:00 GMT";
+    this._HDR_PRAGMA_N            = "Pragma";
+    this._HDR_PRAGMA_V            = "no-cache";
+    this._RSC_HTTP_200_OK         = 200;
+
+    /* Response data names. */
+    this._DAT_HOSTNAME_N = "hostname";
+    this._DAT_ADDRESS_N  = "address";
+    this._DAT_VERSION_N  = "version";
+    this._DAT_VERSION_V  = "IPv";
 
     /* Daemon name, version, and copyright banners. */
     this._DMN_NAME        = "DNS Resolver Daemon (dnsresolvd)";
