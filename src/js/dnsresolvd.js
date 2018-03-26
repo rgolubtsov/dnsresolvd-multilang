@@ -14,11 +14,10 @@
 
 "use strict";
 
-var path = require("path");
-var http = require("http");
-var url  = require("url");
-var dns  = require("dns");
-
+var path  = require("path" );
+var http  = require("http" );
+var url   = require("url"  );
+var dns   = require("dns"  );
 var posix = require("posix");
 
 var __DNSRESOLVD_H = require("./dnsresolvd.h");
@@ -52,12 +51,38 @@ var dns_lookup = function(_ret, port_number, daemon_name) {
         // Parsing and validating query params.
         var query = url.parse(req.url, true).query;
 
-        // http://localhost:<port_number>/?h=<hostname>
-        //                                 |
         var hostname = query.h; // <-------+
+        //                                 |
+        // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+        //                                              |
+        var fmt      = query.f; // <--------------------+
 
         if (!hostname) {
             hostname = aux._DEF_HOSTNAME;
+        }
+
+        if (!fmt) {
+            fmt = aux._PRM_FMT_JSON;
+        } else {
+            var fmt_ = [
+                aux._PRM_FMT_HTML,
+                aux._PRM_FMT_JSON,
+            ];
+
+            fmt = fmt.toLowerCase();
+            var _fmt = false;
+
+            for (var i = 0; i < fmt_.length; i++) {
+                if (fmt === fmt_[i]) {
+                    _fmt = true;
+
+                    break;
+                }
+            }
+
+            if (!_fmt) {
+                fmt = aux._PRM_FMT_JSON;
+            }
         }
 
         /*
@@ -70,35 +95,68 @@ var dns_lookup = function(_ret, port_number, daemon_name) {
          * @param ver      The IP version (family) used to look up in DNS.
          */
         dns.lookup(hostname, function(e, addr, ver) {
-            var resp_buffer = "<!DOCTYPE html>"                                                 + aux._NEW_LINE
-+ "<html lang=\"en-US\" dir=\"ltr\">"                                                           + aux._NEW_LINE
-+ "<head>"                                                                                      + aux._NEW_LINE
-+ "<meta http-equiv=\"Content-Type\"    content=\"" + aux._HDR_CONTENT_TYPE + "\"           />" + aux._NEW_LINE
-+ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"      + aux._NEW_LINE
-+ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"      + aux._NEW_LINE
-+ "<title>" + aux._DMN_NAME + "</title>"                                                        + aux._NEW_LINE
-+ "</head>"                                                                                     + aux._NEW_LINE
-+ "<body>"                                                                                      + aux._NEW_LINE
-+ "<div>"   + hostname      + aux._ONE_SPACE_STRING;
+            var resp_buffer;
 
-            if (e) {
-                resp_buffer += aux._ERR_PREFIX
-                            +  aux._COLON_SPACE_SEP
-                            +  aux._ERR_COULD_NOT_LOOKUP;
-            } else {
-                resp_buffer += addr + " IPv" + ver;
+            if (fmt === aux._PRM_FMT_HTML) {
+                resp_buffer = "<!DOCTYPE html>"                                             + aux._NEW_LINE
++ "<html lang=\"en-US\" dir=\"ltr\">"                                                       + aux._NEW_LINE
++ "<head>"                                                                                  + aux._NEW_LINE
++ "<meta http-equiv=\""     + aux._HDR_CONTENT_TYPE_N      +             "\"    content=\""
+                            + aux._HDR_CONTENT_TYPE_V_HTML +             "\"           />"  + aux._NEW_LINE
++ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + aux._NEW_LINE
++ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + aux._NEW_LINE
++ "<title>" + aux._DMN_NAME + "</title>"                                                    + aux._NEW_LINE
++ "</head>"                                                                                 + aux._NEW_LINE
++ "<body>"                                                                                  + aux._NEW_LINE
++ "<div>"   + hostname      + aux._ONE_SPACE_STRING;
             }
 
-            resp_buffer += "</div>"  + aux._NEW_LINE
-                        +  "</body>" + aux._NEW_LINE
-                        +  "</html>" + aux._NEW_LINE;
+            if (e) {
+                       if (fmt === aux._PRM_FMT_HTML) {
+                    resp_buffer += aux._ERR_PREFIX
+                                +  aux._COLON_SPACE_SEP
+                                +  aux._ERR_COULD_NOT_LOOKUP;
+                } else if (fmt === aux._PRM_FMT_JSON) {
+                    resp_buffer = JSON.stringify({
+                        [aux._DAT_HOSTNAME_N] : hostname,
+                        [aux._ERR_PREFIX    ] : aux._ERR_COULD_NOT_LOOKUP,
+                    });
+                }
+            } else {
+                       if (fmt === aux._PRM_FMT_HTML) {
+                    resp_buffer += addr
+                                +  aux._ONE_SPACE_STRING
+                                +  aux._DAT_VERSION_V
+                                +  ver;
+                } else if (fmt === aux._PRM_FMT_JSON) {
+                    resp_buffer = JSON.stringify({
+                        [aux._DAT_HOSTNAME_N] : hostname,
+                        [aux._DAT_ADDRESS_N ] : addr,
+                        [aux._DAT_VERSION_N ] : aux._DAT_VERSION_V + ver,
+                    });
+                }
+            }
+
+            if (fmt === aux._PRM_FMT_HTML) {
+                resp_buffer += "</div>"  + aux._NEW_LINE
+                            +  "</body>" + aux._NEW_LINE
+                            +  "</html>" + aux._NEW_LINE;
+            }
 
             // Adding headers to the response.
+            var HDR_CONTENT_TYPE_V;
+
+                   if (fmt === aux._PRM_FMT_HTML) {
+                HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_HTML;
+            } else if (fmt === aux._PRM_FMT_JSON) {
+                HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_JSON;
+            }
+
             resp.writeHead(aux._RSC_HTTP_200_OK, {
-                "Content-Type"  : aux._HDR_CONTENT_TYPE,
-                "Cache-Control" : aux._HDR_CACHE_CONTROL,
-                "Expires"       : aux._HDR_EXPIRES,
-                "Pragma"        : aux._HDR_PRAGMA
+                [aux._HDR_CONTENT_TYPE_N ] :      HDR_CONTENT_TYPE_V,
+                [aux._HDR_CACHE_CONTROL_N] : aux._HDR_CACHE_CONTROL_V,
+                [aux._HDR_EXPIRES_N      ] : aux._HDR_EXPIRES_V,
+                [aux._HDR_PRAGMA_N       ] : aux._HDR_PRAGMA_V,
             });
 
             // Writing the response out.
@@ -172,26 +230,34 @@ var main = function(argc, argv) {
     posix.openlog(path.basename(daemon_name, aux._LOG_DAEMON_EXT),
                   {cons : true, pid : true}, aux._LOG_FACILITY_DAEMON);
 
-    _separator_draw(aux._DMN_DESCRIPTION);
+    var print_banner_opt = aux._EMPTY_STRING;
 
-    console.log(aux._DMN_NAME + aux._COMMA_SPACE_SEP  + aux._DMN_VERSION_S__
-      + aux._ONE_SPACE_STRING + aux._DMN_VERSION      + aux._NEW_LINE
-      + aux._DMN_DESCRIPTION                          + aux._NEW_LINE
-      + aux._DMN_COPYRIGHT__  + aux._ONE_SPACE_STRING + aux._DMN_AUTHOR);
+    if (argc > 3) {
+        print_banner_opt = argv[3];
+    }
 
-    _separator_draw(aux._DMN_DESCRIPTION);
+    if (print_banner_opt === aux._PRINT_BANNER_OPT) {
+        _separator_draw(aux._DMN_DESCRIPTION);
+
+        console.log(aux._DMN_NAME + aux._COMMA_SPACE_SEP + aux._DMN_VERSION_S__
+          + aux._ONE_SPACE_STRING + aux._DMN_VERSION      + aux._NEW_LINE
+          + aux._DMN_DESCRIPTION                          + aux._NEW_LINE
+          + aux._DMN_COPYRIGHT__  + aux._ONE_SPACE_STRING + aux._DMN_AUTHOR);
+
+        _separator_draw(aux._DMN_DESCRIPTION);
+    }
 
     // Checking for args presence.
-    if (argc !== 3) {
+    if (argc === 2) {
         ret = aux._EXIT_FAILURE;
 
-        console.error(daemon_name + aux._ERR_MUST_BE_THE_ONLY_ARG_1
-                     + (argc - 2) + aux._ERR_MUST_BE_THE_ONLY_ARG_2
+        console.error(daemon_name + aux._ERR_MUST_BE_ONE_TWO_ARGS_1
+                     + (argc - 2) + aux._ERR_MUST_BE_ONE_TWO_ARGS_2
                      + aux._NEW_LINE);
 
         posix.syslog(aux._LOG_PRIORITY_ERR,
-                      daemon_name + aux._ERR_MUST_BE_THE_ONLY_ARG_1
-                     + (argc - 2) + aux._ERR_MUST_BE_THE_ONLY_ARG_2
+                      daemon_name + aux._ERR_MUST_BE_ONE_TWO_ARGS_1
+                     + (argc - 2) + aux._ERR_MUST_BE_ONE_TWO_ARGS_2
                      + aux._NEW_LINE);
 
         console.error(aux._MSG_USAGE_TEMPLATE_1 + daemon_name
