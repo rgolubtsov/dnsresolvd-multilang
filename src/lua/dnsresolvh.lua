@@ -27,6 +27,7 @@ local _h = {}
     _h._COMMA_SPACE_SEP  = ", "
     _h._NEW_LINE         = "\n"
     _h._PRINT_BANNER_OPT = "-V"
+    _h._QUESTION_MARK    =  "?"
 
     -- Common error messages and codes.
     _h._ERR_PREFIX                    = "error"
@@ -57,6 +58,8 @@ local _h = {}
     -- Daemon module events.
     _h._EVE_ERROR     = "error"
     _h._EVE_LISTENING = "listening"
+    _h._EVE_DATA      = "data"
+    _h._EVE_END       = "end"
 
     -- Constant: The minimum port number allowed.
     _h._MIN_PORT = 1024
@@ -68,9 +71,11 @@ local _h = {}
     _h._MSG_SERVER_STARTED_1 = "Server started on port "
     _h._MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it."
 
-    -- HTTP request params.
-    _h._PRM_FMT_HTML = "html"
-    _h._PRM_FMT_JSON = "json"
+    -- HTTP request methods and params.
+    _h._MTD_HTTP_GET  = "GET"
+    _h._MTD_HTTP_POST = "POST"
+    _h._PRM_FMT_HTML  = "html"
+    _h._PRM_FMT_JSON  = "json"
 
     -- HTTP response headers and status codes.
     _h._HDR_CONTENT_TYPE_N      = "Content-Type"
