@@ -42,129 +42,45 @@ var dns_lookup = function(_ret, port_number, daemon_name) {
     /*
      * Creating, configuring, and starting the server.
      *
-     * @param req  The HTTP request object.
+     * @param req  The HTTP request  object.
      * @param resp The HTTP response object.
      *
      * @return The HTTP server object.
      */
     var daemon = http.createServer(function(req, resp) {
-        // Parsing and validating query params.
-        var query = url.parse(req.url, true).query;
+        var params;
+        var hostname;
+        var fmt;
 
-        var hostname = query.h; // <-------+
-        //                                 |
-        // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
-        //                                              |
-        var fmt      = query.f; // <--------------------+
+        // Parsing and validating request params.
+               if (req.method === aux._MTD_HTTP_GET ) {
+            params = _request_params_parse(req.url);
 
-        if (!hostname) {
-            hostname = aux._DEF_HOSTNAME;
-        }
+            hostname = params.h;
+            fmt      = params.f;
 
-        if (!fmt) {
-            fmt = aux._PRM_FMT_JSON;
-        } else {
-            var fmt_ = [
-                aux._PRM_FMT_HTML,
-                aux._PRM_FMT_JSON,
-            ];
-
-            fmt = fmt.toLowerCase();
-            var _fmt = false;
-
-            for (var i = 0; i < fmt_.length; i++) {
-                if (fmt === fmt_[i]) {
-                    _fmt = true;
-
-                    break;
-                }
-            }
-
-            if (!_fmt) {
-                fmt = aux._PRM_FMT_JSON;
-            }
-        }
-
-        /*
-         * Performing DNS lookup for the given hostname
-         * and writing the response out.
-         *
-         * @param hostname The effective hostname to look up for.
-         * @param e        The Error object (if any error occurs).
-         * @param addr     The IP address retrieved.
-         * @param ver      The IP version (family) used to look up in DNS.
-         */
-        dns.lookup(hostname, function(e, addr, ver) {
-            var resp_buffer;
-
-            if (fmt === aux._PRM_FMT_HTML) {
-                resp_buffer = "<!DOCTYPE html>"                                             + aux._NEW_LINE
-+ "<html lang=\"en-US\" dir=\"ltr\">"                                                       + aux._NEW_LINE
-+ "<head>"                                                                                  + aux._NEW_LINE
-+ "<meta http-equiv=\""     + aux._HDR_CONTENT_TYPE_N      +             "\"    content=\""
-                            + aux._HDR_CONTENT_TYPE_V_HTML +             "\"           />"  + aux._NEW_LINE
-+ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + aux._NEW_LINE
-+ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + aux._NEW_LINE
-+ "<title>" + aux._DMN_NAME + "</title>"                                                    + aux._NEW_LINE
-+ "</head>"                                                                                 + aux._NEW_LINE
-+ "<body>"                                                                                  + aux._NEW_LINE
-+ "<div>"   + hostname      + aux._ONE_SPACE_STRING;
-            }
-
-            if (e) {
-                       if (fmt === aux._PRM_FMT_HTML) {
-                    resp_buffer += aux._ERR_PREFIX
-                                +  aux._COLON_SPACE_SEP
-                                +  aux._ERR_COULD_NOT_LOOKUP;
-                } else if (fmt === aux._PRM_FMT_JSON) {
-                    resp_buffer = JSON.stringify({
-                        [aux._DAT_HOSTNAME_N] : hostname,
-                        [aux._ERR_PREFIX    ] : aux._ERR_COULD_NOT_LOOKUP,
-                    });
-                }
-            } else {
-                       if (fmt === aux._PRM_FMT_HTML) {
-                    resp_buffer += addr
-                                +  aux._ONE_SPACE_STRING
-                                +  aux._DAT_VERSION_V
-                                +  ver;
-                } else if (fmt === aux._PRM_FMT_JSON) {
-                    resp_buffer = JSON.stringify({
-                        [aux._DAT_HOSTNAME_N] : hostname,
-                        [aux._DAT_ADDRESS_N ] : addr,
-                        [aux._DAT_VERSION_N ] : aux._DAT_VERSION_V + ver,
-                    });
-                }
-            }
-
-            if (fmt === aux._PRM_FMT_HTML) {
-                resp_buffer += "</div>"  + aux._NEW_LINE
-                            +  "</body>" + aux._NEW_LINE
-                            +  "</html>" + aux._NEW_LINE;
-            }
-
-            // Adding headers to the response.
-            var HDR_CONTENT_TYPE_V;
-
-                   if (fmt === aux._PRM_FMT_HTML) {
-                HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_HTML;
-            } else if (fmt === aux._PRM_FMT_JSON) {
-                HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_JSON;
-            }
-
-            resp.writeHead(aux._RSC_HTTP_200_OK, {
-                [aux._HDR_CONTENT_TYPE_N ] :      HDR_CONTENT_TYPE_V,
-                [aux._HDR_CACHE_CONTROL_N] : aux._HDR_CACHE_CONTROL_V,
-                [aux._HDR_EXPIRES_N      ] : aux._HDR_EXPIRES_V,
-                [aux._HDR_PRAGMA_N       ] : aux._HDR_PRAGMA_V,
+            /*
+             * Calling the lookup wrapper for GET requests:
+             * all the logic is implemented there.
+             */
+            dns_lookup_wrapper(hostname, fmt, resp);
+        } else if (req.method === aux._MTD_HTTP_POST) {
+            req.on(aux._EVE_DATA, function(body) {
+                params = _request_params_parse(aux._QUESTION_MARK
+                                             + body.toString());
             });
 
-            // Writing the response out.
-            resp.write(resp_buffer);
+            req.on(aux._EVE_END, function() {
+                hostname = params.h;
+                fmt      = params.f;
 
-            // Closing the response stream.
-            resp.end();
-        });
+                /*
+                 * Calling the lookup wrapper for POST requests:
+                 * all the logic is implemented there.
+                 */
+                dns_lookup_wrapper(hostname, fmt, resp);
+            });
+        }
     }).listen(port_number);
 
     daemon.on(aux._EVE_ERROR, function(e) {
@@ -206,11 +122,146 @@ var dns_lookup = function(_ret, port_number, daemon_name) {
     return ret;
 };
 
+/**
+ * Wraps performing DNS lookup action for the given hostname
+ * and writing the response out.
+ *
+ * @param hostname The effective hostname to look up for.
+ * @param fmt      The response format selector.
+ * @param resp     The HTTP response object.
+ */
+var dns_lookup_wrapper = function(hostname, fmt, resp) {
+    /*
+     * Performing DNS lookup for the given hostname
+     * and writing the response out.
+     *
+     * @param hostname The effective hostname to look up for.
+     * @param e        The Error object (if any error occurs).
+     * @param addr     The IP address retrieved.
+     * @param ver      The IP version (family) used to look up in DNS.
+     */
+    dns.lookup(hostname, function(e, addr, ver) {
+        var resp_buffer;
+
+        if (fmt === aux._PRM_FMT_HTML) {
+            resp_buffer = "<!DOCTYPE html>"                                                 + aux._NEW_LINE
++ "<html lang=\"en-US\" dir=\"ltr\">"                                                       + aux._NEW_LINE
++ "<head>"                                                                                  + aux._NEW_LINE
++ "<meta http-equiv=\""     + aux._HDR_CONTENT_TYPE_N      +             "\"    content=\""
+                            + aux._HDR_CONTENT_TYPE_V_HTML +             "\"           />"  + aux._NEW_LINE
++ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + aux._NEW_LINE
++ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + aux._NEW_LINE
++ "<title>" + aux._DMN_NAME + "</title>"                                                    + aux._NEW_LINE
++ "</head>"                                                                                 + aux._NEW_LINE
++ "<body>"                                                                                  + aux._NEW_LINE
++ "<div>"   + hostname      + aux._ONE_SPACE_STRING;
+        }
+
+        if (e) {
+                   if (fmt === aux._PRM_FMT_HTML) {
+                resp_buffer += aux._ERR_PREFIX
+                            +  aux._COLON_SPACE_SEP
+                            +  aux._ERR_COULD_NOT_LOOKUP;
+            } else if (fmt === aux._PRM_FMT_JSON) {
+                resp_buffer = JSON.stringify({
+                    [aux._DAT_HOSTNAME_N] : hostname,
+                    [aux._ERR_PREFIX    ] : aux._ERR_COULD_NOT_LOOKUP,
+                });
+            }
+        } else {
+                   if (fmt === aux._PRM_FMT_HTML) {
+                resp_buffer += addr
+                            +  aux._ONE_SPACE_STRING
+                            +  aux._DAT_VERSION_V
+                            +  ver;
+            } else if (fmt === aux._PRM_FMT_JSON) {
+                resp_buffer = JSON.stringify({
+                    [aux._DAT_HOSTNAME_N] : hostname,
+                    [aux._DAT_ADDRESS_N ] : addr,
+                    [aux._DAT_VERSION_N ] : aux._DAT_VERSION_V + ver,
+                });
+            }
+        }
+
+        if (fmt === aux._PRM_FMT_HTML) {
+            resp_buffer += "</div>"  + aux._NEW_LINE
+                        +  "</body>" + aux._NEW_LINE
+                        +  "</html>" + aux._NEW_LINE;
+        }
+
+        // Adding headers to the response.
+        var HDR_CONTENT_TYPE_V;
+
+               if (fmt === aux._PRM_FMT_HTML) {
+            HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_HTML;
+        } else if (fmt === aux._PRM_FMT_JSON) {
+            HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_JSON;
+        }
+
+        resp.writeHead(aux._RSC_HTTP_200_OK, {
+            [aux._HDR_CONTENT_TYPE_N ] :      HDR_CONTENT_TYPE_V,
+            [aux._HDR_CACHE_CONTROL_N] : aux._HDR_CACHE_CONTROL_V,
+            [aux._HDR_EXPIRES_N      ] : aux._HDR_EXPIRES_V,
+            [aux._HDR_PRAGMA_N       ] : aux._HDR_PRAGMA_V,
+        });
+
+        // Writing the response out.
+        resp.write(resp_buffer);
+
+        // Closing the response stream.
+        resp.end();
+    });
+};
+
+/* Helper function. Parses and validates request params. */
+var _request_params_parse = function(url_or_body) {
+    var query = url.parse(url_or_body, true).query;
+
+    var hostname = query.h; // <-------+
+    //                                 |
+    // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+    //                                              |
+    var fmt      = query.f; // <--------------------+
+
+    if (!hostname) {
+        hostname = aux._DEF_HOSTNAME;
+    }
+
+    if (!fmt) {
+        fmt = aux._PRM_FMT_JSON;
+    } else {
+        var fmt_ = [
+            aux._PRM_FMT_HTML,
+            aux._PRM_FMT_JSON,
+        ];
+
+        fmt = fmt.toLowerCase();
+        var _fmt = false;
+
+        for (var i = 0; i < fmt_.length; i++) {
+            if (fmt === fmt_[i]) {
+                _fmt = true;
+
+                break;
+            }
+        }
+
+        if (!_fmt) {
+            fmt = aux._PRM_FMT_JSON;
+        }
+    }
+
+    return {
+        h : hostname,
+        f : fmt,
+    };
+};
+
 /* Helper function. Makes final buffer cleanups, closes streams, etc. */
 var _cleanups_fixate = function() {
     // Closing the system logger.
     posix.closelog();
-}
+};
 
 /* Helper function. Draws a horizontal separator banner. */
 var _separator_draw = function(banner_text) {
