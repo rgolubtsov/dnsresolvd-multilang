@@ -32,6 +32,7 @@ var __DNSRESOLVD_H = function() {
     this._COMMA_SPACE_SEP  =   ", ";
     this._NEW_LINE         = os.EOL;
     this._PRINT_BANNER_OPT =   "-V";
+    this._QUESTION_MARK    =    "?";
 
     /* Common error messages and codes. */
     this._ERR_PREFIX                    = "error";
@@ -63,6 +64,8 @@ var __DNSRESOLVD_H = function() {
     /* Daemon class events. */
     this._EVE_ERROR     = "error";
     this._EVE_LISTENING = "listening";
+    this._EVE_DATA      = "data";
+    this._EVE_END       = "end";
 
     /** Constant: The minimum port number allowed. */
     this._MIN_PORT = 1024;
@@ -74,9 +77,11 @@ var __DNSRESOLVD_H = function() {
     this._MSG_SERVER_STARTED_1 = "Server started on port ";
     this._MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it.";
 
-    /* HTTP request params. */
-    this._PRM_FMT_HTML = "html";
-    this._PRM_FMT_JSON = "json";
+    /* HTTP request methods and params. */
+    this._MTD_HTTP_GET  = "GET";
+    this._MTD_HTTP_POST = "POST";
+    this._PRM_FMT_HTML  = "html";
+    this._PRM_FMT_JSON  = "json";
 
     /* HTTP response headers and status codes. */
     this._HDR_CONTENT_TYPE_N      = "Content-Type";
