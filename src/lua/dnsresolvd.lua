@@ -22,19 +22,6 @@ local json = require("json")
 
 local aux  = require("dnsresolvh")
 
--- Helper function. Draws a horizontal separator banner.
-local _separator_draw = function(banner_text)
-    local i = banner_text:len()
-    local s = aux._EMPTY_STRING
-
-    repeat s = s .. '=' i = i - 1 until (i == 0) print(s)
-end
-
--- Helper function. Makes final buffer cleanups, closes streams, etc.
-local _cleanups_fixate = function()
-    -- TODO: Implement cleanup stuff.
-end
-
 --[[
  * Performs DNS lookup action for the given hostname,
  * i.e. (in this case) IP address retrieval by hostname.
@@ -59,159 +46,38 @@ local dns_lookup = function(_ret, port_number, daemon_name)
      * @return The HTTP server object.
     --]]
     local daemon = http.createServer(function(req, resp)
-        -- Parsing and validating query params.
-        local query = url.parse(req.url, true).query
+        local params
+        local hostname
+        local fmt
 
-        local hostname = query.h -- <------+
-        --                                 |
-        -- http://localhost:<port_number>/?h=<hostname>&f=<fmt>
-        --                                              |
-        local fmt      = query.f -- <-------------------+
+        -- Parsing and validating request params.
+            if (req.method == aux._MTD_HTTP_GET ) then
+            params = _request_params_parse(req.url)
 
-        if (hostname == nil) then
-            hostname = aux._DEF_HOSTNAME
+            hostname = params.h
+            fmt      = params.f
+
+            --[[
+             * Calling the lookup wrapper for GET requests:
+             * all the logic is implemented there.
+            --]]
+            dns_lookup_wrapper(hostname, fmt, resp)
+        elseif (req.method == aux._MTD_HTTP_POST) then
+            req:on(aux._EVE_DATA, function(body)
+                params = _request_params_parse(aux._QUESTION_MARK .. body)
+            end)
+
+            req:on(aux._EVE_END, function()
+                hostname = params.h
+                fmt      = params.f
+
+                --[[
+                 * Calling the lookup wrapper for POST requests:
+                 * all the logic is implemented there.
+                --]]
+                dns_lookup_wrapper(hostname, fmt, resp)
+            end)
         end
-
-        if (fmt == nil) then
-            fmt = aux._PRM_FMT_JSON
-        else
-            local fmt_ = {
-                aux._PRM_FMT_HTML,
-                aux._PRM_FMT_JSON,
-            }
-
-             fmt = fmt:lower()
-            _fmt = false
-
-            for i = 1, #fmt_ do
-                if (fmt == fmt_[i]) then
-                    _fmt = true
-
-                    break
-                end
-            end
-
-            if (not _fmt) then
-                fmt = aux._PRM_FMT_JSON
-            end
-        end
-
-        --[[
-         * Writes the response with the DNS record retrieved.
-         *
-         * @param hostname The effective hostname to look up for.
-         * @param e        The Error object (if any error occurs).
-         * @param rec      The DNS record retrieved.
-         * @param fmt      The response format selector.
-        --]]
-        local resp_write = function(hostname, e, rec, fmt)
-            local resp_buffer
-
-            if (fmt == aux._PRM_FMT_HTML) then
-                resp_buffer = "<!DOCTYPE html>"                                              .. aux._NEW_LINE
-.. "<html lang=\"en-US\" dir=\"ltr\">"                                                       .. aux._NEW_LINE
-.. "<head>"                                                                                  .. aux._NEW_LINE
-.. "<meta http-equiv=\""      .. aux._HDR_CONTENT_TYPE_N      ..          "\"    content=\""
-                              .. aux._HDR_CONTENT_TYPE_V_HTML ..          "\"           />"  .. aux._NEW_LINE
-.. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  .. aux._NEW_LINE
-.. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  .. aux._NEW_LINE
-.. "<title>" .. aux._DMN_NAME .. "</title>"                                                  .. aux._NEW_LINE
-.. "</head>"                                                                                 .. aux._NEW_LINE
-.. "<body>"                                                                                  .. aux._NEW_LINE
-.. "<div>"   .. hostname      .. aux._ONE_SPACE_STRING
-            end
-
-            if (e ~= nil) then
-                    if (fmt == aux._PRM_FMT_HTML) then
-                    resp_buffer = resp_buffer .. aux._ERR_PREFIX
-                                              .. aux._COLON_SPACE_SEP
-                                              .. aux._ERR_COULD_NOT_LOOKUP
-                elseif (fmt == aux._PRM_FMT_JSON) then
-                    resp_buffer = json.encode({
-                        [aux._DAT_HOSTNAME_N] = hostname,
-                        [aux._ERR_PREFIX    ] = aux._ERR_COULD_NOT_LOOKUP,
-                    })
-                end
-            else
---              pp.prettyPrint(rec) --> Don't remove, keep it disabled.
-
-                if (#rec == 0) then
-                    ret = aux._EXIT_FAILURE
-
-                    return ret
-                else
-                    local addr = rec[1].address --> The IP address for host.
-                    local ver  = rec[1].type    --> The IP version (family).
-
-                        if (ver == dns.TYPE_A   ) then
-                        ver = 4
-                    elseif (ver == dns.TYPE_AAAA) then
-                        ver = 6
-                    end
-
-                        if (fmt == aux._PRM_FMT_HTML) then
-                        resp_buffer = resp_buffer .. addr
-                                                  .. aux._ONE_SPACE_STRING
-                                                  .. aux._DAT_VERSION_V
-                                                  .. ver
-                    elseif (fmt == aux._PRM_FMT_JSON) then
-                        resp_buffer = json.encode({
-                            [aux._DAT_HOSTNAME_N] = hostname,
-                            [aux._DAT_ADDRESS_N ] = addr,
-                            [aux._DAT_VERSION_N ] = aux._DAT_VERSION_V .. ver,
-                        })
-                    end
-                end
-            end
-
-            if (fmt == aux._PRM_FMT_HTML) then
-                resp_buffer = resp_buffer .. "</div>"  .. aux._NEW_LINE
-                                          .. "</body>" .. aux._NEW_LINE
-                                          .. "</html>" .. aux._NEW_LINE
-            end
-
-            -- Adding headers to the response.
-            local HDR_CONTENT_TYPE_V
-
-                if (fmt == aux._PRM_FMT_HTML) then
-                HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_HTML
-            elseif (fmt == aux._PRM_FMT_JSON) then
-                HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_JSON
-            end
-
-            resp:writeHead(aux._RSC_HTTP_200_OK, {
-                [aux._HDR_CONTENT_TYPE_N ] =      HDR_CONTENT_TYPE_V,
-                [aux._HDR_CACHE_CONTROL_N] = aux._HDR_CACHE_CONTROL_V,
-                [aux._HDR_EXPIRES_N      ] = aux._HDR_EXPIRES_V,
-                [aux._HDR_PRAGMA_N       ] = aux._HDR_PRAGMA_V,
-            })
-
-            -- Writing the response out.
-            resp:write(resp_buffer)
-
-            -- Closing the response stream.
-            resp:finish()
-        end
-
-        --[[
-         * Performing DNS lookup for the given hostname
-         * and writing the response out.
-         *
-         * Since Luvit actually doesn't have the dns.lookup() method,
-         * it needs to perform a so-called two-stage lookup operation:
-         *
-         *     If the host doesn't have the A record (IPv4),
-         *     trying to find its AAAA record (IPv6).
-        --]]
-        dns.resolve4        (hostname, function(e, rec     )
-            ret = resp_write(hostname,          e, rec, fmt)
-
-            if (ret == aux._EXIT_FAILURE) then
-                dns.resolve6  (hostname, function(e, rec     )
-                    resp_write(hostname,          e, rec, fmt)
-                end)
-            end
-        end)
     end):listen(port_number)
 
     daemon:on(aux._EVE_ERROR, function(e)
@@ -237,8 +103,6 @@ local dns_lookup = function(_ret, port_number, daemon_name)
            .. aux._MSG_SERVER_STARTED_2)
     end)
 
---  pp.prettyPrint(daemon)
-
     -- FIXME: Investigate why do we need emitting events explicitly?
     --        This does not affect error events anyway, perplexedly.
     daemon:emit(aux._EVE_LISTENING                 )
@@ -246,6 +110,190 @@ local dns_lookup = function(_ret, port_number, daemon_name)
 --  daemon:emit(aux._EVE_ERROR                     )
 
     return ret
+end
+
+--[[
+ * Wraps writing the response with the DNS record retrieved.
+ *
+ * @param hostname The effective hostname to look up for.
+ * @param fmt      The response format selector.
+ * @param resp     The HTTP response object.
+--]]
+dns_lookup_wrapper = function(hostname, fmt, resp)
+    --[[
+     * Writes the response with the DNS record retrieved.
+     *
+     * @param hostname The effective hostname to look up for.
+     * @param fmt      The response format selector.
+     * @param e        The Error object (if any error occurs).
+     * @param rec      The DNS record retrieved.
+     * @param resp     The HTTP response object.
+    --]]
+    local resp_write = function(hostname, fmt, e, rec, resp)
+        local resp_buffer
+
+        if (fmt == aux._PRM_FMT_HTML) then
+            resp_buffer = "<!DOCTYPE html>"                                                  .. aux._NEW_LINE
+.. "<html lang=\"en-US\" dir=\"ltr\">"                                                       .. aux._NEW_LINE
+.. "<head>"                                                                                  .. aux._NEW_LINE
+.. "<meta http-equiv=\""      .. aux._HDR_CONTENT_TYPE_N      ..          "\"    content=\""
+                              .. aux._HDR_CONTENT_TYPE_V_HTML ..          "\"           />"  .. aux._NEW_LINE
+.. "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  .. aux._NEW_LINE
+.. "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  .. aux._NEW_LINE
+.. "<title>" .. aux._DMN_NAME .. "</title>"                                                  .. aux._NEW_LINE
+.. "</head>"                                                                                 .. aux._NEW_LINE
+.. "<body>"                                                                                  .. aux._NEW_LINE
+.. "<div>"   .. hostname      .. aux._ONE_SPACE_STRING
+        end
+
+        if (e ~= nil) then
+                if (fmt == aux._PRM_FMT_HTML) then
+                resp_buffer = resp_buffer .. aux._ERR_PREFIX
+                                          .. aux._COLON_SPACE_SEP
+                                          .. aux._ERR_COULD_NOT_LOOKUP
+            elseif (fmt == aux._PRM_FMT_JSON) then
+                resp_buffer = json.encode({
+                    [aux._DAT_HOSTNAME_N] = hostname,
+                    [aux._ERR_PREFIX    ] = aux._ERR_COULD_NOT_LOOKUP,
+                })
+            end
+        else
+--          pp.prettyPrint(rec) --> Don't remove, keep it disabled.
+
+            if (#rec == 0) then
+                ret = aux._EXIT_FAILURE
+
+                return ret
+            else
+                local addr = rec[1].address --> The IP address for host.
+                local ver  = rec[1].type    --> The IP version (family).
+
+                    if (ver == dns.TYPE_A   ) then
+                    ver = 4
+                elseif (ver == dns.TYPE_AAAA) then
+                    ver = 6
+                end
+
+                    if (fmt == aux._PRM_FMT_HTML) then
+                    resp_buffer = resp_buffer .. addr
+                                              .. aux._ONE_SPACE_STRING
+                                              .. aux._DAT_VERSION_V
+                                              .. ver
+                elseif (fmt == aux._PRM_FMT_JSON) then
+                    resp_buffer = json.encode({
+                        [aux._DAT_HOSTNAME_N] = hostname,
+                        [aux._DAT_ADDRESS_N ] = addr,
+                        [aux._DAT_VERSION_N ] = aux._DAT_VERSION_V .. ver,
+                    })
+                end
+            end
+        end
+
+        if (fmt == aux._PRM_FMT_HTML) then
+            resp_buffer = resp_buffer .. "</div>"  .. aux._NEW_LINE
+                                      .. "</body>" .. aux._NEW_LINE
+                                      .. "</html>" .. aux._NEW_LINE
+        end
+
+        -- Adding headers to the response.
+        local HDR_CONTENT_TYPE_V
+
+            if (fmt == aux._PRM_FMT_HTML) then
+            HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_HTML
+        elseif (fmt == aux._PRM_FMT_JSON) then
+            HDR_CONTENT_TYPE_V = aux._HDR_CONTENT_TYPE_V_JSON
+        end
+
+        resp:writeHead(aux._RSC_HTTP_200_OK, {
+            [aux._HDR_CONTENT_TYPE_N ] =      HDR_CONTENT_TYPE_V,
+            [aux._HDR_CACHE_CONTROL_N] = aux._HDR_CACHE_CONTROL_V,
+            [aux._HDR_EXPIRES_N      ] = aux._HDR_EXPIRES_V,
+            [aux._HDR_PRAGMA_N       ] = aux._HDR_PRAGMA_V,
+        })
+
+        -- Writing the response out.
+        resp:write(resp_buffer)
+
+        -- Closing the response stream.
+        resp:finish()
+    end
+
+    --[[
+     * Performing DNS lookup for the given hostname
+     * and writing the response out.
+     *
+     * Since Luvit actually doesn't have the dns.lookup() method,
+     * it needs to perform a so-called two-stage lookup operation:
+     *
+     *     If the host doesn't have the A record (IPv4),
+     *     trying to find its AAAA record (IPv6).
+    --]]
+    dns.resolve4        (hostname, function(e, rec      )
+        ret = resp_write(hostname, fmt,     e, rec, resp)
+
+        if (ret == aux._EXIT_FAILURE) then
+            dns.resolve6  (hostname, function(e, rec      )
+                resp_write(hostname, fmt,     e, rec, resp)
+            end)
+        end
+    end)
+end
+
+-- Helper function. Parses and validates request params.
+_request_params_parse = function(url_or_body)
+    local query = url.parse(url_or_body, true).query
+
+    local hostname = query.h -- <------+
+    --                                 |
+    -- http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+    --                                              |
+    local fmt      = query.f -- <-------------------+
+
+    if (hostname == nil) then
+        hostname = aux._DEF_HOSTNAME
+    end
+
+    if (fmt == nil) then
+        fmt = aux._PRM_FMT_JSON
+    else
+        local fmt_ = {
+            aux._PRM_FMT_HTML,
+            aux._PRM_FMT_JSON,
+        }
+
+         fmt = fmt:lower()
+        _fmt = false
+
+        for i = 1, #fmt_ do
+            if (fmt == fmt_[i]) then
+                _fmt = true
+
+                break
+            end
+        end
+
+        if (not _fmt) then
+            fmt = aux._PRM_FMT_JSON
+        end
+    end
+
+    return {
+        h = hostname,
+        f = fmt,
+    }
+end
+
+-- Helper function. Makes final buffer cleanups, closes streams, etc.
+_cleanups_fixate = function()
+    -- TODO: Implement cleanup stuff.
+end
+
+-- Helper function. Draws a horizontal separator banner.
+_separator_draw = function(banner_text)
+    local i = banner_text:len()
+    local s = aux._EMPTY_STRING
+
+    repeat s = s .. '=' i = i - 1 until (i == 0) print(s)
 end
 
 -- The daemon entry point.
