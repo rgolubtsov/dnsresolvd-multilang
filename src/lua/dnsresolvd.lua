@@ -152,7 +152,7 @@ dns_lookup_wrapper = function(hostname, fmt, resp)
 .. "<div>"   .. hostname      .. aux._ONE_SPACE_STRING
         end
 
-        if (e ~= nil) then
+        if (e) then
                 if (fmt == aux._PRM_FMT_HTML) then
                 resp_buffer = resp_buffer .. aux._ERR_PREFIX
                                           .. aux._COLON_SPACE_SEP
@@ -255,11 +255,11 @@ _request_params_parse = function(url_or_body)
     --                                              |
     local fmt      = query.f -- <-------------------+
 
-    if (hostname == nil) then
+    if (not hostname) then
         hostname = aux._DEF_HOSTNAME
     end
 
-    if (fmt == nil) then
+    if (not fmt) then
         fmt = aux._PRM_FMT_JSON
     else
         local fmt_ = {
@@ -343,8 +343,8 @@ local main = function(argc, argv)
     end
 
     -- Checking for port correctness.
-    if ((port_number == nil) or (port_number < aux._MIN_PORT)
-                             or (port_number > aux._MAX_PORT)) then
+    if ((not port_number) or (port_number < aux._MIN_PORT)
+                          or (port_number > aux._MAX_PORT)) then
 
         ret = aux._EXIT_FAILURE
 
