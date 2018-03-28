@@ -18,8 +18,6 @@ local url  = require("url" )
 local dns  = require("dns" )
 local json = require("json")
 
---local pp = require("pretty-print") --> Don't remove, keep it disabled.
-
 local aux  = require("dnsresolvh")
 
 --[[
@@ -164,8 +162,6 @@ dns_lookup_wrapper = function(hostname, fmt, resp)
                 })
             end
         else
---          pp.prettyPrint(rec) --> Don't remove, keep it disabled.
-
             if (#rec == 0) then
                 ret = aux._EXIT_FAILURE
 
