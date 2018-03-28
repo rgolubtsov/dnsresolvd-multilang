@@ -18,8 +18,6 @@ local url  = require("url" )
 local dns  = require("dns" )
 local json = require("json")
 
---local pp = require("pretty-print") --> Don't remove, keep it disabled.
-
 local aux  = require("dnsresolvh")
 
 --[[
@@ -103,11 +101,17 @@ local dns_lookup = function(_ret, port_number, daemon_name)
            .. aux._MSG_SERVER_STARTED_2)
     end)
 
-    -- FIXME: Investigate why do we need emitting events explicitly?
-    --        This does not affect error events anyway, perplexedly.
-    daemon:emit(aux._EVE_LISTENING                 )
---  daemon:emit(aux._EVE_ERROR, aux._ERR_EADDRINUSE)
---  daemon:emit(aux._EVE_ERROR                     )
+    daemon_address = {daemon:address()}
+
+    if (not daemon_address[1]) then
+        if (daemon_address[3] == aux._ERR_EADDRINUSE) then
+            daemon:emit(aux._EVE_ERROR, aux._ERR_EADDRINUSE)
+        else
+            daemon:emit(aux._EVE_ERROR)
+        end
+    else
+        daemon:emit(aux._EVE_LISTENING)
+    end
 
     return ret
 end
@@ -146,7 +150,7 @@ dns_lookup_wrapper = function(hostname, fmt, resp)
 .. "<div>"   .. hostname      .. aux._ONE_SPACE_STRING
         end
 
-        if (e ~= nil) then
+        if (e) then
                 if (fmt == aux._PRM_FMT_HTML) then
                 resp_buffer = resp_buffer .. aux._ERR_PREFIX
                                           .. aux._COLON_SPACE_SEP
@@ -158,8 +162,6 @@ dns_lookup_wrapper = function(hostname, fmt, resp)
                 })
             end
         else
---          pp.prettyPrint(rec) --> Don't remove, keep it disabled.
-
             if (#rec == 0) then
                 ret = aux._EXIT_FAILURE
 
@@ -249,11 +251,11 @@ _request_params_parse = function(url_or_body)
     --                                              |
     local fmt      = query.f -- <-------------------+
 
-    if (hostname == nil) then
+    if (not hostname) then
         hostname = aux._DEF_HOSTNAME
     end
 
-    if (fmt == nil) then
+    if (not fmt) then
         fmt = aux._PRM_FMT_JSON
     else
         local fmt_ = {
@@ -337,8 +339,8 @@ local main = function(argc, argv)
     end
 
     -- Checking for port correctness.
-    if ((port_number == nil) or (port_number < aux._MIN_PORT)
-                             or (port_number > aux._MAX_PORT)) then
+    if ((not port_number) or (port_number < aux._MIN_PORT)
+                          or (port_number > aux._MAX_PORT)) then
 
         ret = aux._EXIT_FAILURE
 
