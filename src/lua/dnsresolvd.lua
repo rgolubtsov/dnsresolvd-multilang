@@ -103,11 +103,17 @@ local dns_lookup = function(_ret, port_number, daemon_name)
            .. aux._MSG_SERVER_STARTED_2)
     end)
 
-    -- FIXME: Investigate why do we need emitting events explicitly?
-    --        This does not affect error events anyway, perplexedly.
-    daemon:emit(aux._EVE_LISTENING                 )
---  daemon:emit(aux._EVE_ERROR, aux._ERR_EADDRINUSE)
---  daemon:emit(aux._EVE_ERROR                     )
+    daemon_address = {daemon:address()}
+
+    if (not daemon_address[1]) then
+        if (daemon_address[3] == aux._ERR_EADDRINUSE) then
+            daemon:emit(aux._EVE_ERROR, aux._ERR_EADDRINUSE)
+        else
+            daemon:emit(aux._EVE_ERROR)
+        end
+    else
+        daemon:emit(aux._EVE_LISTENING)
+    end
 
     return ret
 end
