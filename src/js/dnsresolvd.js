@@ -199,10 +199,11 @@ var dns_lookup_wrapper = function(hostname, fmt, resp) {
         }
 
         resp.writeHead(aux._RSC_HTTP_200_OK, {
-            [aux._HDR_CONTENT_TYPE_N ] :      HDR_CONTENT_TYPE_V,
-            [aux._HDR_CACHE_CONTROL_N] : aux._HDR_CACHE_CONTROL_V,
-            [aux._HDR_EXPIRES_N      ] : aux._HDR_EXPIRES_V,
-            [aux._HDR_PRAGMA_N       ] : aux._HDR_PRAGMA_V,
+            [aux._HDR_CONTENT_TYPE_N  ] :      HDR_CONTENT_TYPE_V,
+            [aux._HDR_CONTENT_LENGTH_N] : resp_buffer.length,
+            [aux._HDR_CACHE_CONTROL_N ] : aux._HDR_CACHE_CONTROL_V,
+            [aux._HDR_EXPIRES_N       ] : aux._HDR_EXPIRES_V,
+            [aux._HDR_PRAGMA_N        ] : aux._HDR_PRAGMA_V,
         });
 
         // Writing the response out.

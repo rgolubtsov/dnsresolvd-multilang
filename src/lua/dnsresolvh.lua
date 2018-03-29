@@ -78,6 +78,7 @@ local _h = {}
     _h._HDR_CONTENT_TYPE_N      = "Content-Type"
     _h._HDR_CONTENT_TYPE_V_HTML = "text/html; charset=UTF-8"
     _h._HDR_CONTENT_TYPE_V_JSON = "application/json"
+    _h._HDR_CONTENT_LENGTH_N    = "Content-Length"
     _h._HDR_CACHE_CONTROL_N     = "Cache-Control"
     _h._HDR_CACHE_CONTROL_V     = "no-cache, no-store, must-revalidate"
     _h._HDR_EXPIRES_N           = "Expires"

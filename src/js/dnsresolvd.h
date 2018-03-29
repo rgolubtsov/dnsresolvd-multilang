@@ -87,6 +87,7 @@ var __DNSRESOLVD_H = function() {
     this._HDR_CONTENT_TYPE_N      = "Content-Type";
     this._HDR_CONTENT_TYPE_V_HTML = "text/html; charset=UTF-8";
     this._HDR_CONTENT_TYPE_V_JSON = "application/json";
+    this._HDR_CONTENT_LENGTH_N    = "Content-Length";
     this._HDR_CACHE_CONTROL_N     = "Cache-Control";
     this._HDR_CACHE_CONTROL_V     = "no-cache, no-store, must-revalidate";
     this._HDR_EXPIRES_N           = "Expires";
