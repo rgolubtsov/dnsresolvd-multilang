@@ -50,10 +50,7 @@ local _h = {}
     _h._MSG_USAGE_TEMPLATE_2 = " <port_number> [-V]"
 
     -- Syslog-related constants.
-    _h._LOG_DAEMON_EXT      = ".lua"
-    _h._LOG_FACILITY_DAEMON = "daemon"
-    _h._LOG_PRIORITY_ERR    = "err"
-    _h._LOG_PRIORITY_INFO   = "info"
+    _h._LOG_DAEMON_EXT = ".lua"
 
     -- Daemon module events.
     _h._EVE_ERROR     = "error"

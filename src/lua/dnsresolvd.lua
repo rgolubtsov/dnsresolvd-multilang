@@ -12,13 +12,14 @@
  * (See the LICENSE file at the top of the source tree.)
 --]]
 
-local path = require("path")
-local http = require("http")
-local url  = require("url" )
-local dns  = require("dns" )
-local json = require("json")
+local path  = require("path" )
+local http  = require("http" )
+local url   = require("url"  )
+local dns   = require("dns"  )
+local json  = require("json" )
+local posix = require("posix")
 
-local aux  = require("dnsresolvh")
+local aux = require("dnsresolvh")
 
 --[[
  * Performs DNS lookup action for the given hostname,
@@ -85,8 +86,18 @@ local dns_lookup = function(_ret, port_number, daemon_name)
             print(daemon_name .. aux._ERR_CANNOT_START_SERVER
                               .. aux._ERR_SRV_PORT_IS_IN_USE
                               .. aux._NEW_LINE)
+
+            posix.syslog(posix.LOG_ERR,
+                  daemon_name .. aux._ERR_CANNOT_START_SERVER
+                              .. aux._ERR_SRV_PORT_IS_IN_USE
+                              .. aux._NEW_LINE)
         else
             print(daemon_name .. aux._ERR_CANNOT_START_SERVER
+                              .. aux._ERR_SRV_UNKNOWN_REASON
+                              .. aux._NEW_LINE)
+
+            posix.syslog(posix.LOG_ERR,
+                  daemon_name .. aux._ERR_CANNOT_START_SERVER
                               .. aux._ERR_SRV_UNKNOWN_REASON
                               .. aux._NEW_LINE)
         end
@@ -99,6 +110,9 @@ local dns_lookup = function(_ret, port_number, daemon_name)
     daemon:on(aux._EVE_LISTENING, function(e)
         print(aux._MSG_SERVER_STARTED_1 .. port_number .. aux._NEW_LINE
            .. aux._MSG_SERVER_STARTED_2)
+
+        posix.syslog(posix.LOG_INFO,          aux._MSG_SERVER_STARTED_1
+           .. port_number .. aux._NEW_LINE .. aux._MSG_SERVER_STARTED_2)
     end)
 
     daemon_address = {daemon:address()}
@@ -287,7 +301,8 @@ end
 
 -- Helper function. Makes final buffer cleanups, closes streams, etc.
 _cleanups_fixate = function()
-    -- TODO: Implement cleanup stuff.
+    -- Closing the system logger.
+    posix.closelog()
 end
 
 -- Helper function. Draws a horizontal separator banner.
@@ -304,6 +319,10 @@ local main = function(argc, argv)
 
     local daemon_name = path.basename(argv[1])
     local port_number = tonumber(argv[2], 10)
+
+    -- Opening the system logger.
+    posix.openlog(path.basename(daemon_name,  aux._LOG_DAEMON_EXT),
+                  {cons = true, pid = true}, posix.LOG_DAEMON)
 
     local print_banner_opt = aux._EMPTY_STRING
 
@@ -330,6 +349,11 @@ local main = function(argc, argv)
             .. (argc - 1) .. aux._ERR_MUST_BE_ONE_TWO_ARGS_2
             .. aux._NEW_LINE)
 
+        posix.syslog(posix.LOG_ERR,
+              daemon_name .. aux._ERR_MUST_BE_ONE_TWO_ARGS_1
+            .. (argc - 1) .. aux._ERR_MUST_BE_ONE_TWO_ARGS_2
+            .. aux._NEW_LINE)
+
         print(aux._MSG_USAGE_TEMPLATE_1 .. daemon_name
            .. aux._MSG_USAGE_TEMPLATE_2 .. aux._NEW_LINE)
 
@@ -345,6 +369,10 @@ local main = function(argc, argv)
         ret = aux._EXIT_FAILURE
 
         print(daemon_name .. aux._ERR_PORT_MUST_BE_POSITIVE_INT
+           .. aux._NEW_LINE)
+
+        posix.syslog(posix.LOG_ERR,
+              daemon_name .. aux._ERR_PORT_MUST_BE_POSITIVE_INT
            .. aux._NEW_LINE)
 
         print(aux._MSG_USAGE_TEMPLATE_1 .. daemon_name
