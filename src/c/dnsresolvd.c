@@ -273,26 +273,39 @@ int main(int argc, char *const *argv) {
 
     int c; /* <== Needs this for Ctrl+C hitting check only. */
 
+    char *print_banner_opt = _EMPTY_STRING;
+
+    if (argc > 2) {
+        print_banner_opt = malloc(strlen(           argv[2]));
+        print_banner_opt = strcpy(print_banner_opt, argv[2]);
+    }
+
+    if (strcmp(print_banner_opt, _PRINT_BANNER_OPT) == 0) {
+        _separator_draw(_DMN_DESCRIPTION);
+
+        printf(_DMN_NAME        _COMMA_SPACE_SEP                         \
+               _DMN_VERSION_S__ _ONE_SPACE_STRING _DMN_VERSION _NEW_LINE \
+               _DMN_DESCRIPTION                                _NEW_LINE \
+               _DMN_COPYRIGHT__ _ONE_SPACE_STRING _DMN_AUTHOR  _NEW_LINE);
+
+        _separator_draw(_DMN_DESCRIPTION);
+    }
+
+    if (argc > 2) {
+        free(print_banner_opt);
+    }
+
     /* Opening the system logger. */
     openlog(NULL, LOG_CONS | LOG_PID, LOG_DAEMON);
 
-    _separator_draw(_DMN_DESCRIPTION);
-
-    printf(_DMN_NAME        _COMMA_SPACE_SEP                         \
-           _DMN_VERSION_S__ _ONE_SPACE_STRING _DMN_VERSION _NEW_LINE \
-           _DMN_DESCRIPTION                                _NEW_LINE \
-           _DMN_COPYRIGHT__ _ONE_SPACE_STRING _DMN_AUTHOR  _NEW_LINE);
-
-    _separator_draw(_DMN_DESCRIPTION);
-
     /* Checking for args presence. */
-    if (argc != 2) {
+    if (argc == 1) {
         ret = EXIT_FAILURE;
 
-        fprintf(stderr, _ERR_MUST_BE_THE_ONLY_ARG _NEW_LINE _NEW_LINE,
+        fprintf(stderr, _ERR_MUST_BE_ONE_TWO_ARGS _NEW_LINE _NEW_LINE,
                          daemon_name, (argc - 1));
 
-        syslog(LOG_ERR, _ERR_MUST_BE_THE_ONLY_ARG _NEW_LINE _NEW_LINE,
+        syslog(LOG_ERR, _ERR_MUST_BE_ONE_TWO_ARGS _NEW_LINE _NEW_LINE,
                          daemon_name, (argc - 1));
 
         fprintf(stderr, _MSG_USAGE_TEMPLATE _NEW_LINE _NEW_LINE, daemon_name);

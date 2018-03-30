@@ -31,6 +31,7 @@
 #define _COLON_SPACE_SEP  ": "
 #define _COMMA_SPACE_SEP  ", "
 #define _NEW_LINE         "\n"
+#define _PRINT_BANNER_OPT "-V"
 
 /* Common error messages. */
 #define _ERR_PREFIX                    "error"
@@ -42,11 +43,11 @@
 #define _ERR_COULD_NOT_LOOKUP          "could not lookup hostname"
 
 /* Print this error message when there are no any args passed. */
-#define _ERR_MUST_BE_THE_ONLY_ARG "%s: There must be exactly one arg " \
+#define _ERR_MUST_BE_ONE_TWO_ARGS "%s: There must be one or two args " \
                                   "passed: %u args found"
 
 /* Print this usage info just after any inappropriate input. */
-#define _MSG_USAGE_TEMPLATE "Usage: %s <port_number>"
+#define _MSG_USAGE_TEMPLATE "Usage: %s <port_number> [-V]"
 
 /** Constant: The minimum port number allowed. */
 #define _MIN_PORT 1024
