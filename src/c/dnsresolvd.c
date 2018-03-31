@@ -15,7 +15,8 @@
 #include "dnsresolvd.h"
 
 /*
- * Query parse callback. Iterates over query params given as key-value pairs.
+ * Query parse callback.
+ * Iterates over query params given as key-value pairs.
  */
 int _query_params_iterator(      void          *cls,
                            enum  MHD_ValueKind  kind,
@@ -60,6 +61,27 @@ int _query_params_iterator(      void          *cls,
     return ret;
 }
 
+/*
+ * POST body data parse callback.
+ * Iterates over HTTP POST request body data given as key-value pairs.
+ */
+int _post_data_iterator(      void          *cls,
+                        enum  MHD_ValueKind  kind,
+                        const char          *key,
+                        const char          *filename,
+                        const char          *content_type,
+                        const char          *transfer_encoding,
+                        const char          *data,
+                              uint64_t       off,
+                              size_t         size) {
+
+    int ret = MHD_NO;
+
+    /* TODO: Implement parsing POST body data here. */
+
+    return ret;
+}
+
 /* Main callback. Actually serving the request here. */
 int _request_handler(       void            *cls,
                      struct MHD_Connection  *connection,
@@ -91,6 +113,14 @@ int _request_handler(       void            *cls,
                             "</body>" _NEW_LINE \
                             "</html>" _NEW_LINE
 
+    enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
+
+    struct conn_data {
+                int                conn_type;
+                char              *conn_answ;
+        struct  MHD_PostProcessor *pp;
+    };
+
     int num_hdrs;
 
     char *addr;
@@ -101,29 +131,39 @@ int _request_handler(       void            *cls,
 
     struct MHD_Response *resp;
 
-    if (strcmp(method, MHD_HTTP_METHOD_GET) != 0) {
-        ret = MHD_NO; /* Unexpected method; should be "GET". */
-
-        return ret;
+    /* --------------------------------------------------------------------- */
+    /* --- Parsing and validating request params - Begin ------------------- */
+    /* --------------------------------------------------------------------- */
+           if (strcmp(method, MHD_HTTP_METHOD_GET ) == 0) {
+        params_kind = MHD_GET_ARGUMENT_KIND;
+    } else if (strcmp(method, MHD_HTTP_METHOD_POST) == 0) {
+        params_kind =     MHD_POSTDATA_KIND;
     }
 
-    /* --------------------------------------------------------------------- */
-    /* --- Parsing and validating query params - Begin --------------------- */
-    /* --------------------------------------------------------------------- */
-    num_hdrs = MHD_get_connection_values(connection,
-                                         MHD_GET_ARGUMENT_KIND,
-                                         NULL, NULL);
+    num_hdrs = MHD_get_connection_values(connection, params_kind, NULL, NULL);
 
-    if (num_hdrs > 0) {
+    if ((num_hdrs > 0) || (params_kind == MHD_POSTDATA_KIND)) {
         MHD_get_connection_values(connection,
-                                  MHD_GET_ARGUMENT_KIND,
+                                  params_kind,
                                  _query_params_iterator,
                                   NULL);
+
+        if (params_kind == MHD_POSTDATA_KIND) {
+            struct conn_data *cd = *con_cls;
+
+            if (*upload_data_size != 0) {
+                MHD_post_process(cd->pp, upload_data, *upload_data_size);
+
+                *upload_data_size = 0;
+
+                return ret;
+            }
+        }
     } else {
         hostname = _DEF_HOSTNAME;
     }
     /* --------------------------------------------------------------------- */
-    /* --- Parsing and validating query params - End ----------------------- */
+    /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
 
     addr = malloc(INET6_ADDRSTRLEN);
