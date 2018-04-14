@@ -36,21 +36,21 @@ int _query_params_iterator(      void          *cls,
      *                                 |
      *               +-----------------+
      *               |
-     *               V
+     *               v
      */
     if (strcmp(key, "h") == 0) {
         /*
          * /?h_____
          *      |
-         *      V
+         *      v
          */
         if (value != NULL) {
             /*
              *     /?h=_____
              *           |
-             *           V
+             *           v
              */
-            if (strcmp(value, _EMPTY_STRING) != 0) {
+            if (strlen(value) > 0) {
                 hostname = value;
             }
         }
@@ -77,7 +77,34 @@ int _post_data_iterator(      void          *cls,
 
     int ret = MHD_NO;
 
-    /* TODO: Implement parsing POST body data here. */
+    hostname = _DEF_HOSTNAME;
+
+    /*
+     *$ curl -d 'h=<hostname>' http://localhost:<port_number>
+     *           |
+     *           +---+
+     *               |
+     *               v
+     */
+    if (strcmp(key, "h") == 0) {
+        /*
+         * 'h_____
+         *     |
+         *     v
+         */
+        if (data != NULL) {
+            /*
+             *'h=_____
+             *     |
+             *     v
+             */
+            if (size > 0) {
+                hostname = data;
+            }
+        }
+    } else {
+        ret = MHD_YES;
+    }
 
     return ret;
 }
@@ -113,15 +140,13 @@ int _request_handler(       void            *cls,
                             "</body>" _NEW_LINE \
                             "</html>" _NEW_LINE
 
+    #define MAX_PP_PARSE_BUFF_SIZE 1024
+
     enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
 
-    struct conn_data {
-                int                conn_type;
-                char              *conn_answ;
-        struct  MHD_PostProcessor *pp;
-    };
-
     int num_hdrs;
+
+    struct MHD_PostProcessor *pp;
 
     char *addr;
     char  ver_str[2];
@@ -140,27 +165,40 @@ int _request_handler(       void            *cls,
         params_kind =     MHD_POSTDATA_KIND;
     }
 
-    num_hdrs = MHD_get_connection_values(connection, params_kind, NULL, NULL);
+           if (params_kind == MHD_GET_ARGUMENT_KIND) {
+        num_hdrs = MHD_get_connection_values(connection, params_kind, NULL, NULL);
 
-    if ((num_hdrs > 0) || (params_kind == MHD_POSTDATA_KIND)) {
-        MHD_get_connection_values(connection,
-                                  params_kind,
-                                 _query_params_iterator,
-                                  NULL);
+        if (num_hdrs > 0) {
+            MHD_get_connection_values(connection,
+                                      params_kind,
+                                     _query_params_iterator,
+                                      NULL);
+        }
+    } else if (params_kind ==     MHD_POSTDATA_KIND) {
+        if (*con_cls == NULL) {
+            pp = MHD_create_post_processor(connection,
+                                           MAX_PP_PARSE_BUFF_SIZE,
+                                          _post_data_iterator,
+                                           NULL);
 
-        if (params_kind == MHD_POSTDATA_KIND) {
-            struct conn_data *cd = *con_cls;
+            if (pp == NULL) {
+                ret = MHD_NO; return ret;
+            }
 
-            if (*upload_data_size != 0) {
-                MHD_post_process(cd->pp, upload_data, *upload_data_size);
+            *con_cls = (void *) pp;
+
+            return ret;
+        } else {
+            pp = *con_cls;
+
+            if (*upload_data_size > 0) {
+                MHD_post_process(pp, upload_data, *upload_data_size);
 
                 *upload_data_size = 0;
 
                 return ret;
             }
         }
-    } else {
-        hostname = _DEF_HOSTNAME;
     }
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - End --------------------- */
@@ -248,6 +286,19 @@ int _request_handler(       void            *cls,
     MHD_destroy_response(resp);
 
     return ret;
+}
+
+/* Last callback. Finalizes the request, releases resources. */
+void _request_finalizer(       void                        *cls,
+                        struct MHD_Connection              *connection,
+                               void                       **con_cls,
+                        enum   MHD_RequestTerminationCode   toe) {
+
+    if (*con_cls != NULL) {
+        MHD_destroy_post_processor(*con_cls);
+
+        *con_cls = NULL;
+    }
 }
 
 /**
@@ -391,6 +442,9 @@ int main(int argc, char *const *argv) {
                               NULL,        /*  Thread pool  */
                               NULL,
                               &_request_handler,
+                              NULL,
+                              MHD_OPTION_NOTIFY_COMPLETED,
+                              &_request_finalizer,
                               NULL,
     /* Thread pool >>>>>>> */ MHD_OPTION_THREAD_POOL_SIZE, 4, MHD_OPTION_END);
 
