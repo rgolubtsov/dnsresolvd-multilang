@@ -14,8 +14,21 @@
 
 #include "dnsresolvd.h"
 
+/** The effective hostname to look up for. */
+const char *hostname = _DEF_HOSTNAME;
+
+/**
+ * The IP version (family) used to look up in DNS:
+ * <ul>
+ * <li><code>4</code> &ndash; IPv4</li>
+ * <li><code>6</code> &ndash; IPv6</li>
+ * </ul>
+ */
+unsigned short ver;
+
 /*
- * Query parse callback. Iterates over query params given as key-value pairs.
+ * Query parse callback.
+ * Iterates over query params given as key-value pairs.
  */
 int _query_params_iterator(      void          *cls,
                            enum  MHD_ValueKind  kind,
@@ -24,10 +37,8 @@ int _query_params_iterator(      void          *cls,
 
     int ret = MHD_NO;
 
-    hostname = _DEF_HOSTNAME;
-
     if (kind != MHD_GET_ARGUMENT_KIND) {
-        return ret; /* Processing "GET" requests only. */
+        return ret; /* Processing HTTP GET requests only. */
     }
 
     /*
@@ -35,22 +46,72 @@ int _query_params_iterator(      void          *cls,
      *                                 |
      *               +-----------------+
      *               |
-     *               V
+     *               v
      */
     if (strcmp(key, "h") == 0) {
         /*
          * /?h_____
          *      |
-         *      V
+         *      v
          */
         if (value != NULL) {
             /*
              *     /?h=_____
              *           |
-             *           V
+             *           v
              */
-            if (strcmp(value, _EMPTY_STRING) != 0) {
+            if (strlen(value) > 0) {
                 hostname = value;
+            }
+        }
+    } else {
+        ret = MHD_YES;
+    }
+
+    return ret;
+}
+
+/*
+ * POST body data parse callback.
+ * Iterates over HTTP POST request body data given as key-value pairs.
+ */
+int _post_data_iterator(      void          *cls,
+                        enum  MHD_ValueKind  kind,
+                        const char          *key,
+                        const char          *filename,
+                        const char          *content_type,
+                        const char          *transfer_encoding,
+                        const char          *data,
+                              uint64_t       off,
+                              size_t         size) {
+
+    int ret = MHD_NO;
+
+    if (kind != MHD_POSTDATA_KIND) {
+        return ret; /* Processing HTTP POST requests only. */
+    }
+
+    /*
+     *$ curl -d 'h=<hostname>' http://localhost:<port_number>
+     *           |
+     *           +---+
+     *               |
+     *               v
+     */
+    if (strcmp(key, "h") == 0) {
+        /*
+         * 'h_____
+         *     |
+         *     v
+         */
+        if (data != NULL) {
+            /*
+             *'h=_____
+             *     |
+             *     v
+             */
+            if (size > 0) {
+                hostname = data;
             }
         }
     } else {
@@ -91,9 +152,16 @@ int _request_handler(       void            *cls,
                             "</body>" _NEW_LINE \
                             "</html>" _NEW_LINE
 
+    #define MAX_PP_PARSE_BUFF_SIZE 1024
+
+    enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
+
     int num_hdrs;
 
-    char *addr;
+    struct MHD_PostProcessor *pp;
+
+    char *_addr;
+    char *_hostname;
     char  ver_str[2];
     char *resp_buffer;
 
@@ -101,73 +169,100 @@ int _request_handler(       void            *cls,
 
     struct MHD_Response *resp;
 
-    if (strcmp(method, MHD_HTTP_METHOD_GET) != 0) {
-        ret = MHD_NO; /* Unexpected method; should be "GET". */
-
-        return ret;
+    /* --------------------------------------------------------------------- */
+    /* --- Parsing and validating request params - Begin ------------------- */
+    /* --------------------------------------------------------------------- */
+           if (strcmp(method, MHD_HTTP_METHOD_GET ) == 0) {
+        params_kind = MHD_GET_ARGUMENT_KIND;
+    } else if (strcmp(method, MHD_HTTP_METHOD_POST) == 0) {
+        params_kind =     MHD_POSTDATA_KIND;
     }
 
-    /* --------------------------------------------------------------------- */
-    /* --- Parsing and validating query params - Begin --------------------- */
-    /* --------------------------------------------------------------------- */
-    num_hdrs = MHD_get_connection_values(connection,
-                                         MHD_GET_ARGUMENT_KIND,
-                                         NULL, NULL);
+           if (params_kind == MHD_GET_ARGUMENT_KIND) {
+        num_hdrs = MHD_get_connection_values(connection, params_kind, NULL, NULL);
 
-    if (num_hdrs > 0) {
-        MHD_get_connection_values(connection,
-                                  MHD_GET_ARGUMENT_KIND,
-                                 _query_params_iterator,
-                                  NULL);
-    } else {
-        hostname = _DEF_HOSTNAME;
+        if (num_hdrs > 0) {
+            MHD_get_connection_values(connection,
+                                      params_kind,
+                                     _query_params_iterator,
+                                      NULL);
+        }
+    } else if (params_kind ==     MHD_POSTDATA_KIND) {
+        if (*con_cls == NULL) {
+            pp = MHD_create_post_processor(connection,
+                                           MAX_PP_PARSE_BUFF_SIZE,
+                                          _post_data_iterator,
+                                           NULL);
+
+            if (pp == NULL) {
+                ret = MHD_NO; return ret;
+            }
+
+            *con_cls = (void *) pp;
+
+            return ret;
+        } else {
+            pp = *con_cls;
+
+            if (*upload_data_size > 0) {
+                MHD_post_process(pp, upload_data, *upload_data_size);
+
+                *upload_data_size = 0;
+
+                return ret;
+            }
+        }
     }
     /* --------------------------------------------------------------------- */
-    /* --- Parsing and validating query params - End ----------------------- */
+    /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
 
-    addr = malloc(INET6_ADDRSTRLEN);
+    _addr     = malloc(INET6_ADDRSTRLEN);
+    _hostname = malloc(HOST_NAME_MAX   );
+
+    _hostname = strcpy(_hostname, hostname);
 
     /* Performing DNS lookup for the given hostname. */
-    addr = dns_lookup(addr, hostname);
+    _addr = dns_lookup(_addr, _hostname);
 
-    lookup_error = (strcmp(addr, _ERR_PREFIX) == 0);
+    lookup_error = (strcmp(_addr, _ERR_PREFIX) == 0);
 
     if (!lookup_error) {
         sprintf(ver_str, "%u", ver);
     }
 
     if (lookup_error) {
-        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1)
-                           + strlen(hostname)
+        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
+                           + strlen(_hostname        )
                            + sizeof(_ONE_SPACE_STRING)
-                           + sizeof(RESP_TEMPLATE_3)
-                           + sizeof(RESP_TEMPLATE_4));
+                           + sizeof(RESP_TEMPLATE_3  )
+                           + sizeof(RESP_TEMPLATE_4  ));
     } else {
-        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1)
-                           + strlen(hostname)
+        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
+                           + strlen(_hostname        )
                            + sizeof(_ONE_SPACE_STRING)
-                           + strlen(addr)
-                           + sizeof(RESP_TEMPLATE_2)
-                           + strlen(ver_str)
-                           + sizeof(RESP_TEMPLATE_4));
+                           + strlen(_addr            )
+                           + sizeof(RESP_TEMPLATE_2  )
+                           + strlen(ver_str          )
+                           + sizeof(RESP_TEMPLATE_4  ));
     }
 
-    resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1);
-    resp_buffer = strcat(resp_buffer, hostname);
+    resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1  );
+    resp_buffer = strcat(resp_buffer, _hostname        );
     resp_buffer = strcat(resp_buffer, _ONE_SPACE_STRING);
 
     if (lookup_error) {
         resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
     } else {
-        resp_buffer = strcat(resp_buffer, addr);
+        resp_buffer = strcat(resp_buffer, _addr          );
         resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2);
-        resp_buffer = strcat(resp_buffer, ver_str);
+        resp_buffer = strcat(resp_buffer, ver_str        );
     }
 
-    resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4);
+    resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4  );
 
-    free(addr);
+    free(_hostname);
+    free(_addr    );
 
     /* Creating the response. */
     resp = MHD_create_response_from_buffer(strlen(resp_buffer),
@@ -210,6 +305,19 @@ int _request_handler(       void            *cls,
     return ret;
 }
 
+/* Last callback. Finalizes the request, releases resources. */
+void _request_finalizer(       void                        *cls,
+                        struct MHD_Connection              *connection,
+                               void                       **con_cls,
+                        enum   MHD_RequestTerminationCode   toe) {
+
+    if (*con_cls != NULL) {
+        MHD_destroy_post_processor(*con_cls);
+
+        *con_cls = NULL;
+    }
+}
+
 /**
  * Performs DNS lookup action for the given hostname,
  * i.e. (in this case) IP address retrieval by hostname.
@@ -234,16 +342,16 @@ char *dns_lookup(char *addr, const char *hostname) {
         if (hent == NULL) {
             addr = strcpy(addr, _ERR_PREFIX);
         } else {
-            addr = inet_ntop(AF_INET6, hent->h_addr_list[0], addr,
-                                INET6_ADDRSTRLEN);
+            addr = (char *) inet_ntop(AF_INET6, hent->h_addr_list[0], addr,
+                                         INET6_ADDRSTRLEN);
 
             ver  = 6;
         }
     } else {
-        addr = inet_ntop(AF_INET, hent->h_addr_list[0], addr,
-                            INET_ADDRSTRLEN);
+        addr     = (char *) inet_ntop(AF_INET,  hent->h_addr_list[0], addr,
+                                         INET_ADDRSTRLEN);
 
-        ver  = 4;
+        ver      = 4;
     }
 
     return addr;
@@ -351,6 +459,9 @@ int main(int argc, char *const *argv) {
                               NULL,        /*  Thread pool  */
                               NULL,
                               &_request_handler,
+                              NULL,
+                              MHD_OPTION_NOTIFY_COMPLETED,
+                              &_request_finalizer,
                               NULL,
     /* Thread pool >>>>>>> */ MHD_OPTION_THREAD_POOL_SIZE, 4, MHD_OPTION_END);
 
