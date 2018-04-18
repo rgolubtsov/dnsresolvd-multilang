@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <syslog.h>
+#include <limits.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 
@@ -76,18 +77,6 @@
 
 /** Constant: The default hostname to look up for. */
 #define _DEF_HOSTNAME "openbsd.org"
-
-/** The effective hostname to look up for. */
-char *hostname;
-
-/**
- * The IP version (family) used to look up in DNS:
- * <ul>
- * <li><code>4</code> &ndash; IPv4</li>
- * <li><code>6</code> &ndash; IPv6</li>
- * </ul>
- */
-unsigned short ver;
 
 /*
  * Performs DNS lookup action for the given hostname,

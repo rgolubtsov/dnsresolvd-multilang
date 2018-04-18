@@ -14,6 +14,18 @@
 
 #include "dnsresolvd.h"
 
+/** The effective hostname to look up for. */
+const char *hostname = _DEF_HOSTNAME;
+
+/**
+ * The IP version (family) used to look up in DNS:
+ * <ul>
+ * <li><code>4</code> &ndash; IPv4</li>
+ * <li><code>6</code> &ndash; IPv6</li>
+ * </ul>
+ */
+unsigned short ver;
+
 /*
  * Query parse callback.
  * Iterates over query params given as key-value pairs.
@@ -25,10 +37,8 @@ int _query_params_iterator(      void          *cls,
 
     int ret = MHD_NO;
 
-    hostname = _DEF_HOSTNAME;
-
     if (kind != MHD_GET_ARGUMENT_KIND) {
-        return ret; /* Processing "GET" requests only. */
+        return ret; /* Processing HTTP GET requests only. */
     }
 
     /*
@@ -77,7 +87,9 @@ int _post_data_iterator(      void          *cls,
 
     int ret = MHD_NO;
 
-    hostname = _DEF_HOSTNAME;
+    if (kind != MHD_POSTDATA_KIND) {
+        return ret; /* Processing HTTP POST requests only. */
+    }
 
     /*
      *$ curl -d 'h=<hostname>' http://localhost:<port_number>
@@ -148,7 +160,8 @@ int _request_handler(       void            *cls,
 
     struct MHD_PostProcessor *pp;
 
-    char *addr;
+    char *_addr;
+    char *_hostname;
     char  ver_str[2];
     char *resp_buffer;
 
@@ -204,48 +217,52 @@ int _request_handler(       void            *cls,
     /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
 
-    addr = malloc(INET6_ADDRSTRLEN);
+    _addr     = malloc(INET6_ADDRSTRLEN);
+    _hostname = malloc(HOST_NAME_MAX   );
+
+    _hostname = strcpy(_hostname, hostname);
 
     /* Performing DNS lookup for the given hostname. */
-    addr = dns_lookup(addr, hostname);
+    _addr = dns_lookup(_addr, _hostname);
 
-    lookup_error = (strcmp(addr, _ERR_PREFIX) == 0);
+    lookup_error = (strcmp(_addr, _ERR_PREFIX) == 0);
 
     if (!lookup_error) {
         sprintf(ver_str, "%u", ver);
     }
 
     if (lookup_error) {
-        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1)
-                           + strlen(hostname)
+        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
+                           + strlen(_hostname        )
                            + sizeof(_ONE_SPACE_STRING)
-                           + sizeof(RESP_TEMPLATE_3)
-                           + sizeof(RESP_TEMPLATE_4));
+                           + sizeof(RESP_TEMPLATE_3  )
+                           + sizeof(RESP_TEMPLATE_4  ));
     } else {
-        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1)
-                           + strlen(hostname)
+        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
+                           + strlen(_hostname        )
                            + sizeof(_ONE_SPACE_STRING)
-                           + strlen(addr)
-                           + sizeof(RESP_TEMPLATE_2)
-                           + strlen(ver_str)
-                           + sizeof(RESP_TEMPLATE_4));
+                           + strlen(_addr            )
+                           + sizeof(RESP_TEMPLATE_2  )
+                           + strlen(ver_str          )
+                           + sizeof(RESP_TEMPLATE_4  ));
     }
 
-    resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1);
-    resp_buffer = strcat(resp_buffer, hostname);
+    resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1  );
+    resp_buffer = strcat(resp_buffer, _hostname        );
     resp_buffer = strcat(resp_buffer, _ONE_SPACE_STRING);
 
     if (lookup_error) {
         resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
     } else {
-        resp_buffer = strcat(resp_buffer, addr);
+        resp_buffer = strcat(resp_buffer, _addr          );
         resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2);
-        resp_buffer = strcat(resp_buffer, ver_str);
+        resp_buffer = strcat(resp_buffer, ver_str        );
     }
 
-    resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4);
+    resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4  );
 
-    free(addr);
+    free(_hostname);
+    free(_addr    );
 
     /* Creating the response. */
     resp = MHD_create_response_from_buffer(strlen(resp_buffer),
@@ -325,16 +342,16 @@ char *dns_lookup(char *addr, const char *hostname) {
         if (hent == NULL) {
             addr = strcpy(addr, _ERR_PREFIX);
         } else {
-            addr = inet_ntop(AF_INET6, hent->h_addr_list[0], addr,
-                                INET6_ADDRSTRLEN);
+            addr = (char *) inet_ntop(AF_INET6, hent->h_addr_list[0], addr,
+                                         INET6_ADDRSTRLEN);
 
             ver  = 6;
         }
     } else {
-        addr = inet_ntop(AF_INET, hent->h_addr_list[0], addr,
-                            INET_ADDRSTRLEN);
+        addr     = (char *) inet_ntop(AF_INET,  hent->h_addr_list[0], addr,
+                                         INET_ADDRSTRLEN);
 
-        ver  = 4;
+        ver      = 4;
     }
 
     return addr;
