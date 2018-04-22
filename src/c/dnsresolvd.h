@@ -20,7 +20,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <syslog.h>
-#include <limits.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 

@@ -14,8 +14,11 @@
 
 #include "dnsresolvd.h"
 
-/** The effective hostname to look up for. */
-const char *hostname = _DEF_HOSTNAME;
+struct params {
+    /* The effective hostname to look up for. */
+    char *hostname;
+    char *fmt;
+};
 
 /**
  * The IP version (family) used to look up in DNS:
@@ -35,14 +38,14 @@ int _query_params_iterator(      void          *cls,
                            const char          *key,
                            const char          *value) {
 
-    int ret = MHD_NO;
+    int ret = MHD_YES;
 
     if (kind != MHD_GET_ARGUMENT_KIND) {
-        return ret; /* Processing HTTP GET requests only. */
+        ret = MHD_NO; return ret; /* Processing HTTP GET requests only. */
     }
 
     /*
-     * http://localhost:<port_number>/?h=<hostname>
+     * http://localhost:<port_number>/?h=<hostname>&f=<fmt>
      *                                 |
      *               +-----------------+
      *               |
@@ -56,16 +59,39 @@ int _query_params_iterator(      void          *cls,
          */
         if (value != NULL) {
             /*
-             *     /?h=_____
-             *           |
-             *           v
+             *   /?h=_____
+             *         |
+             *         v
              */
             if (strlen(value) > 0) {
-                hostname = value;
+                ((struct params *) cls)->hostname = value;
+            }
+        }
+    /*
+     * http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+     *                                              |
+     *                      +-----------------------+
+     *                      |
+     *                      v
+     */
+    } else if (strcmp(key, "f") == 0) {
+        /*
+         *  &f_____
+         *      |
+         *      v
+         */
+        if (value != NULL) {
+            /*
+             *    &f=_____
+             *         |
+             *         v
+             */
+            if (strlen(value) > 0) {
+                ((struct params *) cls)->fmt = value;
             }
         }
     } else {
-        ret = MHD_YES;
+        ret = MHD_NO;
     }
 
     return ret;
@@ -85,14 +111,14 @@ int _post_data_iterator(      void          *cls,
                               uint64_t       off,
                               size_t         size) {
 
-    int ret = MHD_NO;
+    int ret = MHD_YES;
 
-    if (kind != MHD_POSTDATA_KIND) {
-        return ret; /* Processing HTTP POST requests only. */
+    if ((kind != MHD_POSTDATA_KIND) || (off > 0)) {
+        ret = MHD_NO; return ret; /* Processing HTTP POST requests only. */
     }
 
     /*
-     *$ curl -d 'h=<hostname>' http://localhost:<port_number>
+     *$ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
      *           |
      *           +---+
      *               |
@@ -106,16 +132,39 @@ int _post_data_iterator(      void          *cls,
          */
         if (data != NULL) {
             /*
-             *'h=_____
-             *     |
-             *     v
+             *    'h=_____
+             *         |
+             *         v
              */
-            if (size > 0) {
-                hostname = data;
+            if (strlen(data) > 0) {
+                ((struct params *) cls)->hostname = data;
+            }
+        }
+    /*
+     *  $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
+     *                          |
+     *                      +---+
+     *                      |
+     *                      v
+     */
+    } else if (strcmp(key, "f") == 0) {
+        /*
+         * &f_____
+         *     |
+         *     v
+         */
+        if (data != NULL) {
+            /*
+             *    &f=_____
+             *         |
+             *         v
+             */
+            if (strlen(data) > 0) {
+                ((struct params *) cls)->fmt = data;
             }
         }
     } else {
-        ret = MHD_YES;
+        ret = MHD_NO;
     }
 
     return ret;
@@ -156,12 +205,13 @@ int _request_handler(       void            *cls,
 
     enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
 
+    struct params *_params;
+
     int num_hdrs;
 
     struct MHD_PostProcessor *pp;
 
     char *_addr;
-    char *_hostname;
     char  ver_str[2];
     char *resp_buffer;
 
@@ -178,21 +228,27 @@ int _request_handler(       void            *cls,
         params_kind =     MHD_POSTDATA_KIND;
     }
 
+    _params = malloc(sizeof(struct params));
+
+    _params->hostname = _DEF_HOSTNAME;
+    _params->fmt      = "json";
+
            if (params_kind == MHD_GET_ARGUMENT_KIND) {
-        num_hdrs = MHD_get_connection_values(connection, params_kind, NULL, NULL);
+        num_hdrs =
+            MHD_get_connection_values(connection, params_kind, NULL, NULL);
 
         if (num_hdrs > 0) {
             MHD_get_connection_values(connection,
                                       params_kind,
                                      _query_params_iterator,
-                                      NULL);
+                                     _params);
         }
     } else if (params_kind ==     MHD_POSTDATA_KIND) {
         if (*con_cls == NULL) {
             pp = MHD_create_post_processor(connection,
                                            MAX_PP_PARSE_BUFF_SIZE,
                                           _post_data_iterator,
-                                           NULL);
+                                          _params);
 
             if (pp == NULL) {
                 ret = MHD_NO; return ret;
@@ -217,13 +273,10 @@ int _request_handler(       void            *cls,
     /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
 
-    _addr     = malloc(INET6_ADDRSTRLEN);
-    _hostname = malloc(HOST_NAME_MAX   );
-
-    _hostname = strcpy(_hostname, hostname);
+    _addr = malloc(INET6_ADDRSTRLEN);
 
     /* Performing DNS lookup for the given hostname. */
-    _addr = dns_lookup(_addr, _hostname);
+    _addr = dns_lookup(_addr, _params->hostname);
 
     lookup_error = (strcmp(_addr, _ERR_PREFIX) == 0);
 
@@ -233,13 +286,13 @@ int _request_handler(       void            *cls,
 
     if (lookup_error) {
         resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
-                           + strlen(_hostname        )
+                           + strlen(_params->hostname)
                            + sizeof(_ONE_SPACE_STRING)
                            + sizeof(RESP_TEMPLATE_3  )
                            + sizeof(RESP_TEMPLATE_4  ));
     } else {
         resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
-                           + strlen(_hostname        )
+                           + strlen(_params->hostname)
                            + sizeof(_ONE_SPACE_STRING)
                            + strlen(_addr            )
                            + sizeof(RESP_TEMPLATE_2  )
@@ -248,7 +301,7 @@ int _request_handler(       void            *cls,
     }
 
     resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1  );
-    resp_buffer = strcat(resp_buffer, _hostname        );
+    resp_buffer = strcat(resp_buffer, _params->hostname);
     resp_buffer = strcat(resp_buffer, _ONE_SPACE_STRING);
 
     if (lookup_error) {
@@ -261,8 +314,8 @@ int _request_handler(       void            *cls,
 
     resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4  );
 
-    free(_hostname);
-    free(_addr    );
+    free(_addr  );
+    free(_params);
 
     /* Creating the response. */
     resp = MHD_create_response_from_buffer(strlen(resp_buffer),
