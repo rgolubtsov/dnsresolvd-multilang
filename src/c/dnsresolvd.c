@@ -15,9 +15,11 @@
 #include "dnsresolvd.h"
 
 struct params {
-    /* The effective hostname to look up for. */
-    char *hostname;
-    char *fmt;
+    /** The effective hostname to look up for. */
+    const char *hostname;
+
+    /** The response format selector. */
+    const char *fmt;
 };
 
 /**
@@ -193,12 +195,15 @@ int _request_handler(       void            *cls,
 "<body>"                                                                                                  _NEW_LINE \
 "<div>"
 
-    #define RESP_TEMPLATE_2 " IPv"
+    #define RESP_TEMPLATE_2 _ONE_SPACE_STRING     \
+                            _DAT_VERSION_V
 
-    #define RESP_TEMPLATE_3 _ERR_PREFIX _COLON_SPACE_SEP _ERR_COULD_NOT_LOOKUP
+    #define RESP_TEMPLATE_3 _ERR_PREFIX           \
+                            _COLON_SPACE_SEP      \
+                            _ERR_COULD_NOT_LOOKUP
 
-    #define RESP_TEMPLATE_4 "</div>"  _NEW_LINE \
-                            "</body>" _NEW_LINE \
+    #define RESP_TEMPLATE_4 "</div>"  _NEW_LINE   \
+                            "</body>" _NEW_LINE   \
                             "</html>" _NEW_LINE
 
     #define MAX_PP_PARSE_BUFF_SIZE 1024
@@ -229,9 +234,6 @@ int _request_handler(       void            *cls,
     }
 
     _params = malloc(sizeof(struct params));
-
-    _params->hostname = _DEF_HOSTNAME;
-    _params->fmt      = "json";
 
            if (params_kind == MHD_GET_ARGUMENT_KIND) {
         num_hdrs =
@@ -268,6 +270,20 @@ int _request_handler(       void            *cls,
                 return ret;
             }
         }
+    }
+
+    if (   (       _params->hostname  == NULL         )
+        || (strlen(_params->hostname) == 0            )
+        || (strlen(_params->hostname)  > HOST_NAME_MAX)) {
+
+        _params->hostname = _DEF_HOSTNAME;
+    }
+
+    if (   (       _params->fmt  == NULL)
+        || (strlen(_params->fmt)  < 3   )
+        || (strlen(_params->fmt)  > 4   )) {
+
+        _params->fmt = _PRM_FMT_JSON;
     }
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - End --------------------- */
@@ -331,9 +347,7 @@ int _request_handler(       void            *cls,
      */
 
     if (resp == NULL) {
-        ret = MHD_NO;
-
-        return ret;
+        ret = MHD_NO; return ret;
     }
 
     /* Adding headers to the response. */

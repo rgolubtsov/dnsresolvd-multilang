@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <syslog.h>
+#include <limits.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 
@@ -59,11 +60,18 @@
 #define _MSG_SERVER_STARTED_1 "Server started on port %u"
 #define _MSG_SERVER_STARTED_2 "=== Hit Ctrl+C to terminate it."
 
+/* HTTP request params. */
+#define _PRM_FMT_HTML "html"
+#define _PRM_FMT_JSON "json"
+
 /* HTTP response headers. */
 #define _HDR_CONTENT_TYPE  "text/html; charset=UTF-8"
 #define _HDR_CACHE_CONTROL "no-cache, no-store, must-revalidate"
 #define _HDR_EXPIRES       "Thu, 01 Dec 1994 16:00:00 GMT"
 #define _HDR_PRAGMA        "no-cache"
+
+/* Response data names. */
+#define _DAT_VERSION_V "IPv"
 
 /* Daemon name, version, and copyright banners. */
 #define _DMN_NAME        "DNS Resolver Daemon (dnsresolvd)"
