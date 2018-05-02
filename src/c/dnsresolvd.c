@@ -252,6 +252,9 @@ int _request_handler(       void            *cls,
     params->hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
     params->fmt      = malloc(sizeof(char) * (4             + 1));
 
+    params->hostname = strcpy(params->hostname, _EMPTY_STRING);
+    params->fmt      = strcpy(params->fmt,      _EMPTY_STRING);
+
            if (params_kind == MHD_GET_ARGUMENT_KIND) {
         num_hdrs =
             MHD_get_connection_values(connection, params_kind, NULL, NULL);
@@ -310,6 +313,14 @@ int _request_handler(       void            *cls,
             }
         }
     }
+
+    if ((strlen(hostname) == 0) || (strlen(hostname) > HOST_NAME_MAX)) {
+        hostname = _DEF_HOSTNAME;
+    }
+
+    if ((strlen(fmt     )  < 3) || (strlen(fmt     ) > 4            )) {
+        fmt      = _PRM_FMT_JSON;
+    }
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
@@ -323,15 +334,7 @@ int _request_handler(       void            *cls,
 
     if (!lookup_error) {
         sprintf(ver_str, "%u", ver);
-    }
 
-    if (lookup_error) {
-        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
-                           + strlen(hostname         )
-                           + sizeof(_ONE_SPACE_STRING)
-                           + sizeof(RESP_TEMPLATE_3  )
-                           + sizeof(RESP_TEMPLATE_4  ));
-    } else {
         resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
                            + strlen(hostname         )
                            + sizeof(_ONE_SPACE_STRING)
@@ -339,18 +342,24 @@ int _request_handler(       void            *cls,
                            + sizeof(RESP_TEMPLATE_2  )
                            + strlen(ver_str          )
                            + sizeof(RESP_TEMPLATE_4  ));
+    } else {
+        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
+                           + strlen(hostname         )
+                           + sizeof(_ONE_SPACE_STRING)
+                           + sizeof(RESP_TEMPLATE_3  )
+                           + sizeof(RESP_TEMPLATE_4  ));
     }
 
     resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1  );
     resp_buffer = strcat(resp_buffer, hostname         );
     resp_buffer = strcat(resp_buffer, _ONE_SPACE_STRING);
 
-    if (lookup_error) {
-        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
-    } else {
+    if (!lookup_error) {
         resp_buffer = strcat(resp_buffer, addr           );
         resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2);
         resp_buffer = strcat(resp_buffer, ver_str        );
+    } else {
+        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
     }
 
     resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4  );
