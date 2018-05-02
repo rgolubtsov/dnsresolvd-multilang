@@ -14,8 +14,20 @@
 
 #include "dnsresolvd.h"
 
+/*
+ * Helper structure. Used to iterate over HTTP GET query params
+ * and over HTTP POST request body data items.
+ */
+struct _params {
+    char *hostname;
+    char *fmt;
+};
+
 /** The effective hostname to look up for. */
-const char *hostname = _DEF_HOSTNAME;
+char *hostname;
+
+/** The response format selector. */
+char *fmt;
 
 /**
  * The IP version (family) used to look up in DNS:
@@ -35,14 +47,14 @@ int _query_params_iterator(      void          *cls,
                            const char          *key,
                            const char          *value) {
 
-    int ret = MHD_NO;
+    int ret = MHD_YES;
 
     if (kind != MHD_GET_ARGUMENT_KIND) {
-        return ret; /* Processing HTTP GET requests only. */
+        ret = MHD_NO; return ret; /* Processing HTTP GET requests only. */
     }
 
     /*
-     * http://localhost:<port_number>/?h=<hostname>
+     * http://localhost:<port_number>/?h=<hostname>&f=<fmt>
      *                                 |
      *               +-----------------+
      *               |
@@ -56,16 +68,41 @@ int _query_params_iterator(      void          *cls,
          */
         if (value != NULL) {
             /*
-             *     /?h=_____
-             *           |
-             *           v
+             *   /?h=_____
+             *         |
+             *         v
              */
             if (strlen(value) > 0) {
-                hostname = value;
+                ((struct _params *) cls)->hostname  =
+         strcpy(((struct _params *) cls)->hostname, value);
+            }
+        }
+    /*
+     * http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+     *                                              |
+     *                      +-----------------------+
+     *                      |
+     *                      v
+     */
+    } else if (strcmp(key, "f") == 0) {
+        /*
+         *  &f_____
+         *      |
+         *      v
+         */
+        if (value != NULL) {
+            /*
+             *    &f=_____
+             *         |
+             *         v
+             */
+            if (strlen(value) > 0) {
+                ((struct _params *) cls)->fmt  =
+         strcpy(((struct _params *) cls)->fmt, value);
             }
         }
     } else {
-        ret = MHD_YES;
+        ret = MHD_NO;
     }
 
     return ret;
@@ -85,14 +122,14 @@ int _post_data_iterator(      void          *cls,
                               uint64_t       off,
                               size_t         size) {
 
-    int ret = MHD_NO;
+    int ret = MHD_YES;
 
-    if (kind != MHD_POSTDATA_KIND) {
-        return ret; /* Processing HTTP POST requests only. */
+    if ((kind != MHD_POSTDATA_KIND) || (off > 0)) {
+        ret = MHD_NO; return ret; /* Processing HTTP POST requests only. */
     }
 
     /*
-     *$ curl -d 'h=<hostname>' http://localhost:<port_number>
+     *$ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
      *           |
      *           +---+
      *               |
@@ -106,16 +143,41 @@ int _post_data_iterator(      void          *cls,
          */
         if (data != NULL) {
             /*
-             *'h=_____
-             *     |
-             *     v
+             *    'h=_____
+             *         |
+             *         v
              */
-            if (size > 0) {
-                hostname = data;
+            if (strlen(data) > 0) {
+                ((struct _params *) cls)->hostname  =
+         strcpy(((struct _params *) cls)->hostname, data);
+            }
+        }
+    /*
+     *  $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
+     *                          |
+     *                      +---+
+     *                      |
+     *                      v
+     */
+    } else if (strcmp(key, "f") == 0) {
+        /*
+         * &f_____
+         *     |
+         *     v
+         */
+        if (data != NULL) {
+            /*
+             *    &f=_____
+             *         |
+             *         v
+             */
+            if (strlen(data) > 0) {
+                ((struct _params *) cls)->fmt  =
+         strcpy(((struct _params *) cls)->fmt, data);
             }
         }
     } else {
-        ret = MHD_YES;
+        ret = MHD_NO;
     }
 
     return ret;
@@ -144,30 +206,38 @@ int _request_handler(       void            *cls,
 "<body>"                                                                                                  _NEW_LINE \
 "<div>"
 
-    #define RESP_TEMPLATE_2 " IPv"
+    #define RESP_TEMPLATE_2 _ONE_SPACE_STRING     \
+                            _DAT_VERSION_V
 
-    #define RESP_TEMPLATE_3 _ERR_PREFIX _COLON_SPACE_SEP _ERR_COULD_NOT_LOOKUP
+    #define RESP_TEMPLATE_3 _ERR_PREFIX           \
+                            _COLON_SPACE_SEP      \
+                            _ERR_COULD_NOT_LOOKUP
 
-    #define RESP_TEMPLATE_4 "</div>"  _NEW_LINE \
-                            "</body>" _NEW_LINE \
+    #define RESP_TEMPLATE_4 "</div>"  _NEW_LINE   \
+                            "</body>" _NEW_LINE   \
                             "</html>" _NEW_LINE
 
     #define MAX_PP_PARSE_BUFF_SIZE 1024
 
     enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
 
+    struct _params *params;
+
     int num_hdrs;
 
     struct MHD_PostProcessor *pp;
 
-    char *_addr;
-    char *_hostname;
+    char *addr;
     char  ver_str[2];
     char *resp_buffer;
 
     bool lookup_error;
 
     struct MHD_Response *resp;
+
+/* --- (1) Parse upload_data by yourself --------------------------------------
+    char param[HOST_NAME_MAX + 1]; int i;
+---------------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - Begin ------------------- */
@@ -178,21 +248,36 @@ int _request_handler(       void            *cls,
         params_kind =     MHD_POSTDATA_KIND;
     }
 
+    params           = malloc(sizeof(struct _params            ));
+    params->hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+    params->fmt      = malloc(sizeof(char) * (4             + 1));
+
+    params->hostname = strcpy(params->hostname, _EMPTY_STRING);
+    params->fmt      = strcpy(params->fmt,      _EMPTY_STRING);
+
            if (params_kind == MHD_GET_ARGUMENT_KIND) {
-        num_hdrs = MHD_get_connection_values(connection, params_kind, NULL, NULL);
+        num_hdrs =
+            MHD_get_connection_values(connection, params_kind, NULL, NULL);
 
         if (num_hdrs > 0) {
             MHD_get_connection_values(connection,
                                       params_kind,
                                      _query_params_iterator,
-                                      NULL);
+                                      params);
+
+            hostname = params->hostname;
+            fmt      = params->fmt;
         }
     } else if (params_kind ==     MHD_POSTDATA_KIND) {
         if (*con_cls == NULL) {
             pp = MHD_create_post_processor(connection,
                                            MAX_PP_PARSE_BUFF_SIZE,
                                           _post_data_iterator,
-                                           NULL);
+                                           params);
+
+            free(params->fmt     );
+            free(params->hostname);
+            free(params          );
 
             if (pp == NULL) {
                 ret = MHD_NO; return ret;
@@ -205,64 +290,85 @@ int _request_handler(       void            *cls,
             pp = *con_cls;
 
             if (*upload_data_size > 0) {
+/* --- (2) Parse upload_data by yourself --------------------------------------
+                printf("[%s]\n", upload_data);
+
+                while (sscanf(upload_data, "%[^=&]%n", param, &i) == 1) {
+                    printf("[%s]\n", param);
+
+                    upload_data += i;
+                    upload_data++;
+                }
+---------------------------------------------------------------------------- */
                 MHD_post_process(pp, upload_data, *upload_data_size);
 
                 *upload_data_size = 0;
+
+                hostname = params->hostname;
+                fmt      = params->fmt;
+
+                free(params);
 
                 return ret;
             }
         }
     }
+
+    if ((strlen(hostname) == 0) || (strlen(hostname) > HOST_NAME_MAX)) {
+        hostname = _DEF_HOSTNAME;
+    }
+
+    if ((strlen(fmt     )  < 3) || (strlen(fmt     ) > 4            )) {
+        fmt      = _PRM_FMT_JSON;
+    }
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
 
-    _addr     = malloc(INET6_ADDRSTRLEN);
-    _hostname = malloc(HOST_NAME_MAX   );
-
-    _hostname = strcpy(_hostname, hostname);
+    addr = malloc(INET6_ADDRSTRLEN);
 
     /* Performing DNS lookup for the given hostname. */
-    _addr = dns_lookup(_addr, _hostname);
+    addr = dns_lookup(addr, hostname);
 
-    lookup_error = (strcmp(_addr, _ERR_PREFIX) == 0);
+    lookup_error = (strcmp(addr, _ERR_PREFIX) == 0);
 
     if (!lookup_error) {
         sprintf(ver_str, "%u", ver);
-    }
 
-    if (lookup_error) {
         resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
-                           + strlen(_hostname        )
+                           + strlen(hostname         )
                            + sizeof(_ONE_SPACE_STRING)
-                           + sizeof(RESP_TEMPLATE_3  )
+                           + strlen(addr             )
+                           + sizeof(RESP_TEMPLATE_2  )
+                           + strlen(ver_str          )
                            + sizeof(RESP_TEMPLATE_4  ));
     } else {
         resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
-                           + strlen(_hostname        )
+                           + strlen(hostname         )
                            + sizeof(_ONE_SPACE_STRING)
-                           + strlen(_addr            )
-                           + sizeof(RESP_TEMPLATE_2  )
-                           + strlen(ver_str          )
+                           + sizeof(RESP_TEMPLATE_3  )
                            + sizeof(RESP_TEMPLATE_4  ));
     }
 
     resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1  );
-    resp_buffer = strcat(resp_buffer, _hostname        );
+    resp_buffer = strcat(resp_buffer, hostname         );
     resp_buffer = strcat(resp_buffer, _ONE_SPACE_STRING);
 
-    if (lookup_error) {
-        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
-    } else {
-        resp_buffer = strcat(resp_buffer, _addr          );
+    if (!lookup_error) {
+        resp_buffer = strcat(resp_buffer, addr           );
         resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2);
         resp_buffer = strcat(resp_buffer, ver_str        );
+    } else {
+        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
     }
 
     resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4  );
 
-    free(_hostname);
-    free(_addr    );
+    free(addr);
+
+    free(params->fmt     );
+    free(params->hostname);
+    free(params          );
 
     /* Creating the response. */
     resp = MHD_create_response_from_buffer(strlen(resp_buffer),
@@ -278,9 +384,7 @@ int _request_handler(       void            *cls,
      */
 
     if (resp == NULL) {
-        ret = MHD_NO;
-
-        return ret;
+        ret = MHD_NO; return ret;
     }
 
     /* Adding headers to the response. */
