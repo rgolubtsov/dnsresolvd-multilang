@@ -195,15 +195,15 @@ int _request_handler(       void            *cls,
 
     int ret = MHD_YES;
 
-    #define RESP_TEMPLATE_1 "<!DOCTYPE html>"                                                             _NEW_LINE \
-"<html lang=\"en-US\" dir=\"ltr\">"                                                                       _NEW_LINE \
-"<head>"                                                                                                  _NEW_LINE \
-"<meta http-equiv=\"" MHD_HTTP_HEADER_CONTENT_TYPE "\"    content=\"" _HDR_CONTENT_TYPE "\"           />" _NEW_LINE \
-"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"                  _NEW_LINE \
-"<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"                  _NEW_LINE \
-"<title>" _DMN_NAME "</title>"                                                                            _NEW_LINE \
-"</head>"                                                                                                 _NEW_LINE \
-"<body>"                                                                                                  _NEW_LINE \
+    #define RESP_TEMPLATE_1 "<!DOCTYPE html>"                                                                  _NEW_LINE \
+"<html lang=\"en-US\" dir=\"ltr\">"                                                                            _NEW_LINE \
+"<head>"                                                                                                       _NEW_LINE \
+"<meta http-equiv=\"" MHD_HTTP_HEADER_CONTENT_TYPE "\"    content=\"" _HDR_CONTENT_TYPE_HTML "\"           />" _NEW_LINE \
+"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"                       _NEW_LINE \
+"<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"                       _NEW_LINE \
+"<title>" _DMN_NAME "</title>"                                                                                 _NEW_LINE \
+"</head>"                                                                                                      _NEW_LINE \
+"<body>"                                                                                                       _NEW_LINE \
 "<div>"
 
     #define RESP_TEMPLATE_2 _ONE_SPACE_STRING     \
@@ -217,6 +217,11 @@ int _request_handler(       void            *cls,
                             "</body>" _NEW_LINE   \
                             "</html>" _NEW_LINE
 
+    #define CB1   "{\""
+    #define CB2   "\"}"
+    #define DQ1 "\":\""
+    #define DQ2 "\",\""
+
     #define MAX_PP_PARSE_BUFF_SIZE 1024
 
     enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
@@ -227,16 +232,23 @@ int _request_handler(       void            *cls,
 
     struct MHD_PostProcessor *pp;
 
+    char *fmt_[] = {
+        _PRM_FMT_HTML,
+        _PRM_FMT_JSON
+    };
+
     char *addr;
     char  ver_str[2];
     char *resp_buffer;
+    char *HDR_CONTENT_TYPE_V;
 
+    bool _fmt;
     bool lookup_error;
 
     struct MHD_Response *resp;
 
 /* --- (1) Parse upload_data by yourself --------------------------------------
-    char param[HOST_NAME_MAX + 1]; int i;
+    char param[HOST_NAME_MAX + 1]; */int i;/*
 ---------------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
@@ -320,6 +332,20 @@ int _request_handler(       void            *cls,
 
     if ((strlen(fmt     )  < 3) || (strlen(fmt     ) > 4            )) {
         fmt      = _PRM_FMT_JSON;
+    } else {
+        for (i = 0; fmt[i]; i++) { fmt[i] = tolower(fmt[i]); }
+
+        _fmt = false;
+
+        for (i = 0; i < 2; i++) {
+            if (strcmp(fmt, fmt_[i]) == 0) {
+                _fmt = true; break;
+            }
+        }
+
+        if (!_fmt) {
+            fmt  = _PRM_FMT_JSON;
+        }
     }
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - End --------------------- */
@@ -334,41 +360,93 @@ int _request_handler(       void            *cls,
 
     if (!lookup_error) {
         sprintf(ver_str, "%u", ver);
-
-        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
-                           + strlen(hostname         )
-                           + sizeof(_ONE_SPACE_STRING)
-                           + strlen(addr             )
-                           + sizeof(RESP_TEMPLATE_2  )
-                           + strlen(ver_str          )
-                           + sizeof(RESP_TEMPLATE_4  ));
-    } else {
-        resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
-                           + strlen(hostname         )
-                           + sizeof(_ONE_SPACE_STRING)
-                           + sizeof(RESP_TEMPLATE_3  )
-                           + sizeof(RESP_TEMPLATE_4  ));
     }
 
-    resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1  );
-    resp_buffer = strcat(resp_buffer, hostname         );
-    resp_buffer = strcat(resp_buffer, _ONE_SPACE_STRING);
+           if (strcmp(fmt, _PRM_FMT_HTML) == 0) {
+        if (!lookup_error) {
+            resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
+                               + strlen(hostname         )
+                               + sizeof(_ONE_SPACE_STRING)
+                               + strlen(addr             )
+                               + sizeof(RESP_TEMPLATE_2  )
+                               + strlen(ver_str          )
+                               + sizeof(RESP_TEMPLATE_4  ));
+        } else {
+            resp_buffer = malloc(sizeof(RESP_TEMPLATE_1  )
+                               + strlen(hostname         )
+                               + sizeof(_ONE_SPACE_STRING)
+                               + sizeof(RESP_TEMPLATE_3  )
+                               + sizeof(RESP_TEMPLATE_4  ));
+        }
 
-    if (!lookup_error) {
-        resp_buffer = strcat(resp_buffer, addr           );
-        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2);
-        resp_buffer = strcat(resp_buffer, ver_str        );
+        resp_buffer = strcpy(resp_buffer, RESP_TEMPLATE_1    );
+        resp_buffer = strcat(resp_buffer, hostname           );
+        resp_buffer = strcat(resp_buffer, _ONE_SPACE_STRING  );
+
+        if (!lookup_error) {
+            resp_buffer = strcat(resp_buffer, addr           );
+            resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_2);
+            resp_buffer = strcat(resp_buffer, ver_str        );
+        } else {
+            resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
+        }
+
+        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4    );
+    } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+        if (!lookup_error) {
+            resp_buffer = malloc(sizeof(CB1                  )
+                               + sizeof(_DAT_HOSTNAME_N      )
+                               + sizeof(DQ1                  )
+                               + strlen(hostname             )
+                               + sizeof(DQ2                  )
+                               + sizeof(_DAT_ADDRESS_N       )
+                               + sizeof(DQ1                  )
+                               + strlen(addr                 )
+                               + sizeof(DQ2                  )
+                               + sizeof(_DAT_VERSION_N       )
+                               + sizeof(DQ1                  )
+                               + sizeof(_DAT_VERSION_V       )
+                               + strlen(ver_str              )
+                               + sizeof(CB2                  ));
+        } else {
+            resp_buffer = malloc(sizeof(CB1                  )
+                               + sizeof(_DAT_HOSTNAME_N      )
+                               + sizeof(DQ1                  )
+                               + strlen(hostname             )
+                               + sizeof(DQ2                  )
+                               + sizeof(_ERR_PREFIX          )
+                               + sizeof(DQ1                  )
+                               + sizeof(_ERR_COULD_NOT_LOOKUP)
+                               + sizeof(CB2                  ));
+        }
+
+        resp_buffer = strcpy(resp_buffer, CB1                      );
+        resp_buffer = strcat(resp_buffer, _DAT_HOSTNAME_N          );
+        resp_buffer = strcat(resp_buffer, DQ1                      );
+        resp_buffer = strcat(resp_buffer, hostname                 );
+        resp_buffer = strcat(resp_buffer, DQ2                      );
+
+        if (!lookup_error) {
+            resp_buffer = strcat(resp_buffer, _DAT_ADDRESS_N       );
+            resp_buffer = strcat(resp_buffer, DQ1                  );
+            resp_buffer = strcat(resp_buffer, addr                 );
+            resp_buffer = strcat(resp_buffer, DQ2                  );
+            resp_buffer = strcat(resp_buffer, _DAT_VERSION_N       );
+            resp_buffer = strcat(resp_buffer, DQ1                  );
+            resp_buffer = strcat(resp_buffer, _DAT_VERSION_V       );
+            resp_buffer = strcat(resp_buffer, ver_str              );
+        } else {
+            resp_buffer = strcat(resp_buffer, _ERR_PREFIX          );
+            resp_buffer = strcat(resp_buffer, DQ1                  );
+            resp_buffer = strcat(resp_buffer, _ERR_COULD_NOT_LOOKUP);
+        }
+
+        resp_buffer = strcat(resp_buffer, CB2                      );
     } else {
-        resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_3);
+        resp_buffer = '\0';
     }
-
-    resp_buffer = strcat(resp_buffer, RESP_TEMPLATE_4  );
 
     free(addr);
-
-    free(params->fmt     );
-    free(params->hostname);
-    free(params          );
 
     /* Creating the response. */
     resp = MHD_create_response_from_buffer(strlen(resp_buffer),
@@ -384,21 +462,44 @@ int _request_handler(       void            *cls,
      */
 
     if (resp == NULL) {
-        ret = MHD_NO; return ret;
+        ret = MHD_NO;
+
+        free(params->fmt     );
+        free(params->hostname);
+        free(params          );
+
+        return ret;
+    }
+
+    HDR_CONTENT_TYPE_V = malloc(MAX(
+        sizeof(_HDR_CONTENT_TYPE_HTML),
+        sizeof(_HDR_CONTENT_TYPE_JSON)
+    ));
+
+           if (strcmp(fmt, _PRM_FMT_HTML) == 0) {
+        HDR_CONTENT_TYPE_V = strcpy(HDR_CONTENT_TYPE_V,_HDR_CONTENT_TYPE_HTML);
+    } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+        HDR_CONTENT_TYPE_V = strcpy(HDR_CONTENT_TYPE_V,_HDR_CONTENT_TYPE_JSON);
     }
 
     /* Adding headers to the response. */
     if (MHD_add_response_header(resp, MHD_HTTP_HEADER_CONTENT_TYPE,
-                               _HDR_CONTENT_TYPE)  == MHD_NO) return MHD_NO;
+                                HDR_CONTENT_TYPE_V) == MHD_NO) {return MHD_NO;}
 
     if (MHD_add_response_header(resp, MHD_HTTP_HEADER_CACHE_CONTROL,
-                               _HDR_CACHE_CONTROL) == MHD_NO) return MHD_NO;
+                               _HDR_CACHE_CONTROL ) == MHD_NO) {return MHD_NO;}
 
     if (MHD_add_response_header(resp, MHD_HTTP_HEADER_EXPIRES,
-                               _HDR_EXPIRES)       == MHD_NO) return MHD_NO;
+                               _HDR_EXPIRES       ) == MHD_NO) {return MHD_NO;}
 
     if (MHD_add_response_header(resp, MHD_HTTP_HEADER_PRAGMA,
-                               _HDR_PRAGMA)        == MHD_NO) return MHD_NO;
+                               _HDR_PRAGMA        ) == MHD_NO) {return MHD_NO;}
+
+    free(HDR_CONTENT_TYPE_V);
+
+    free(params->fmt     );
+    free(params->hostname);
+    free(params          );
 
     /* Enqueueing the response to transmit to. */
     ret = MHD_queue_response(connection, MHD_HTTP_OK, resp);
