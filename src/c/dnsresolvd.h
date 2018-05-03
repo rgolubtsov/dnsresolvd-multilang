@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <stdbool.h>
 #include <string.h>
 #include <syslog.h>
@@ -25,6 +26,10 @@
 #include <arpa/inet.h>
 
 #include <microhttpd.h>
+
+/* Macros for min/max. Taken from /usr/include/sys/param.h where it exists. */
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 /* Helper constants. */
 #define _EMPTY_STRING       ""
@@ -65,13 +70,17 @@
 #define _PRM_FMT_JSON "json"
 
 /* HTTP response headers. */
-#define _HDR_CONTENT_TYPE  "text/html; charset=UTF-8"
-#define _HDR_CACHE_CONTROL "no-cache, no-store, must-revalidate"
-#define _HDR_EXPIRES       "Thu, 01 Dec 1994 16:00:00 GMT"
-#define _HDR_PRAGMA        "no-cache"
+#define _HDR_CONTENT_TYPE_HTML "text/html; charset=UTF-8"
+#define _HDR_CONTENT_TYPE_JSON "application/json"
+#define _HDR_CACHE_CONTROL     "no-cache, no-store, must-revalidate"
+#define _HDR_EXPIRES           "Thu, 01 Dec 1994 16:00:00 GMT"
+#define _HDR_PRAGMA            "no-cache"
 
 /* Response data names. */
-#define _DAT_VERSION_V "IPv"
+#define _DAT_HOSTNAME_N "hostname"
+#define _DAT_ADDRESS_N  "address"
+#define _DAT_VERSION_N  "version"
+#define _DAT_VERSION_V  "IPv"
 
 /* Daemon name, version, and copyright banners. */
 #define _DMN_NAME        "DNS Resolver Daemon (dnsresolvd)"
