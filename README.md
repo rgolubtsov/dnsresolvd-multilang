@@ -23,29 +23,11 @@ Every daemon implementation has its own build rules, so let's describe them sequ
 
 ### C (GNU libmicrohttpd)
 
-#### Building under OpenBSD/amd64 6.1
+#### Building under OpenBSD/amd64 6.3
 
-**Dependencies:** The only build and runtime dependency is the main library &ndash; **GNU libmicrohttpd**. Since OpenBSD doesn't have it neither in packages nor in ports, it needs to build it from source. Assuming the compiler GCC 4.9.4 is installed (preferably from packages: `$ sudo pkg_add -vvvvv gcc`), the build process is straightforward, just as stated in the docs (download, unpack, configure, build, install):
+**Dependencies:** The only build and runtime dependency is the main library &ndash; **GNU libmicrohttpd**. ~~Since OpenBSD doesn't have it neither in packages nor in ports, it needs to build it from source.~~ In OpenBSD 6.3 it is prebuilt as a package &ndash; `libmicrohttpd-0.9.59.tgz` can be installed as usual: `$ sudo pkg_add -vvvvv libmicrohttpd`. Assuming the compiler GCC 4.9.4 is installed (preferably from packages: `$ sudo pkg_add -vvvvv gcc`)~~, the build process is straightforward, just as stated in the docs (download, unpack, configure, build, install):~~
 
 (Oh! Prior to this it needs the **GNU make** package has to be installed: `$ sudo pkg_add -vvvvv gmake`.)
-
-```
-$ curl -O http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.55.tar.gz
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 1277k  100 1277k    0     0   425k      0  0:00:03  0:00:03 --:--:--  425k
-```
-
-```
-$ tar -xzf libmicrohttpd-0.9.55.tar.gz
-$ cd libmicrohttpd-0.9.55
-```
-
-```
-$ ./configure
-$ gmake
-$ sudo gmake install
-```
 
 Now the daemon might be built.
 
@@ -53,39 +35,33 @@ Now the daemon might be built.
 $ cd src/c
 $ gmake clean && gmake all
 rm -f dnsresolvd dnsresolvd.o
-cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong   -c -o dnsresolvd.o dnsresolvd.c
-dnsresolvd.c: In function '_query_params_iterator':
-dnsresolvd.c:51:26: warning: assignment discards 'const' qualifier from pointer target type
-                 hostname = value;
-                          ^
-dnsresolvd.c: In function 'dns_lookup':
-dnsresolvd.c:240:18: warning: assignment discards 'const' qualifier from pointer target type
-             addr = inet_ntop(AF_INET6, hent->h_addr_list[0], addr,
-                  ^
-dnsresolvd.c:246:14: warning: assignment discards 'const' qualifier from pointer target type
-         addr = inet_ntop(AF_INET, hent->h_addr_list[0], addr,
-              ^
-cc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
+egcc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
+dnsresolvd.c: In function '_request_handler':
+dnsresolvd.c:227:13: warning: Value MHD_RESPONSE_HEADER_KIND is deprecated and not used
+     enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
+             ^
+egcc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
 dnsresolvd.o: In function `_request_handler':
-dnsresolvd.c:(.text+0x1aa): warning: warning: strcat() is almost always misused, please use strlcat()
-dnsresolvd.c:(.text+0x34a): warning: warning: sprintf() is often misused, please use snprintf()
-/usr/local/lib/gcc/x86_64-unknown-openbsd6.1/4.9.4/../../../libmicrohttpd.so.55.0: warning: warning: strcpy() is almost always misused, please use strlcpy()
-/usr/local/lib/gcc/x86_64-unknown-openbsd6.1/4.9.4/../../../libgcrypt.so.19.3: warning: warning: stpcpy() is dangerous; do not use it
-/usr/local/lib/gcc/x86_64-unknown-openbsd6.1/4.9.4/../../../libgmp.so.10.0: warning: warning: vsprintf() is often misused, please use vsnprintf()
+dnsresolvd.c:(.text+0x7af): warning: sprintf() is often misused, please use snprintf()
+dnsresolvd.c:(.text+0x3c2): warning: strcat() is almost always misused, please use strlcat()
+dnsresolvd.o: In function `_query_params_iterator':
+dnsresolvd.c:(.text+0x84): warning: strcpy() is almost always misused, please use strlcpy()
+/usr/local/lib/gcc/x86_64-unknown-openbsd6.3/4.9.4/../../../libunistring.so.0.1: warning: stpcpy() is dangerous; do not use it
+/usr/local/lib/gcc/x86_64-unknown-openbsd6.3/4.9.4/../../../libgmp.so.10.0: warning: vsprintf() is often misused, please use vsnprintf()
 ```
 
 Once this is done, check it out... just for fun:))
 
 ```
 $ ls -al
-total 108
-drwxr-xr-x  2 radic  radic    512 Jun 22 00:47 .
-drwxr-xr-x  4 radic  radic    512 Jun 10 21:57 ..
--rw-r--r--  1 radic  radic   1038 Jun 13 02:55 Makefile
--rwxr-xr-x  1 radic  radic  16731 Jun 22 00:47 dnsresolvd
--rw-r--r--  1 radic  radic  12645 Jun 22 00:45 dnsresolvd.c
--rw-r--r--  1 radic  radic   3267 Jun 22 00:45 dnsresolvd.h
--rw-r--r--  1 radic  radic  10584 Jun 22 00:47 dnsresolvd.o
+total 132
+drwxr-xr-x  2 radic  radic    512 May  9 01:45 .
+drwxr-xr-x  7 radic  radic    512 May  8 22:20 ..
+-rw-r--r--  1 radic  radic   1626 May  9 01:40 Makefile
+-rwxr-xr-x  1 radic  radic  17015 May  9 01:45 dnsresolvd
+-rw-r--r--  1 radic  radic  23576 May  8 22:20 dnsresolvd.c
+-rw-r--r--  1 radic  radic   3690 May  8 22:20 dnsresolvd.h
+-rw-r--r--  1 radic  radic  14008 May  9 01:45 dnsresolvd.o
 $
 $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1
