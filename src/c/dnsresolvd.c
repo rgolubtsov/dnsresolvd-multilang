@@ -60,7 +60,7 @@ int _query_params_iterator(      void          *cls,
      *               |
      *               v
      */
-    if (strcmp(key, "h") == 0) {
+    if (strcmp(key, _PRM_HOSTNAME) == 0) {
         /*
          * /?h_____
          *      |
@@ -84,7 +84,7 @@ int _query_params_iterator(      void          *cls,
      *                      |
      *                      v
      */
-    } else if (strcmp(key, "f") == 0) {
+    } else if (strcmp(key, _PRM_FORMAT) == 0) {
         /*
          *  &f_____
          *      |
@@ -135,7 +135,7 @@ int _post_data_iterator(      void          *cls,
      *               |
      *               v
      */
-    if (strcmp(key, "h") == 0) {
+    if (strcmp(key, _PRM_HOSTNAME) == 0) {
         /*
          * 'h_____
          *     |
@@ -148,8 +148,7 @@ int _post_data_iterator(      void          *cls,
              *         v
              */
             if (strlen(data) > 0) {
-                ((struct _params *) cls)->hostname  =
-         strcpy(((struct _params *) cls)->hostname, data);
+                /* === NOP === */
             }
         }
     /*
@@ -159,7 +158,7 @@ int _post_data_iterator(      void          *cls,
      *                      |
      *                      v
      */
-    } else if (strcmp(key, "f") == 0) {
+    } else if (strcmp(key, _PRM_FORMAT) == 0) {
         /*
          * &f_____
          *     |
@@ -172,8 +171,7 @@ int _post_data_iterator(      void          *cls,
              *         v
              */
             if (strlen(data) > 0) {
-                ((struct _params *) cls)->fmt  =
-         strcpy(((struct _params *) cls)->fmt, data);
+                /* === NOP === */
             }
         }
     } else {
@@ -247,8 +245,10 @@ int _request_handler(       void            *cls,
 
     struct MHD_Response *resp;
 
-/* --- (1) Parse upload_data by yourself --------------------------------------
-    char param[HOST_NAME_MAX + 1]; */int i;/*
+/* --- (1) Parse upload_data by ourselves -------------------------------------
+  */char param[HOST_NAME_MAX + 1]; int i;
+    bool  is___hostname;  bool  is___fmt;
+    char *post_hostname;  char *post_fmt;/*
 ---------------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
@@ -260,36 +260,32 @@ int _request_handler(       void            *cls,
         params_kind =     MHD_POSTDATA_KIND;
     }
 
-    params           = malloc(sizeof(struct _params            ));
-    params->hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
-    params->fmt      = malloc(sizeof(char) * (4             + 1));
-
-    params->hostname = strcpy(params->hostname, _EMPTY_STRING);
-    params->fmt      = strcpy(params->fmt,      _EMPTY_STRING);
-
            if (params_kind == MHD_GET_ARGUMENT_KIND) {
         num_hdrs =
             MHD_get_connection_values(connection, params_kind, NULL, NULL);
+
+        params           = malloc(sizeof(struct _params            ));
+        params->hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+        params->fmt      = malloc(sizeof(char) * (4             + 1));
+
+        params->hostname = strcpy(params->hostname, _EMPTY_STRING);
+        params->fmt      = strcpy(params->fmt,      _EMPTY_STRING);
 
         if (num_hdrs > 0) {
             MHD_get_connection_values(connection,
                                       params_kind,
                                      _query_params_iterator,
                                       params);
-
-            hostname = params->hostname;
-            fmt      = params->fmt;
         }
+
+        hostname = params->hostname;
+        fmt      = params->fmt;
     } else if (params_kind ==     MHD_POSTDATA_KIND) {
         if (*con_cls == NULL) {
             pp = MHD_create_post_processor(connection,
                                            MAX_PP_PARSE_BUFF_SIZE,
                                           _post_data_iterator,
-                                           params);
-
-            free(params->fmt     );
-            free(params->hostname);
-            free(params          );
+                                           NULL);
 
             if (pp == NULL) {
                 ret = MHD_NO; return ret;
@@ -302,35 +298,70 @@ int _request_handler(       void            *cls,
             pp = *con_cls;
 
             if (*upload_data_size > 0) {
-/* --- (2) Parse upload_data by yourself --------------------------------------
-                printf("[%s]\n", upload_data);
+/* --- (2) Parse upload_data by ourselves -------------------------------------
+              */is___hostname = false;
+                is___fmt      = false;
+
+                post_hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+                post_fmt      = malloc(sizeof(char) * (4             + 1));
+
+                post_hostname = strcpy(post_hostname, _EMPTY_STRING);
+                post_fmt      = strcpy(post_fmt,      _EMPTY_STRING);
 
                 while (sscanf(upload_data, "%[^=&]%n", param, &i) == 1) {
-                    printf("[%s]\n", param);
+                    if (strcmp(param, _PRM_HOSTNAME) == 0) {
+                        is___hostname = true;
+
+                        upload_data += i;
+                        upload_data++;
+
+                        continue;
+                    }
+
+                    if (strcmp(param, _PRM_FORMAT  ) == 0) {
+                        is___fmt = true;
+
+                        upload_data += i;
+                        upload_data++;
+
+                        continue;
+                    }
+
+                    if (is___hostname) {
+                        post_hostname = strcpy(post_hostname, param);
+                        is___hostname = false;
+                    }
+
+                    if (is___fmt     ) {
+                        post_fmt      = strcpy(post_fmt,      param);
+                        is___fmt      = false;
+                    }
 
                     upload_data += i;
                     upload_data++;
                 }
+
+                hostname = post_hostname;
+                fmt      = post_fmt;/*
 ---------------------------------------------------------------------------- */
                 MHD_post_process(pp, upload_data, *upload_data_size);
 
                 *upload_data_size = 0;
-
-                hostname = params->hostname;
-                fmt      = params->fmt;
-
-                free(params);
 
                 return ret;
             }
         }
     }
 
-    if ((strlen(hostname) == 0) || (strlen(hostname) > HOST_NAME_MAX)) {
+    if ((hostname == NULL) || (strlen(hostname) == 0            )
+                           || (strlen(hostname)  > HOST_NAME_MAX)) {
+
         hostname = _DEF_HOSTNAME;
     }
 
-    if ((strlen(fmt     )  < 3) || (strlen(fmt     ) > 4            )) {
+    if ((fmt      == NULL) || (strlen(fmt     )  < 3            )
+                           || (strlen(fmt     )  > 4            )) {
+
         fmt      = _PRM_FMT_JSON;
     } else {
         for (i = 0; fmt[i]; i++) { fmt[i] = tolower(fmt[i]); }
@@ -464,9 +495,13 @@ int _request_handler(       void            *cls,
     if (resp == NULL) {
         ret = MHD_NO;
 
-        free(params->fmt     );
-        free(params->hostname);
-        free(params          );
+               if (params_kind == MHD_GET_ARGUMENT_KIND) {
+            free(params->fmt     );
+            free(params->hostname);
+            free(params          );
+        } else if (params_kind ==     MHD_POSTDATA_KIND) {
+            /* === NOP === */
+        }
 
         return ret;
     }
@@ -497,9 +532,13 @@ int _request_handler(       void            *cls,
 
     free(HDR_CONTENT_TYPE_V);
 
-    free(params->fmt     );
-    free(params->hostname);
-    free(params          );
+           if (params_kind == MHD_GET_ARGUMENT_KIND) {
+        free(params->fmt     );
+        free(params->hostname);
+        free(params          );
+    } else if (params_kind ==     MHD_POSTDATA_KIND) {
+        /* === NOP === */
+    }
 
     /* Enqueueing the response to transmit to. */
     ret = MHD_queue_response(connection, MHD_HTTP_OK, resp);

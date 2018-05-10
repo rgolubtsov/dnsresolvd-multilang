@@ -66,6 +66,8 @@
 #define _MSG_SERVER_STARTED_2 "=== Hit Ctrl+C to terminate it."
 
 /* HTTP request params. */
+#define _PRM_HOSTNAME "h"
+#define _PRM_FORMAT   "f"
 #define _PRM_FMT_HTML "html"
 #define _PRM_FMT_JSON "json"
 
