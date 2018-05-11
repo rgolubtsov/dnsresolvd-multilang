@@ -239,7 +239,7 @@ int _request_handler(       void            *cls,
     struct MHD_Response *resp;
 
 /* --- (1) Parse upload_data by ourselves -------------------------------------
-  */bool is_____h, is_____f; char param[HOST_NAME_MAX + 1]; int i;/*
+    bool is_____h, is_____f; char param[HOST_NAME_MAX + 1]; */int i;/*
 ---------------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
@@ -292,7 +292,7 @@ int _request_handler(       void            *cls,
 
             if (*upload_data_size > 0) {
 /* --- (2) Parse upload_data by ourselves -------------------------------------
-              */is_____h = false;
+                is_____h = false;
                 is_____f = false;
 
                 while (sscanf(upload_data, "%[^=&]%n", param, &i) == 1) {
@@ -320,7 +320,7 @@ int _request_handler(       void            *cls,
 
                     upload_data += i;
                     upload_data++;
-                }/*
+                }
 ---------------------------------------------------------------------------- */
                 MHD_post_process(pp, upload_data, *upload_data_size);
 
