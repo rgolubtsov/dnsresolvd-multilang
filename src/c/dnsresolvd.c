@@ -60,7 +60,7 @@ int _query_params_iterator(      void          *cls,
      *               |
      *               v
      */
-    if (strcmp(key, _PRM_HOSTNAME) == 0) {
+    if (strcmp(key, "h") == 0) {
         /*
          * /?h_____
          *      |
@@ -84,7 +84,7 @@ int _query_params_iterator(      void          *cls,
      *                      |
      *                      v
      */
-    } else if (strcmp(key, _PRM_FORMAT) == 0) {
+    } else if (strcmp(key, "f") == 0) {
         /*
          *  &f_____
          *      |
@@ -135,7 +135,7 @@ int _post_data_iterator(      void          *cls,
      *               |
      *               v
      */
-    if (strcmp(key, _PRM_HOSTNAME) == 0) {
+    if (strcmp(key, "h") == 0) {
         /*
          * 'h_____
          *     |
@@ -158,7 +158,7 @@ int _post_data_iterator(      void          *cls,
      *                      |
      *                      v
      */
-    } else if (strcmp(key, _PRM_FORMAT) == 0) {
+    } else if (strcmp(key, "f") == 0) {
         /*
          * &f_____
          *     |
@@ -309,7 +309,7 @@ int _request_handler(       void            *cls,
                 post_fmt      = strcpy(post_fmt,      _EMPTY_STRING);
 
                 while (sscanf(upload_data, "%[^=&]%n", param, &i) == 1) {
-                    if (strcmp(param, _PRM_HOSTNAME) == 0) {
+                    if (strcmp(param, "h") == 0) {
                         is___hostname = true;
 
                         upload_data += i;
@@ -318,7 +318,7 @@ int _request_handler(       void            *cls,
                         continue;
                     }
 
-                    if (strcmp(param, _PRM_FORMAT  ) == 0) {
+                    if (strcmp(param, "f") == 0) {
                         is___fmt = true;
 
                         upload_data += i;
