@@ -141,9 +141,7 @@ int _post_data_iterator(      void          *cls,
              *         |
              *         v
              */
-            if (strlen(data) > 0) {
-                /* === NOP === */
-            }
+            if (strlen(data) > 0) {}
         }
     /*
      *  $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
@@ -164,9 +162,7 @@ int _post_data_iterator(      void          *cls,
              *         |
              *         v
              */
-            if (strlen(data) > 0) {
-                /* === NOP === */
-            }
+            if (strlen(data) > 0) {}
         }
     } else {
         ret = MHD_NO;
@@ -218,12 +214,12 @@ int _request_handler(       void            *cls,
 
     enum MHD_ValueKind params_kind = MHD_HEADER_KIND;
 
-    int num_hdrs;
-
     struct _params *params;
 
     char *hostname; /* The effective hostname to look up for. */
     char *fmt;      /* The response format selector.          */
+
+    int num_hdrs;
 
     struct MHD_PostProcessor *pp;
 
@@ -243,9 +239,7 @@ int _request_handler(       void            *cls,
     struct MHD_Response *resp;
 
 /* --- (1) Parse upload_data by ourselves -------------------------------------
-  */char param[HOST_NAME_MAX + 1]; int i;
-    bool  is___hostname;  bool  is___fmt;
-    char *post_hostname;  char *post_fmt;/*
+  */bool is_____h, is_____f; char param[HOST_NAME_MAX + 1]; int i;/*
 ---------------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
@@ -257,18 +251,18 @@ int _request_handler(       void            *cls,
         params_kind =     MHD_POSTDATA_KIND;
     }
 
+    params           = malloc(sizeof(struct _params            ));
+    params->hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+    params->fmt      = malloc(sizeof(char) * (4             + 1));
+            hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+            fmt      = malloc(sizeof(char) * (4             + 1));
+
+    params->hostname = strcpy(params->hostname, _EMPTY_STRING);
+    params->fmt      = strcpy(params->fmt,      _EMPTY_STRING);
+
            if (params_kind == MHD_GET_ARGUMENT_KIND) {
         num_hdrs =
             MHD_get_connection_values(connection, params_kind, NULL, NULL);
-
-        params           = malloc(sizeof(struct _params            ));
-        params->hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
-        params->fmt      = malloc(sizeof(char) * (4             + 1));
-                hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
-                fmt      = malloc(sizeof(char) * (4             + 1));
-
-        params->hostname = strcpy(params->hostname, _EMPTY_STRING);
-        params->fmt      = strcpy(params->fmt,      _EMPTY_STRING);
 
         if (num_hdrs > 0) {
             MHD_get_connection_values(connection,
@@ -298,18 +292,12 @@ int _request_handler(       void            *cls,
 
             if (*upload_data_size > 0) {
 /* --- (2) Parse upload_data by ourselves -------------------------------------
-              */is___hostname = false;
-                is___fmt      = false;
-
-                post_hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
-                post_fmt      = malloc(sizeof(char) * (4             + 1));
-
-                post_hostname = strcpy(post_hostname, _EMPTY_STRING);
-                post_fmt      = strcpy(post_fmt,      _EMPTY_STRING);
+              */is_____h = false;
+                is_____f = false;
 
                 while (sscanf(upload_data, "%[^=&]%n", param, &i) == 1) {
                     if (strcmp(param, "h") == 0) {
-                        is___hostname = true;
+                        is_____h = true;
 
                         upload_data += i;
                         upload_data++;
@@ -318,7 +306,7 @@ int _request_handler(       void            *cls,
                     }
 
                     if (strcmp(param, "f") == 0) {
-                        is___fmt = true;
+                        is_____f = true;
 
                         upload_data += i;
                         upload_data++;
@@ -326,22 +314,19 @@ int _request_handler(       void            *cls,
                         continue;
                     }
 
-                    if (is___hostname) {
-                        post_hostname = strcpy(post_hostname, param);
-                        is___hostname = false;
+                    if (is_____h) {
+                        hostname = strcpy(hostname, param);
+                        is_____h = false;
                     }
 
-                    if (is___fmt     ) {
-                        post_fmt      = strcpy(post_fmt,      param);
-                        is___fmt      = false;
+                    if (is_____f) {
+                        fmt      = strcpy(fmt,      param);
+                        is_____f = false;
                     }
 
                     upload_data += i;
                     upload_data++;
-                }
-
-                hostname = post_hostname;
-                fmt      = post_fmt;/*
+                }/*
 ---------------------------------------------------------------------------- */
                 MHD_post_process(pp, upload_data, *upload_data_size);
 
@@ -494,15 +479,11 @@ int _request_handler(       void            *cls,
     if (resp == NULL) {
         ret = MHD_NO;
 
-               if (params_kind == MHD_GET_ARGUMENT_KIND) {
-            free(        fmt     );
-            free(        hostname);
-            free(params->fmt     );
-            free(params->hostname);
-            free(params          );
-        } else if (params_kind ==     MHD_POSTDATA_KIND) {
-            /* === NOP === */
-        }
+        free(        fmt     );
+        free(        hostname);
+        free(params->fmt     );
+        free(params->hostname);
+        free(params          );
 
         return ret;
     }
@@ -533,15 +514,11 @@ int _request_handler(       void            *cls,
 
     free(HDR_CONTENT_TYPE_V);
 
-           if (params_kind == MHD_GET_ARGUMENT_KIND) {
-        free(        fmt     );
-        free(        hostname);
-        free(params->fmt     );
-        free(params->hostname);
-        free(params          );
-    } else if (params_kind ==     MHD_POSTDATA_KIND) {
-        /* === NOP === */
-    }
+    free(        fmt     );
+    free(        hostname);
+    free(params->fmt     );
+    free(params->hostname);
+    free(params          );
 
     /* Enqueueing the response to transmit to. */
     ret = MHD_queue_response(connection, MHD_HTTP_OK, resp);
