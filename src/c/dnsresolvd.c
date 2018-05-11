@@ -23,12 +23,6 @@ struct _params {
     char *fmt;
 };
 
-/** The effective hostname to look up for. */
-char *hostname;
-
-/** The response format selector. */
-char *fmt;
-
 /**
  * The IP version (family) used to look up in DNS:
  * <ul>
@@ -222,11 +216,14 @@ int _request_handler(       void            *cls,
 
     #define MAX_PP_PARSE_BUFF_SIZE 1024
 
-    enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
+    enum MHD_ValueKind params_kind = MHD_HEADER_KIND;
+
+    int num_hdrs;
 
     struct _params *params;
 
-    int num_hdrs;
+    char *hostname; /* The effective hostname to look up for. */
+    char *fmt;      /* The response format selector.          */
 
     struct MHD_PostProcessor *pp;
 
@@ -267,6 +264,8 @@ int _request_handler(       void            *cls,
         params           = malloc(sizeof(struct _params            ));
         params->hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
         params->fmt      = malloc(sizeof(char) * (4             + 1));
+                hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+                fmt      = malloc(sizeof(char) * (4             + 1));
 
         params->hostname = strcpy(params->hostname, _EMPTY_STRING);
         params->fmt      = strcpy(params->fmt,      _EMPTY_STRING);
@@ -278,8 +277,8 @@ int _request_handler(       void            *cls,
                                       params);
         }
 
-        hostname = params->hostname;
-        fmt      = params->fmt;
+        hostname = strcpy(hostname, params->hostname);
+        fmt      = strcpy(fmt,      params->fmt     );
     } else if (params_kind ==     MHD_POSTDATA_KIND) {
         if (*con_cls == NULL) {
             pp = MHD_create_post_processor(connection,
@@ -356,13 +355,13 @@ int _request_handler(       void            *cls,
     if ((hostname == NULL) || (strlen(hostname) == 0            )
                            || (strlen(hostname)  > HOST_NAME_MAX)) {
 
-        hostname = _DEF_HOSTNAME;
+        hostname = strcpy(hostname, _DEF_HOSTNAME);
     }
 
     if ((fmt      == NULL) || (strlen(fmt     )  < 3            )
                            || (strlen(fmt     )  > 4            )) {
 
-        fmt      = _PRM_FMT_JSON;
+        fmt      = strcpy(fmt,      _PRM_FMT_JSON);
     } else {
         for (i = 0; fmt[i]; i++) { fmt[i] = tolower(fmt[i]); }
 
@@ -375,7 +374,7 @@ int _request_handler(       void            *cls,
         }
 
         if (!_fmt) {
-            fmt  = _PRM_FMT_JSON;
+            fmt  = strcpy(fmt,      _PRM_FMT_JSON);
         }
     }
     /* --------------------------------------------------------------------- */
@@ -496,6 +495,8 @@ int _request_handler(       void            *cls,
         ret = MHD_NO;
 
                if (params_kind == MHD_GET_ARGUMENT_KIND) {
+            free(        fmt     );
+            free(        hostname);
             free(params->fmt     );
             free(params->hostname);
             free(params          );
@@ -533,6 +534,8 @@ int _request_handler(       void            *cls,
     free(HDR_CONTENT_TYPE_V);
 
            if (params_kind == MHD_GET_ARGUMENT_KIND) {
+        free(        fmt     );
+        free(        hostname);
         free(params->fmt     );
         free(params->hostname);
         free(params          );
