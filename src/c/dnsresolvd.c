@@ -298,20 +298,14 @@ int _request_handler(       void            *cls,
                 while (sscanf(upload_data, "%[^=&]%n", param, &i) == 1) {
                     if (strcmp(param, "h") == 0) {
                         is_____h = true;
-
                         upload_data += i;
-                        upload_data++;
-
-                        continue;
+                        upload_data++; continue;
                     }
 
                     if (strcmp(param, "f") == 0) {
                         is_____f = true;
-
                         upload_data += i;
-                        upload_data++;
-
-                        continue;
+                        upload_data++; continue;
                     }
 
                     if (is_____h) {
