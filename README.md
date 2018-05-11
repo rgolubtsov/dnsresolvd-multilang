@@ -11,7 +11,7 @@
 
 The following implementations are on the bench (:small_blue_diamond: &ndash; complete, :small_orange_diamond: &ndash; planned/postponed, :cd: &ndash; in progress):
 
-* :cd: **C ([GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd"))**: `src/c/`
+* :small_blue_diamond: **C ([GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd"))**: `src/c/`
 * :small_blue_diamond: **JavaScript ([Node.js](https://nodejs.org "Node.js"))**: `src/js/`
 * :small_blue_diamond: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
 * :small_blue_diamond: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
@@ -36,16 +36,12 @@ $ cd src/c
 $ gmake clean && gmake all
 rm -f dnsresolvd dnsresolvd.o
 egcc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
-dnsresolvd.c: In function '_request_handler':
-dnsresolvd.c:227:13: warning: Value MHD_RESPONSE_HEADER_KIND is deprecated and not used
-     enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
-             ^
 egcc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
 dnsresolvd.o: In function `_request_handler':
-dnsresolvd.c:(.text+0x7af): warning: sprintf() is often misused, please use snprintf()
-dnsresolvd.c:(.text+0x3c2): warning: strcat() is almost always misused, please use strlcat()
+dnsresolvd.c:(.text+0x754): warning: sprintf() is often misused, please use snprintf()
+dnsresolvd.c:(.text+0x3ed): warning: strcat() is almost always misused, please use strlcat()
 dnsresolvd.o: In function `_query_params_iterator':
-dnsresolvd.c:(.text+0x84): warning: strcpy() is almost always misused, please use strlcpy()
+dnsresolvd.c:(.text+0xe4): warning: strcpy() is almost always misused, please use strlcpy()
 /usr/local/lib/gcc/x86_64-unknown-openbsd6.3/4.9.4/../../../libunistring.so.0.1: warning: stpcpy() is dangerous; do not use it
 /usr/local/lib/gcc/x86_64-unknown-openbsd6.3/4.9.4/../../../libgmp.so.10.0: warning: vsprintf() is often misused, please use vsnprintf()
 ```
@@ -55,13 +51,13 @@ Once this is done, check it out... just for fun:))
 ```
 $ ls -al
 total 132
-drwxr-xr-x  2 radic  radic    512 May  9 01:45 .
-drwxr-xr-x  7 radic  radic    512 May  8 22:20 ..
--rw-r--r--  1 radic  radic   1626 May  9 01:40 Makefile
--rwxr-xr-x  1 radic  radic  17015 May  9 01:45 dnsresolvd
--rw-r--r--  1 radic  radic  23576 May  8 22:20 dnsresolvd.c
--rw-r--r--  1 radic  radic   3690 May  8 22:20 dnsresolvd.h
--rw-r--r--  1 radic  radic  14008 May  9 01:45 dnsresolvd.o
+drwxr-xr-x  2 <username>  <usergroup>    512 May 12 02:00 .
+drwxr-xr-x  7 <username>  <usergroup>    512 May  8 22:20 ..
+-rw-r--r--  1 <username>  <usergroup>   1626 May 12 02:00 Makefile
+-rwxr-xr-x  1 <username>  <usergroup>  16954 May 12 02:00 dnsresolvd
+-rw-r--r--  1 <username>  <usergroup>  24317 May 12 02:00 dnsresolvd.c
+-rw-r--r--  1 <username>  <usergroup>   3690 May 12 02:00 dnsresolvd.h
+-rw-r--r--  1 <username>  <usergroup>  13864 May 12 02:00 dnsresolvd.o
 $
 $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1
@@ -72,8 +68,7 @@ dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1
 **Dependencies:** The only build and runtime dependency is the main library &ndash; **GNU libmicrohttpd**. It has to be installed from packages:
 
 ```
-$ sudo apt-get update
-$ sudo apt-get install libmicrohttpd-dev
+$ sudo apt-get update && sudo apt-get install libmicrohttpd-dev -y
 ```
 
 This package contains all the development stuff and is actually depends on the package `libmicrohttpd10` which provides runtime library (.so). The latter will be installed alongside automatically. The version of the GNU libmicrohttpd library is 0.9.44. (Also it needs to have the package `build-essential` installed, ensuring that the compiler GCC (version 5.4.0 in this Ubuntu release), GNU make, and all the required standard libs are always at hands.)
@@ -84,8 +79,8 @@ Now let's build the daemon.
 $ cd src/c
 $ make clean && make all
 rm -f dnsresolvd dnsresolvd.o
-cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
-cc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
+cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE -I/usr/local/include   -c -o dnsresolvd.o dnsresolvd.c
+cc -L/usr/local/lib  dnsresolvd.o  -lmicrohttpd -o dnsresolvd
 ```
 
 Once this is done, check it out... just for fun:))
@@ -93,16 +88,16 @@ Once this is done, check it out... just for fun:))
 ```
 $ ls -al
 total 76
-drwxrwxr-x 2 radic radic  4096 May  4 20:00 .
-drwxrwxr-x 7 radic radic  4096 Nov  3 10:55 ..
--rwxrwxr-x 1 radic radic 18904 May  4 20:00 dnsresolvd
--rw-rw-r-- 1 radic radic 23576 May  3 19:13 dnsresolvd.c
--rw-rw-r-- 1 radic radic  3690 May  3 19:13 dnsresolvd.h
--rw-rw-r-- 1 radic radic 12944 May  4 20:00 dnsresolvd.o
--rw-rw-r-- 1 radic radic  1384 Mar 20 15:07 Makefile
+drwxr-xr-x 2 <username> <usergroup>  4096 May 11 19:45 .
+drwxr-xr-x 7 <username> <usergroup>  4096 May 11 19:40 ..
+-rwxr-xr-x 1 <username> <usergroup> 18896 May 11 19:45 dnsresolvd
+-rw-r--r-- 1 <username> <usergroup> 24317 May 11 19:40 dnsresolvd.c
+-rw-r--r-- 1 <username> <usergroup>  3690 May 11 19:40 dnsresolvd.h
+-rw-r--r-- 1 <username> <usergroup> 12632 May 11 19:45 dnsresolvd.o
+-rw-r--r-- 1 <username> <usergroup>  1626 May 11 19:40 Makefile
 $
 $ file dnsresolvd
-dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=e5b852935c5d891c932c874613f0fa64909730a6, not stripped
+dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=4598dfb6e593925e7abb04ffe32e1608534d868a, not stripped
 ```
 
 #### Building under Arch Linux (kernel 4.15.10-1-ARCH x86-64)
@@ -114,7 +109,6 @@ $ sudo pacman -Syu
 $ sudo pacman -S make
 $ sudo pacman -S gcc    (or $ sudo pacman -S gcc-multilib)
 ```
-
 ```
 $ sudo pacman -S libmicrohttpd
 ```
@@ -127,21 +121,18 @@ Now let's build the daemon.
 $ cd src/c
 $ make clean && make all
 rm -f dnsresolvd dnsresolvd.o
-cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
-dnsresolvd.c: In function ‘_request_handler’:
-dnsresolvd.c:227:13: warning: Value MHD_RESPONSE_HEADER_KIND is deprecated and not used
-     enum MHD_ValueKind params_kind = MHD_RESPONSE_HEADER_KIND;
-             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-dnsresolvd.c:362:27: warning: ‘%u’ directive writing between 1 and 5 bytes into a region of size 2 [-Wformat-overflow=]
+cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE -I/usr/local/include   -c -o dnsresolvd.o dnsresolvd.c
+dnsresolvd.c: In function '_request_handler':
+dnsresolvd.c:371:27: warning: '%u' directive writing between 1 and 5 bytes into a region of size 2 [-Wformat-overflow=]
          sprintf(ver_str, "%u", ver);
                            ^~
-dnsresolvd.c:362:26: note: directive argument in the range [0, 65535]
+dnsresolvd.c:371:26: note: directive argument in the range [0, 65535]
          sprintf(ver_str, "%u", ver);
                           ^~~~
-dnsresolvd.c:362:9: note: ‘sprintf’ output between 2 and 6 bytes into a destination of size 2
+dnsresolvd.c:371:9: note: 'sprintf' output between 2 and 6 bytes into a destination of size 2
          sprintf(ver_str, "%u", ver);
          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-cc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
+cc -L/usr/local/lib  dnsresolvd.o  -lmicrohttpd -o dnsresolvd
 ```
 
 Once this is done, check it out... just for fun:))
@@ -149,16 +140,16 @@ Once this is done, check it out... just for fun:))
 ```
 $ ls -al
 total 76
-drwxr-xr-x 2 radic radic  4096 May  4 13:00 .
-drwxr-xr-x 7 radic radic  4096 Nov 10 11:20 ..
--rwxr-xr-x 1 radic radic 19976 May  4 13:00 dnsresolvd
--rw-r--r-- 1 radic radic 23576 May  4 12:13 dnsresolvd.c
--rw-r--r-- 1 radic radic  3690 May  4 12:13 dnsresolvd.h
--rw-r--r-- 1 radic radic 14200 May  4 13:00 dnsresolvd.o
--rw-r--r-- 1 radic radic  1384 May  4 12:13 Makefile
+drwxr-xr-x 2 <username> <usergroup>  4096 May 11 19:30 .
+drwxr-xr-x 7 <username> <usergroup>  4096 Nov 10 11:20 ..
+-rwxr-xr-x 1 <username> <usergroup> 19912 May 11 19:30 dnsresolvd
+-rw-r--r-- 1 <username> <usergroup> 24317 May 11 19:25 dnsresolvd.c
+-rw-r--r-- 1 <username> <usergroup>  3690 May 11 19:25 dnsresolvd.h
+-rw-r--r-- 1 <username> <usergroup> 13816 May 11 19:30 dnsresolvd.o
+-rw-r--r-- 1 <username> <usergroup>  1626 May 11 19:25 Makefile
 $
 $ file dnsresolvd
-dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=0d41bf6ae3265148c9da814e0deaf525aedda219, not stripped
+dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=490829387497d1cb7c326b0499670fa694de3868, not stripped
 ```
 
 ### JavaScript (Node.js)
@@ -175,7 +166,7 @@ $ sudo ln -sfnv /usr/bin/nodejs /usr/local/bin/node
 $ sudo npm i posix -g
 $
 $ npm ln posix
-/home/radic/dev/misc/github/dnsresolvd-multilang/src/js/node_modules/posix -> /usr/local/lib/node_modules/posix
+/home/<username>/dev/misc/github/dnsresolvd-multilang/src/js/node_modules/posix -> /usr/local/lib/node_modules/posix
 ```
 ```
 $ node -v
