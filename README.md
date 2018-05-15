@@ -109,6 +109,7 @@ $ sudo pacman -Syu
 $ sudo pacman -S make
 $ sudo pacman -S gcc    (or $ sudo pacman -S gcc-multilib)
 ```
+
 ```
 $ sudo pacman -S libmicrohttpd
 ```
@@ -154,26 +155,167 @@ dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically 
 
 ### JavaScript (Node.js)
 
-#### Building under Ubuntu Server (Ubuntu 16.04.3 LTS x86-64)
+#### Building under OpenBSD/amd64 6.3
+
+Install the necessary dependencies (`node`, `posix`):
 
 ```
-$ sudo apt-get update && sudo apt-get install -y nodejs npm
+$ sudo pkg_add -vvvvv node
+```
+
+```
+$ node -v
+v8.9.4
+```
+
+```
+$ sudo npm i posix -g --unsafe-perm
+
+> posix@4.1.2 install /usr/local/lib/node_modules/posix
+> node-gyp rebuild
+
+gmake: Entering directory '/usr/local/lib/node_modules/posix/build'
+  /usr/bin/clang++ '-DNODE_GYP_MODULE_NAME=posix' '-DUSING_UV_SHARED=1'        \
+                   '-DUSING_V8_SHARED=1' '-DV8_DEPRECATION_WARNINGS=1'         \
+                   '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64'              \
+                   '-DBUILDING_NODE_EXTENSION'                                 \
+                    -I/root/.node-gyp/8.9.4/include/node                       \
+                    -I/root/.node-gyp/8.9.4/src                                \
+                    -I/root/.node-gyp/8.9.4/deps/uv/include                    \
+                    -I/root/.node-gyp/8.9.4/deps/v8/include                    \
+                    -I../node_modules/nan -fPIC -pthread -Wall -Wextra         \
+                    -Wno-unused-parameter -m64 -O3 -fno-omit-frame-pointer     \
+                    -fno-rtti -fno-exceptions -std=gnu++0x -MMD -MF            \
+                    ./Release/.deps/Release/obj.target/posix/src/posix.o.d.raw \
+                    -c -o Release/obj.target/posix/src/posix.o ../src/posix.cc
+  /usr/bin/clang++  -shared -pthread -rdynamic -m64 -Wl,-z,wxneeded            \
+                    -Wl,-soname=posix.node -o Release/obj.target/posix.node    \
+                    -Wl,--start-group Release/obj.target/posix/src/posix.o     \
+                    -Wl,--end-group
+  rm -rf "Release/posix.node" && cp -pPRf "Release/obj.target/posix.node"      \
+         "Release/posix.node"
+gmake: Leaving directory '/usr/local/lib/node_modules/posix/build'
++ posix@4.1.2
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ cd src/js
+$ ls -al
+total 48
+drwxr-xr-x  2 <username>  <usergroup>    512 May  8 22:20 .
+drwxr-xr-x  7 <username>  <usergroup>    512 May  8 22:20 ..
+-rw-r--r--  1 <username>  <usergroup>   4880 May  8 22:20 dnsresolvd.h
+-rwxr-xr-x  1 <username>  <usergroup>  12341 May  8 22:20 dnsresolvd.js
+$
+$ file dnsresolvd.js
+dnsresolvd.js: a node script text executable
+$
+$ cd ../..
+$ NODE_PATH=/usr/local/lib/node_modules ./src/js/dnsresolvd.js 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+#### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
+
+Install the necessary dependencies (`nodejs`, `npm`, `posix`):
+
+```
+$ sudo apt-get update && sudo apt-get install nodejs npm -y
 $
 $ sudo ln -sfnv /usr/bin/nodejs /usr/local/bin/node
 '/usr/local/bin/node' -> '/usr/bin/nodejs'
 ```
-```
-$ sudo npm i posix -g
-$
-$ npm ln posix
-/home/<username>/dev/misc/github/dnsresolvd-multilang/src/js/node_modules/posix -> /usr/local/lib/node_modules/posix
-```
+
 ```
 $ node -v
 v4.2.6
 ```
 
-**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
+```
+$ sudo npm i posix -g
+
+> posix@4.1.2 install /usr/local/lib/node_modules/posix
+> node-gyp rebuild
+
+make: Entering directory '/usr/local/lib/node_modules/posix/build'
+  CXX(target) Release/obj.target/posix/src/posix.o
+  SOLINK_MODULE(target) Release/obj.target/posix.node
+  COPY Release/posix.node
+make: Leaving directory '/usr/local/lib/node_modules/posix/build'
+/usr/local/lib
+└── posix@4.1.2
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ cd src/js
+$ ls -al
+total 32
+drwxrwxr-x 2 <username> <usergroup>  4096 May 15 23:03 .
+drwxrwxr-x 7 <username> <usergroup>  4096 Nov  3  2017 ..
+-rw-rw-r-- 1 <username> <usergroup>  4880 Mar 29 15:33 dnsresolvd.h
+-rwxrwxr-x 1 <username> <usergroup> 12341 Mar 29 15:33 dnsresolvd.js
+$
+$ file dnsresolvd.js
+dnsresolvd.js: a /usr/bin/env node script, ASCII text executable
+$
+$ cd ../..
+$ NODE_PATH=/usr/local/lib/node_modules ./src/js/dnsresolvd.js 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+#### Building under Arch Linux (kernel 4.15.10-1-ARCH x86-64)
+
+Install the necessary dependencies (`nodejs`, `npm`, `posix`):
+
+```
+$ sudo pacman -Syu
+$ sudo pacman -S nodejs npm
+```
+
+```
+$ node -v
+v9.8.0
+```
+
+```
+$ sudo npm i posix -g --unsafe-perm
+
+> posix@4.1.2 install /usr/lib/node_modules/posix
+> node-gyp rebuild
+
+make: Entering directory '/usr/lib/node_modules/posix/build'
+  CXX(target) Release/obj.target/posix/src/posix.o
+  SOLINK_MODULE(target) Release/obj.target/posix.node
+  COPY Release/posix.node
+make: Leaving directory '/usr/lib/node_modules/posix/build'
++ posix@4.1.2
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ cd src/js
+$ ls -al
+total 32
+drwxr-xr-x 2 <username> <usergroup>  4096 May  4 12:13 .
+drwxr-xr-x 7 <username> <usergroup>  4096 Nov 10  2017 ..
+-rw-r--r-- 1 <username> <usergroup>  4880 May  4 12:13 dnsresolvd.h
+-rwxr-xr-x 1 <username> <usergroup> 12341 May  4 12:13 dnsresolvd.js
+$
+$ file dnsresolvd.js
+dnsresolvd.js: a /usr/bin/env node script, ASCII text executable
+$
+$ cd ../..
+$ NODE_PATH=/usr/lib/node_modules ./src/js/dnsresolvd.js 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
 
 ### Lua (Luvit)
 
@@ -183,14 +325,16 @@ v4.2.6
 
 ### Perl 5 (Mojolicious)
 
-#### Building under Ubuntu Server (Ubuntu 16.04.3 LTS x86-64)
+#### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
 
 ```
-$ sudo apt-get update && sudo apt-get install -y cpanminus && sudo cpanm App::cpanminus
+$ sudo apt-get update && sudo apt-get install cpanminus -y && sudo cpanm App::cpanminus
 ```
+
 ```
 $ sudo cpanm Mojolicious Net::DNS::Native
 ```
+
 ```
 $ mojo version
 CORE
@@ -211,10 +355,10 @@ This version is up to date, have fun!
 
 ### Python 3 (Twisted)
 
-#### Building under Ubuntu Server (Ubuntu 16.04.3 LTS x86-64)
+#### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
 
 ```
-$ sudo apt-get update && sudo apt-get install -y python3-twisted python3-dnspython
+$ sudo apt-get update && sudo apt-get install python3-twisted python3-dnspython -y
 ```
 
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
