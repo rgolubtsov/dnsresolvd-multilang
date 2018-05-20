@@ -105,13 +105,11 @@ dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically lin
 This is quite equal to the process of building the daemon under Ubuntu. Install the necessary dependencies:
 
 ```
-$ sudo pacman -Syu
-$ sudo pacman -S make
-$ sudo pacman -S gcc    (or $ sudo pacman -S gcc-multilib)
+$ sudo pacman -Sy make gcc    (or $ sudo pacman -S make gcc-multilib)
 ```
 
 ```
-$ sudo pacman -S libmicrohttpd
+$ sudo pacman -Sy libmicrohttpd
 ```
 
 The version of the compiler GCC used is 7.3.0. The version of the library GNU libmicrohttpd used is 0.9.59.
@@ -274,8 +272,7 @@ Server started on port 8765
 Install the necessary dependencies (`nodejs`, `npm`, `posix`):
 
 ```
-$ sudo pacman -Syu
-$ sudo pacman -S nodejs npm
+$ sudo pacman -Sy nodejs npm
 ```
 
 ```
