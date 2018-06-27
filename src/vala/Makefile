@@ -12,16 +12,24 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-EXEC = dnsresolvd
-SRCS = $(EXEC).vala
+PREF = dnsresolv
+EXEC = $(PREF)d
+SRCS = $(PREF)d.vala \
+       $(PREF)h.gs
 
 # Specify flags and other vars here.
+# If we're on OpenBSD, invoke its gcc from packages
+# instead of implicitly using its system default gcc or clang.
+ifeq ($(shell uname), OpenBSD)
+    CC = egcc
+endif
+
 VC      = valac
-VCFLAGS = --target-glib=2.40 -X -s -X -O3 --pkg=posix -o
+VCFLAGS = --target-glib=2.40 --cc=$(CC) -X -s -X -O3 --pkg=posix -o
 
 # Making the target.
 $(EXEC): $(SRCS)
-	$(VC) $(VCFLAGS) $(EXEC) $(SRCS)
+	$(VC) $(VCFLAGS) $@ $^
 
 .PHONY: all clean
 
