@@ -17,28 +17,31 @@ public static int main(string[] args) {
     int ret = Posix.EXIT_SUCCESS;
 //  int ret = Posix.EXIT_FAILURE;
 
-    int argc = args.length;
+    int argc = args.length - 1;
+
+    // Instantiating the daemon helper class.
+//  var aux = new AUX();
 
     var    daemon_name = args[0];
     uint64 port_number;
 
-    string print_banner_opt = "";
+    string print_banner_opt = AUX.EMPTY_STRING;
 
-    if (argc > 1) {
+    if (argc > 0) {
         port_number = uint64.parse(args[1]);
 
-        if (argc > 2) {
+        if (argc > 1) {
             print_banner_opt = args[2];
         }
     } else {
         port_number = 0;
     }
 
-    stdout.printf("%s", "| " + argc.to_string()
-                     + " | " + daemon_name
-                     + " | " + port_number.to_string()
-                     + " | " + print_banner_opt
-                     + " |"  + "\n");
+    stdout.printf(AUX.S_FMT,  AUX.V_BAR + AUX.SPACE + argc.to_string()
+                + AUX.SPACE + AUX.V_BAR + AUX.SPACE + daemon_name
+                + AUX.SPACE + AUX.V_BAR + AUX.SPACE + port_number.to_string()
+                + AUX.SPACE + AUX.V_BAR + AUX.SPACE + print_banner_opt
+                + AUX.SPACE + AUX.V_BAR + AUX.NEW_LINE);
 
     return ret;
 }
