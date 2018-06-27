@@ -16,6 +16,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
 * :small_blue_diamond: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
 * :small_blue_diamond: **Python 3 ([Twisted](http://twistedmatrix.com "Twisted"))**: `src/python/`
+* :cd: **Vala ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/vala/`
 
 ## Building
 
