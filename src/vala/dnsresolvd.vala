@@ -24,7 +24,7 @@ class DnsResolvd {
     public int startup(uint64 port_number) {
         int ret = Posix.EXIT_SUCCESS;
 
-        stdout.puts(port_number.to_string() + AUX.NEW_LINE);
+//      stdout.puts(port_number.to_string() + AUX.NEW_LINE);
 
         // -------------------------------------------
         // TODO: Implement starting up the HTTP server
@@ -62,11 +62,11 @@ public static int main(string[] args) {
         port_number = 0;
     }
 
-    stdout.printf(AUX.S_FMT,  AUX.V_BAR + AUX.SPACE + argc.to_string()
-                + AUX.SPACE + AUX.V_BAR + AUX.SPACE + daemon_name
-                + AUX.SPACE + AUX.V_BAR + AUX.SPACE + port_number.to_string()
-                + AUX.SPACE + AUX.V_BAR + AUX.SPACE + print_banner_opt
-                + AUX.SPACE + AUX.V_BAR + AUX.NEW_LINE);
+//  stdout.printf(AUX.S_FMT,  AUX.V_BAR + AUX.SPACE + argc.to_string()
+//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + daemon_name
+//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + port_number.to_string()
+//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + print_banner_opt
+//              + AUX.SPACE + AUX.V_BAR + AUX.NEW_LINE);
 
     if (print_banner_opt == AUX.PRINT_BANNER_OPT) {
         aux.separator_draw(AUX.DMN_DESCRIPTION);
