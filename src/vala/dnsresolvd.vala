@@ -79,11 +79,19 @@ public static int main(string[] args) {
         aux.separator_draw(AUX.DMN_DESCRIPTION);
     }
 
+    // Opening the system logger.
+    Posix.openlog((string) null,
+                  (Posix.LOG_CONS | Posix.LOG_PID), Posix.LOG_DAEMON);
+
     // Checking for args presence.
     if (argc == 0) {
         ret = Posix.EXIT_FAILURE;
 
         stderr.printf(AUX.ERR_MUST_BE_ONE_TWO_ARGS
+                    + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name, argc);
+
+        Posix.syslog(Posix.LOG_ERR,
+                      AUX.ERR_MUST_BE_ONE_TWO_ARGS
                     + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name, argc);
 
         stderr.printf(AUX.MSG_USAGE_TEMPLATE
@@ -99,6 +107,10 @@ public static int main(string[] args) {
         ret = Posix.EXIT_FAILURE;
 
         stderr.printf(AUX.ERR_PORT_MUST_BE_POSITIVE_INT
+                    + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+        Posix.syslog(Posix.LOG_ERR,
+                      AUX.ERR_PORT_MUST_BE_POSITIVE_INT
                     + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
 
         stderr.printf(AUX.MSG_USAGE_TEMPLATE

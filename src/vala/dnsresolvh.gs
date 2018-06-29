@@ -54,8 +54,7 @@ class AUX
     // Helper method. Makes final buffer cleanups, closes streams, etc.
     def cleanups_fixate() : void
         // Closing the system logger.
-        // TODO: Call a method to close the system logger.
-        pass
+        Posix.closelog();
 
     // Helper method. Draws a horizontal separator banner.
     def separator_draw(banner_text : string) : void
