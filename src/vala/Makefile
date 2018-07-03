@@ -25,7 +25,12 @@ ifeq ($(shell uname), OpenBSD)
 endif
 
 VC      = valac
-VCFLAGS = --target-glib=2.40 --cc=$(CC) -X -s -X -O3 --pkg=posix -o
+VCFLAGS = --target-glib=2.40 --cc=$(CC) -X -s                       \
+                                        -X -O3                      \
+                                        -X -mtune=generic           \
+                                        -X -pipe                    \
+                                        -X -fstack-protector-strong \
+          --pkg=posix -o
 
 # Making the target.
 $(EXEC): $(SRCS)
