@@ -42,6 +42,10 @@ class AUX
     /** Constant: The maximum port number allowed. */
     const MAX_PORT : uint = 49151
 
+    // Common notification messages.
+    const MSG_SERVER_STARTED_1 : string = "Server started on port %u"
+    const MSG_SERVER_STARTED_2 : string = "=== Hit Ctrl+C to terminate it."
+
     // Daemon name, version, and copyright banners.
     const DMN_NAME        : string =  "DNS Resolver Daemon (dnsresolvd)"
     const DMN_DESCRIPTION : string = ("Performs DNS lookups for the given "
