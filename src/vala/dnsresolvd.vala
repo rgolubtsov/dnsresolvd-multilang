@@ -13,29 +13,23 @@
  */
 
 /** The main class of the daemon. */
-class DnsResolvd {
+class DnsResolvd : Soup.Server {
     /**
-     * Starts up the daemon.
+     * Constructor: Acts as a traditional startup method
+     *              in the current daemon architecture.
      *
      * @param port_number The server port number to listen on.
-     *
-     * @return The server exit code when interrupted.
      */
-    public int startup(uint64 port_number) {
-        int ret = Posix.EXIT_SUCCESS;
+    public DnsResolvd(uint port_number) {
+        Object(port : port_number);
 
-//      stdout.puts(port_number.to_string() + AUX.NEW_LINE);
+        stdout.printf(AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
+                    + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE, port_number);
 
-        // -------------------------------------------
-        // TODO: Implement starting up the HTTP server
-        //       using the libsoup GNOME library.
-        // -------------------------------------------
-
-        return ret;
+        Posix.syslog(Posix.LOG_INFO,
+                      AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
+                    + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE, port_number);
     }
-
-    /** Default constructor. */
-    public DnsResolvd() {}
 }
 
 // The daemon entry point.
@@ -47,13 +41,13 @@ public static int main(string[] args) {
     // Instantiating the daemon helper class.
     var aux = new AUX();
 
-    var    daemon_name = args[0];
-    uint64 port_number;
+    var  daemon_name = args[0];
+    uint port_number;
 
     string print_banner_opt = AUX.EMPTY_STRING;
 
     if (argc > 0) {
-        port_number = uint64.parse(args[1]);
+        port_number = int.parse(args[1]);
 
         if (argc > 1) {
             print_banner_opt = args[2];
@@ -122,10 +116,10 @@ public static int main(string[] args) {
     }
 
     // Instantiating the main daemon class.
-    var dmn = new DnsResolvd();
+    var dmn = new DnsResolvd(port_number);
 
     // Starting up the daemon.
-    ret = dmn.startup(port_number);
+    dmn.run();
 
     // Making final cleanups.
     aux.cleanups_fixate();
