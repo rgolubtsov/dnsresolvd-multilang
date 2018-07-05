@@ -28,6 +28,13 @@ class AUX
                                                  +  "be a positive integer "
                                                  +  "value, in the range "
                                                  +  "1024-49151.")
+    const ERR_CANNOT_START_SERVER       : string = ("%s: FATAL: "
+                                                 +  "Cannot start server ")
+    const ERR_SRV_UNKNOWN_REASON        : string = ("for an unknown reason. "
+                                                 +  "Exiting...")
+    const ERR_SRV_PORT_IS_IN_USE        : string = ("due to the port "
+                                                 +  "requested is in use. "
+                                                 +  "Exiting...")
 
     // Print this error message when there are no any args passed.
     const ERR_MUST_BE_ONE_TWO_ARGS : string = ("%s: There must be one or two "

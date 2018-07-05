@@ -121,6 +121,36 @@ public static int main(string[] args) {
     // Starting up the daemon.
     dmn.run();
 
+/*  try {
+        dmn.listen_local(port_number, Soup.ServerListenOptions.IPV4_ONLY);
+    } catch (Error e) {
+        ret = Posix.EXIT_FAILURE;
+
+        stderr.printf("=== %d\n", e.code);
+
+        stderr.printf(AUX.ERR_CANNOT_START_SERVER
+                    + AUX.ERR_SRV_PORT_IS_IN_USE
+                    + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+        Posix.syslog(Posix.LOG_ERR,
+                      AUX.ERR_CANNOT_START_SERVER
+                    + AUX.ERR_SRV_PORT_IS_IN_USE
+                    + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+        stderr.printf(AUX.ERR_CANNOT_START_SERVER
+                    + AUX.ERR_SRV_UNKNOWN_REASON
+                    + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+        Posix.syslog(Posix.LOG_ERR,
+                      AUX.ERR_CANNOT_START_SERVER
+                    + AUX.ERR_SRV_UNKNOWN_REASON
+                    + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+        aux.cleanups_fixate();
+
+        return ret;
+    }*/
+
     // Making final cleanups.
     aux.cleanups_fixate();
 
