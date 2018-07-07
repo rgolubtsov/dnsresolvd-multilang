@@ -35,8 +35,6 @@ public static int main(string[] args) {
 
     string print_banner_opt = AUX.EMPTY_STRING;
 
-//  int c; // <== Needs this for Ctrl+C hitting check only.
-
     if (argc > 0) {
         port_number = int.parse(args[1]);
 
@@ -196,8 +194,6 @@ public static int main(string[] args) {
 
         return ret;
     }
-
-//  while ((c = stdin.getc()) != (int) stdin.eof()) {}
 
     // Making final cleanups.
     aux.cleanups_fixate(loop);
