@@ -17,19 +17,8 @@ class DnsResolvd : Soup.Server {
     /**
      * Constructor: Acts as a traditional startup method
      *              in the current daemon architecture.
-     *
-     * @param port_number The server port number to listen on.
      */
-    public DnsResolvd(uint port_number) {
-        Object(port : port_number);
-
-        stdout.printf(AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
-                    + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE, port_number);
-
-        Posix.syslog(Posix.LOG_INFO,
-                      AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
-                    + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE, port_number);
-    }
+    public DnsResolvd() {}
 }
 
 // The daemon entry point.
@@ -116,13 +105,98 @@ public static int main(string[] args) {
     }
 
     // Instantiating the main daemon class.
-    var dmn = new DnsResolvd(port_number);
+    var dmn = new DnsResolvd();
 
-    // Starting up the daemon.
-    dmn.run();
+    // Creating the main loop instance.
+    var loop = new MainLoop();
+
+    if ((dmn == null) || (loop == null)) {
+        ret = Posix.EXIT_FAILURE;
+
+        stderr.printf(AUX.ERR_CANNOT_START_SERVER
+                    + AUX.ERR_SRV_UNKNOWN_REASON
+                    + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+        Posix.syslog(Posix.LOG_ERR,
+                      AUX.ERR_CANNOT_START_SERVER
+                    + AUX.ERR_SRV_UNKNOWN_REASON
+                    + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+        aux.cleanups_fixate();
+
+        return ret;
+    }
+
+    // Attaching Unix signal handlers to ensure daemon clean shutdown.
+    Unix.signal_add(Posix.SIGINT,  () => { // <== SIGINT  handler (callback).
+        aux.cleanups_fixate(loop);
+
+        return new Unix.SignalSource(Posix.SIGINT ).REMOVE;
+    });
+
+    Unix.signal_add(Posix.SIGTERM, () => { // <== SIGTERM handler (callback).
+        aux.cleanups_fixate(loop);
+
+        return new Unix.SignalSource(Posix.SIGTERM).REMOVE;
+    });
+
+    // Trying to start up the daemon.
+    try {
+        // Setting up the daemon to listen on all TCP IPv4 interfaces.
+        if (dmn.listen_all(port_number, Soup.ServerListenOptions.IPV4_ONLY)) {
+            stdout.printf(AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
+                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE,port_number);
+
+            Posix.syslog(Posix.LOG_INFO,
+                          AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
+                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE,port_number);
+
+            // Starting up the daemon by running the main loop.
+            loop.run();
+        }
+    } catch (Error e) {
+        ret = Posix.EXIT_FAILURE;
+
+        try {
+            var re = new Regex(AUX.ERR_ADDR_ALREADY_IN_USE);
+
+            if (re.match(e.message)) {
+                stderr.printf(AUX.ERR_CANNOT_START_SERVER
+                            + AUX.ERR_SRV_PORT_IS_IN_USE
+                            + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+                Posix.syslog(Posix.LOG_ERR,
+                              AUX.ERR_CANNOT_START_SERVER
+                            + AUX.ERR_SRV_PORT_IS_IN_USE
+                            + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+            } else {
+                stderr.printf(AUX.ERR_CANNOT_START_SERVER
+                            + AUX.ERR_SRV_UNKNOWN_REASON
+                            + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+
+                Posix.syslog(Posix.LOG_ERR,
+                              AUX.ERR_CANNOT_START_SERVER
+                            + AUX.ERR_SRV_UNKNOWN_REASON
+                            + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+            }
+        } catch (Error e) {
+        /**/    stderr.printf(AUX.ERR_CANNOT_START_SERVER
+        /**/                + AUX.ERR_SRV_UNKNOWN_REASON
+        /**/                + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+        /**/
+        /**/    Posix.syslog(Posix.LOG_ERR,
+        /**/                  AUX.ERR_CANNOT_START_SERVER
+        /**/                + AUX.ERR_SRV_UNKNOWN_REASON
+        /**/                + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name);
+        }
+
+        aux.cleanups_fixate(loop);
+
+        return ret;
+    }
 
     // Making final cleanups.
-    aux.cleanups_fixate();
+    aux.cleanups_fixate(loop);
 
     return ret;
 }
