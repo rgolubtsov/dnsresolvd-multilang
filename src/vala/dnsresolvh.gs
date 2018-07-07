@@ -35,6 +35,9 @@ class AUX
     const ERR_SRV_PORT_IS_IN_USE        : string = ("due to the port "
                                                  +  "requested is in use. "
                                                  +  "Exiting...")
+//  const ERR_ADDR_ALREADY_IN_USE       : string =  "Address already in use"
+
+    const ERR_ADDR_ALREADY_IN_USE       : string =  "^.*(\\ is\\ |\\ in\\ ).*$"
 
     // Print this error message when there are no any args passed.
     const ERR_MUST_BE_ONE_TWO_ARGS : string = ("%s: There must be one or two "
@@ -63,7 +66,11 @@ class AUX
     const DMN_AUTHOR      : string =  "Radislav Golubtsov <ragolubtsov@my.com>"
 
     // Helper method. Makes final buffer cleanups, closes streams, etc.
-    def cleanups_fixate() : void
+    def cleanups_fixate(loop : MainLoop = (MainLoop) null) : void
+        // Stopping the daemon.
+        if (loop != null)
+            loop.quit();
+
         // Closing the system logger.
         Posix.closelog();
 
