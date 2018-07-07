@@ -65,6 +65,9 @@ class AUX
     const DMN_COPYRIGHT__ : string =  "Copyright (C) 2017-2018"
     const DMN_AUTHOR      : string =  "Radislav Golubtsov <ragolubtsov@my.com>"
 
+    /** Constant: The default hostname to look up for. */
+    const DEF_HOSTNAME : string = "openbsd.org"
+
     // Helper method. Makes final buffer cleanups, closes streams, etc.
     def cleanups_fixate(loop : MainLoop = (MainLoop) null) : void
         // Stopping the daemon.
