@@ -14,10 +14,7 @@
 
 /** The main class of the daemon. */
 class DnsResolvd : Soup.Server {
-    /**
-     * Constructor: Acts as a traditional startup method
-     *              in the current daemon architecture.
-     */
+    /** Default constructor. */
     public DnsResolvd() {}
 }
 
@@ -138,6 +135,14 @@ public static int main(string[] args) {
         aux.cleanups_fixate(loop);
 
         return new Unix.SignalSource(Posix.SIGTERM).REMOVE;
+    });
+
+    dmn.add_handler(null, (dmn, msg) => { // <== Default request handler.
+        msg.set_status(AUX.RSC_HTTP_200_OK);
+
+        stdout.printf("==> %u" + AUX.SPACE + AUX.S_FMT + AUX.NEW_LINE,
+                                                         msg.status_code,
+                                                         msg.reason_phrase);
     });
 
     // Trying to start up the daemon.
