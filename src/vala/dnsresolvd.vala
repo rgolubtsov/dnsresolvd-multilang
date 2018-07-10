@@ -137,7 +137,15 @@ public static int main(string[] args) {
         return new Unix.SignalSource(Posix.SIGTERM).REMOVE;
     });
 
-    dmn.add_handler(null, (dmn, msg) => { // <== Default request handler.
+    /*
+     * Attaching HTTP request handlers to process incoming requests
+     * and producing the response.
+     */
+    dmn.add_handler(null, (dmn, msg, pth, qry) => { // <== Def. req. handler.
+        stdout.printf("==> " + AUX.S_FMT + AUX.NEW_LINE, pth);
+
+        stdout.printf("==> " + AUX.S_FMT + AUX.NEW_LINE, qry.get("h"));
+
         msg.set_status(AUX.RSC_HTTP_200_OK);
 
         stdout.printf("==> %u" + AUX.SPACE + AUX.S_FMT + AUX.NEW_LINE,
