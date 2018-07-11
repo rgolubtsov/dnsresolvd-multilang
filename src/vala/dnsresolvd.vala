@@ -142,15 +142,42 @@ public static int main(string[] args) {
      * and producing the response.
      */
     dmn.add_handler(null, (dmn, msg, pth, qry) => { // <== Def. req. handler.
-        stdout.printf("==> " + AUX.S_FMT + AUX.NEW_LINE, pth);
+        var hostname  = (string)null; // The effective hostname to look up for.
+        var fmt       = (string)null; // The response format selector.
 
-        stdout.printf("==> " + AUX.S_FMT + AUX.NEW_LINE, qry.get("h"));
+        if (qry      != null) {
+            hostname  = qry.get("h");
+            fmt       = qry.get("f");
+        }
 
-        msg.set_status(AUX.RSC_HTTP_200_OK);
+        if((hostname == null) || (hostname.length == 0)) {
+            hostname  = AUX.DEF_HOSTNAME;
+        }
 
-        stdout.printf("==> %u" + AUX.SPACE + AUX.S_FMT + AUX.NEW_LINE,
-                                                         msg.status_code,
-                                                         msg.reason_phrase);
+        if((fmt      == null) || (fmt.length      == 0)) {
+            fmt       = AUX.PRM_FMT_JSON;
+        } else {
+            fmt       = fmt.down();
+
+            string[] fmt_ = {
+                AUX.PRM_FMT_HTML,
+                AUX.PRM_FMT_JSON,
+            };
+
+            bool _fmt = false;
+
+            for (uint i  = 0; i < fmt_.length; i++) {
+                if (fmt == fmt_[i]) {
+                   _fmt  = true; break;
+                }
+            }
+
+            if (!_fmt) {
+                fmt   = AUX.PRM_FMT_JSON;
+            }
+        }
+
+        msg.set_status(Soup.Status.OK);
     });
 
     // Trying to start up the daemon.

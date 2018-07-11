@@ -56,8 +56,9 @@ class AUX
     const MSG_SERVER_STARTED_1 : string = "Server started on port %u"
     const MSG_SERVER_STARTED_2 : string = "=== Hit Ctrl+C to terminate it."
 
-    // HTTP response headers and status codes.
-    const RSC_HTTP_200_OK : uint = 200
+    // HTTP request params.
+    const PRM_FMT_HTML : string = "html"
+    const PRM_FMT_JSON : string = "json"
 
     // Daemon name, version, and copyright banners.
     const DMN_NAME        : string =  "DNS Resolver Daemon (dnsresolvd)"
