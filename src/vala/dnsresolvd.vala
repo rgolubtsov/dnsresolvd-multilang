@@ -177,7 +177,7 @@ public static int main(string[] args) {
             }
         }
 
-        msg.set_status(AUX.RSC_HTTP_200_OK);
+        msg.set_status(Soup.Status.OK);
     });
 
     // Trying to start up the daemon.
