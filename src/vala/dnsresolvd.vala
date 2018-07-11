@@ -142,8 +142,6 @@ public static int main(string[] args) {
      * and producing the response.
      */
     dmn.add_handler(null, (dmn, msg, pth, qry) => { // <== Def. req. handler.
-        stdout.printf("==>" + AUX.S_FMT + AUX.NEW_LINE, pth);
-
         var hostname  = (string)null; // The effective hostname to look up for.
         var fmt       = (string)null; // The response format selector.
 
@@ -151,10 +149,6 @@ public static int main(string[] args) {
             hostname  = qry.get("h");
             fmt       = qry.get("f");
         }
-
-        stdout.printf("==>" + AUX.S_FMT
-                    + "<=>" + AUX.S_FMT
-                    + "<==" + AUX.NEW_LINE, hostname, fmt);
 
         if((hostname == null) || (hostname.length == 0)) {
             hostname  = AUX.DEF_HOSTNAME;
@@ -183,15 +177,7 @@ public static int main(string[] args) {
             }
         }
 
-        stdout.printf("==>" + AUX.S_FMT
-                    + "<=>" + AUX.S_FMT
-                    + "<==" + AUX.NEW_LINE, hostname, fmt);
-
         msg.set_status(AUX.RSC_HTTP_200_OK);
-
-        stdout.printf("==>%u" + AUX.SPACE + AUX.S_FMT + AUX.NEW_LINE,
-                                                        msg.status_code,
-                                                        msg.reason_phrase);
     });
 
     // Trying to start up the daemon.
