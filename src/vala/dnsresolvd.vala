@@ -142,12 +142,38 @@ public static int main(string[] args) {
      * and producing the response.
      */
     dmn.add_handler(null, (dmn, msg, pth, qry) => { // <== Def. req. handler.
-        var hostname  = (string)null; // The effective hostname to look up for.
-        var fmt       = (string)null; // The response format selector.
+        var mtd      = msg.method;
+        var req_body = msg.request_body;
 
-        if (qry      != null) {
-            hostname  = qry.get("h");
-            fmt       = qry.get("f");
+        var hostname = (string) null; // The effective hostname to look up for.
+        var fmt      = (string) null; // The response format selector.
+
+        // --------------------------------------------------------------------
+        // --- Parsing and validating request params - Begin ------------------
+        // --------------------------------------------------------------------
+               if (mtd == AUX.MTD_HTTP_GET ) {
+            if (qry      != null) {
+                hostname  = qry.get("h");
+                fmt       = qry.get("f");
+            }
+        } else if (mtd == AUX.MTD_HTTP_POST) {
+            if((req_body != null) && (req_body.length > 0)) {
+                var req_body_data = AUX.EMPTY_STRING;
+
+                for (uint i = 0; i < req_body.length; i++) {
+                    req_body_data += req_body.data[i].to_string(AUX.C_FMT);
+                }
+
+                var qry_ary = req_body_data.split(AUX.AMPER);
+
+                for (uint i = 0; i < qry_ary.length; i++) {
+                           if (qry_ary[i].has_prefix("h=")) {
+                        hostname = qry_ary[i].substring(2);
+                    } else if (qry_ary[i].has_prefix("f=")) {
+                        fmt      = qry_ary[i].substring(2);
+                    }
+                }
+            }
         }
 
         if((hostname == null) || (hostname.length == 0)) {
@@ -176,6 +202,9 @@ public static int main(string[] args) {
                 fmt   = AUX.PRM_FMT_JSON;
             }
         }
+        // --------------------------------------------------------------------
+        // --- Parsing and validating request params - End --------------------
+        // --------------------------------------------------------------------
 
         msg.set_status(Soup.Status.OK);
     });

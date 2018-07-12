@@ -19,6 +19,8 @@ class AUX
     const COMMA_SPACE_SEP  : string = ", "
     const NEW_LINE         : string = "\n"
     const S_FMT            : string = "%s"
+    const C_FMT            : string = "%c"
+    const AMPER            : string =  "&"
     const V_BAR            : string =  "|"
     const SPACE            : string =  " "
     const PRINT_BANNER_OPT : string = "-V"
@@ -56,9 +58,11 @@ class AUX
     const MSG_SERVER_STARTED_1 : string = "Server started on port %u"
     const MSG_SERVER_STARTED_2 : string = "=== Hit Ctrl+C to terminate it."
 
-    // HTTP request params.
-    const PRM_FMT_HTML : string = "html"
-    const PRM_FMT_JSON : string = "json"
+    // HTTP request methods and params.
+    const MTD_HTTP_GET  : string = "GET"
+    const MTD_HTTP_POST : string = "POST"
+    const PRM_FMT_HTML  : string = "html"
+    const PRM_FMT_JSON  : string = "json"
 
     // Daemon name, version, and copyright banners.
     const DMN_NAME        : string =  "DNS Resolver Daemon (dnsresolvd)"
