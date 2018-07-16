@@ -139,9 +139,21 @@ public static int main(string[] args) {
 
     /*
      * Attaching HTTP request handlers to process incoming requests
-     * and producing the response.
+     * and producing the response. ---+------+------+------+------+
+     *                                |      |      |      |      |
+     *                                v      v      v      v      v
+     *
+     * Default request handler.
+     *
+     * @param _pth The URI path for serving requests. Values <code>null</code>
+     *             or &quot;/&quot; mean that this will be the default handler
+     *             for all requests.
+     * @param  dmn The daemon instance running.
+     * @param  msg The HTTP message being processed.
+     * @param  pth The path  component of the <code>msg</code> request URI.
+     * @param  qry The query component of the <code>msg</code> request URI.
      */
-    dmn.add_handler(null, (dmn, msg, pth, qry) => { // <== Def. req. handler.
+    dmn.add_handler(null, (dmn, msg, pth, qry) => {
         var mtd      = msg.method;
         var req_body = msg.request_body;
 
