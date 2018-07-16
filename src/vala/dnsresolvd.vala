@@ -154,6 +154,8 @@ public static int main(string[] args) {
      * @param  qry The query component of the <code>msg</code> request URI.
      */
     dmn.add_handler(null, (dmn, msg, pth, qry) => {
+        uint8[] resp_buffer;
+
         var mtd      = msg.method;
         var req_body = msg.request_body;
 
@@ -219,6 +221,19 @@ public static int main(string[] args) {
         // --------------------------------------------------------------------
 
         msg.set_status(Soup.Status.OK);
+
+        // Adding headers to the response.
+        var HDR_CONTENT_TYPE = AUX.EMPTY_STRING;
+
+               if (fmt == AUX.PRM_FMT_HTML) {
+            HDR_CONTENT_TYPE = AUX.HDR_CONTENT_TYPE_HTML;
+        } else if (fmt == AUX.PRM_FMT_JSON) {
+            HDR_CONTENT_TYPE = AUX.HDR_CONTENT_TYPE_JSON;
+        }
+
+        resp_buffer = { 0 };
+
+        msg.set_response(HDR_CONTENT_TYPE, Soup.MemoryUse.STATIC, resp_buffer);
     });
 
     // Trying to start up the daemon.

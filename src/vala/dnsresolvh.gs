@@ -64,6 +64,10 @@ class AUX
     const PRM_FMT_HTML  : string = "html"
     const PRM_FMT_JSON  : string = "json"
 
+    // HTTP response headers.
+    const HDR_CONTENT_TYPE_HTML : string = "text/html; charset=UTF-8"
+    const HDR_CONTENT_TYPE_JSON : string = "application/json"
+
     // Daemon name, version, and copyright banners.
     const DMN_NAME        : string =  "DNS Resolver Daemon (dnsresolvd)"
     const DMN_DESCRIPTION : string = ("Performs DNS lookups for the given "
