@@ -30,7 +30,9 @@ VCFLAGS = --target-glib=2.40 --cc=$(CC) -X -s                       \
                                         -X -mtune=generic           \
                                         -X -pipe                    \
                                         -X -fstack-protector-strong \
-          --pkg=posix --pkg=libsoup-2.4 -o
+          --pkg=posix                                               \
+          --pkg=libsoup-2.4                                         \
+          --pkg=json-glib-1.0           -o
 
 # Making the target.
 $(EXEC): $(SRCS)
