@@ -220,11 +220,13 @@ public static int main(string[] args) {
         // --- Parsing and validating request params - End --------------------
         // --------------------------------------------------------------------
 
+        var node = new Json.Node(Json.NodeType.OBJECT);
+
         var e    = false; // <--------------+   +--- Setting these vars
         var addr = AUX.EMPTY_STRING; // <---+---+------- as dummies
         var ver  = AUX.EMPTY_STRING; // <---+   +------ for a while.
 
-        if (fmt == AUX.PRM_FMT_HTML) {
+               if (fmt == AUX.PRM_FMT_HTML) {
             resp_buffer = "<!DOCTYPE html>"                                                 + AUX.NEW_LINE
 + "<html lang=\"en-US\" dir=\"ltr\">"                                                       + AUX.NEW_LINE
 + "<head>"                                                                                  + AUX.NEW_LINE
@@ -236,6 +238,8 @@ public static int main(string[] args) {
 + "</head>"                                                                                 + AUX.NEW_LINE
 + "<body>"                                                                                  + AUX.NEW_LINE
 + "<div>"   + hostname     + AUX.SPACE;
+        } else if (fmt == AUX.PRM_FMT_JSON) {
+            node = node.init_object(new Json.Object());
         }
 
         if (e) {
@@ -243,14 +247,18 @@ public static int main(string[] args) {
                 resp_buffer += AUX.ERR_PREFIX
                             +  AUX.COLON_SPACE_SEP
                             +  AUX.ERR_COULD_NOT_LOOKUP;
-            } else if (fmt  == AUX.PRM_FMT_JSON) {}
+            } else if (fmt  == AUX.PRM_FMT_JSON) {
+                resp_buffer  = Json.to_string(node, false);
+            }
         } else {
                    if (fmt  == AUX.PRM_FMT_HTML) {
                 resp_buffer += addr
                             +  AUX.SPACE
                             +  AUX.DAT_VERSION_V
                             +  ver;
-            } else if (fmt  == AUX.PRM_FMT_JSON) {}
+            } else if (fmt  == AUX.PRM_FMT_JSON) {
+                resp_buffer  = Json.to_string(node, true );
+            }
         }
 
         if (fmt == AUX.PRM_FMT_HTML) {
