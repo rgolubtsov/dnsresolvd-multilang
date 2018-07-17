@@ -16,6 +16,7 @@
 class AUX
     // Helper constants.
     const EMPTY_STRING     : string =   ""
+    const COLON_SPACE_SEP  : string = ": "
     const COMMA_SPACE_SEP  : string = ", "
     const NEW_LINE         : string = "\n"
     const S_FMT            : string = "%s"
@@ -26,6 +27,7 @@ class AUX
     const PRINT_BANNER_OPT : string = "-V"
 
     // Common error messages.
+    const ERR_PREFIX                    : string =  "error"
     const ERR_PORT_MUST_BE_POSITIVE_INT : string = ("%s: <port_number> must "
                                                  +  "be a positive integer "
                                                  +  "value, in the range "
@@ -37,6 +39,7 @@ class AUX
     const ERR_SRV_PORT_IS_IN_USE        : string = ("due to the port "
                                                  +  "requested is in use. "
                                                  +  "Exiting...")
+    const ERR_COULD_NOT_LOOKUP          : string =  "could not lookup hostname"
 //  const ERR_ADDR_ALREADY_IN_USE       : string =  "Address already in use"
 
     const ERR_ADDR_ALREADY_IN_USE       : string =  "^.*(\\ is\\ |\\ in\\ ).*$"
@@ -65,8 +68,22 @@ class AUX
     const PRM_FMT_JSON  : string = "json"
 
     // HTTP response headers.
-    const HDR_CONTENT_TYPE_HTML : string = "text/html; charset=UTF-8"
-    const HDR_CONTENT_TYPE_JSON : string = "application/json"
+    const HDR_CONTENT_TYPE_N      : string =  "Content-Type"
+    const HDR_CONTENT_TYPE_V_HTML : string =  "text/html; charset=UTF-8"
+    const HDR_CONTENT_TYPE_V_JSON : string =  "application/json"
+    const HDR_CACHE_CONTROL_N     : string =  "Cache-Control"
+    const HDR_CACHE_CONTROL_V     : string = ("no-cache, no-store, "
+                                           +  "must-revalidate")
+    const HDR_EXPIRES_N           : string =  "Expires"
+    const HDR_EXPIRES_V           : string =  "Thu, 01 Dec 1994 16:00:00 GMT"
+    const HDR_PRAGMA_N            : string =  "Pragma"
+    const HDR_PRAGMA_V            : string =  "no-cache"
+
+    // Response data names.
+    const DAT_HOSTNAME_N : string = "hostname"
+    const DAT_ADDRESS_N  : string = "address"
+    const DAT_VERSION_N  : string = "version"
+    const DAT_VERSION_V  : string = "IPv"
 
     // Daemon name, version, and copyright banners.
     const DMN_NAME        : string =  "DNS Resolver Daemon (dnsresolvd)"
@@ -79,6 +96,31 @@ class AUX
 
     /** Constant: The default hostname to look up for. */
     const DEF_HOSTNAME : string = "openbsd.org"
+
+    /**
+     * Adds headers to the response.
+     *
+     * @param resp_hdrs The response headers object.
+     * @param fmt       The response format selector.
+     *
+     * @return The <code>"Content-Type"</code> response header value
+     *         used in the caller's <code>msg.set_response()</code> method.
+     */
+    def add_response_headers(resp_hdrs : Soup.MessageHeaders,
+                             fmt       : string) : string
+
+        resp_hdrs.append(HDR_CACHE_CONTROL_N, HDR_CACHE_CONTROL_V)
+        resp_hdrs.append(HDR_EXPIRES_N,       HDR_EXPIRES_V      )
+        resp_hdrs.append(HDR_PRAGMA_N,        HDR_PRAGMA_V       )
+
+        var HDR_CONTENT_TYPE_V = EMPTY_STRING
+
+        if      (fmt == PRM_FMT_HTML)
+            HDR_CONTENT_TYPE_V = HDR_CONTENT_TYPE_V_HTML
+        else if (fmt == PRM_FMT_JSON)
+            HDR_CONTENT_TYPE_V = HDR_CONTENT_TYPE_V_JSON
+
+        return HDR_CONTENT_TYPE_V
 
     // Helper method. Makes final buffer cleanups, closes streams, etc.
     def cleanups_fixate(loop : MainLoop = (MainLoop) null) : void
