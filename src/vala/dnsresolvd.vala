@@ -139,9 +139,23 @@ public static int main(string[] args) {
 
     /*
      * Attaching HTTP request handlers to process incoming requests
-     * and producing the response.
+     * and producing the response. ---+------+------+------+------+
+     *                                |      |      |      |      |
+     *                                v      v      v      v      v
+     *
+     * Default request handler.
+     *
+     * @param _pth The URI path for serving requests. Values <code>null</code>
+     *             or &quot;/&quot; mean that this will be the default handler
+     *             for all requests.
+     * @param  dmn The daemon instance running.
+     * @param  msg The HTTP message being processed.
+     * @param  pth The path  component of the <code>msg</code> request URI.
+     * @param  qry The query component of the <code>msg</code> request URI.
      */
-    dmn.add_handler(null, (dmn, msg, pth, qry) => { // <== Def. req. handler.
+    dmn.add_handler(null, (dmn, msg, pth, qry) => {
+        var resp_buffer = AUX.EMPTY_STRING;
+
         var mtd      = msg.method;
         var req_body = msg.request_body;
 
@@ -154,6 +168,15 @@ public static int main(string[] args) {
                if (mtd == AUX.MTD_HTTP_GET ) {
             if (qry      != null) {
                 hostname  = qry.get("h");
+                //                   ^
+                //                   |
+                //                   +-------------+
+                //                                 |
+                // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+                //                                              |
+                //                   +--------------------------+
+                //                   |
+                //                   v
                 fmt       = qry.get("f");
             }
         } else if (mtd == AUX.MTD_HTTP_POST) {
@@ -166,10 +189,15 @@ public static int main(string[] args) {
 
                 var qry_ary = req_body_data.split(AUX.AMPER);
 
-                for (uint i = 0; i < qry_ary.length; i++) {
-                           if (qry_ary[i].has_prefix("h=")) {
-                        hostname = qry_ary[i].substring(2);
-                    } else if (qry_ary[i].has_prefix("f=")) {
+            // $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
+            //            |            |
+            //            |            +-------------------------------+
+            //            +------------------------------------------+ |
+            //                                                       | |
+                for (uint i = 0; i < qry_ary.length; i++) {   //     | |
+                           if (qry_ary[i].has_prefix("h=")) { // <---+ |
+                        hostname = qry_ary[i].substring(2);   //       |
+                    } else if (qry_ary[i].has_prefix("f=")) { // <-----+
                         fmt      = qry_ary[i].substring(2);
                     }
                 }
@@ -206,7 +234,63 @@ public static int main(string[] args) {
         // --- Parsing and validating request params - End --------------------
         // --------------------------------------------------------------------
 
-        msg.set_status(Soup.Status.OK);
+        var node = new Json.Node(Json.NodeType.OBJECT);
+
+        var e    = false; // <--------------+   +--- Setting these vars
+        var addr = AUX.EMPTY_STRING; // <---+---+------- as dummies
+        var ver  = AUX.EMPTY_STRING; // <---+   +------ for a while.
+
+               if (fmt == AUX.PRM_FMT_HTML) {
+            resp_buffer = "<!DOCTYPE html>"                                                 + AUX.NEW_LINE
++ "<html lang=\"en-US\" dir=\"ltr\">"                                                       + AUX.NEW_LINE
++ "<head>"                                                                                  + AUX.NEW_LINE
++ "<meta http-equiv=\""    + AUX.HDR_CONTENT_TYPE_N      +               "\"    content=\""
+                           + AUX.HDR_CONTENT_TYPE_V_HTML +               "\"           />"  + AUX.NEW_LINE
++ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + AUX.NEW_LINE
++ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + AUX.NEW_LINE
++ "<title>" + AUX.DMN_NAME + "</title>"                                                     + AUX.NEW_LINE
++ "</head>"                                                                                 + AUX.NEW_LINE
++ "<body>"                                                                                  + AUX.NEW_LINE
++ "<div>"   + hostname     + AUX.SPACE;
+        } else if (fmt == AUX.PRM_FMT_JSON) {
+            node = node.init_object(new Json.Object());
+        }
+
+        if (e) {
+                   if (fmt  == AUX.PRM_FMT_HTML) {
+                resp_buffer += AUX.ERR_PREFIX
+                            +  AUX.COLON_SPACE_SEP
+                            +  AUX.ERR_COULD_NOT_LOOKUP;
+            } else if (fmt  == AUX.PRM_FMT_JSON) {
+                resp_buffer  = Json.to_string(node, false);
+            }
+        } else {
+                   if (fmt  == AUX.PRM_FMT_HTML) {
+                resp_buffer += addr
+                            +  AUX.SPACE
+                            +  AUX.DAT_VERSION_V
+                            +  ver;
+            } else if (fmt  == AUX.PRM_FMT_JSON) {
+                resp_buffer  = Json.to_string(node, true );
+            }
+        }
+
+        if (fmt == AUX.PRM_FMT_HTML) {
+            resp_buffer += "</div>"  + AUX.NEW_LINE
+                        +  "</body>" + AUX.NEW_LINE
+                        +  "</html>" + AUX.NEW_LINE;
+        }
+
+        // Adding headers to the response.
+        var HDR_CONTENT_TYPE_V = aux.add_response_headers(msg.response_headers,
+                                 fmt);
+
+        stdout.printf("---" + resp_buffer.length.to_string()
+                    + "---" + resp_buffer
+                    + "---" + AUX.NEW_LINE);
+
+        msg.set_status(Soup.Status.OK);msg.set_response(HDR_CONTENT_TYPE_V,
+                       Soup.MemoryUse.COPY,    resp_buffer.data);
     });
 
     // Trying to start up the daemon.

@@ -16,6 +16,10 @@ PREF = dnsresolv
 EXEC = $(PREF)d
 SRCS = $(PREF)d.vala \
        $(PREF)h.gs
+#                ^ ^
+#                | |
+#                | +----- Main   module, in Vala.
+#                +------- Helper module, in Genie.
 
 # Specify flags and other vars here.
 # If we're on OpenBSD, invoke its gcc from packages
@@ -30,7 +34,9 @@ VCFLAGS = --target-glib=2.40 --cc=$(CC) -X -s                       \
                                         -X -mtune=generic           \
                                         -X -pipe                    \
                                         -X -fstack-protector-strong \
-          --pkg=posix --pkg=libsoup-2.4 -o
+          --pkg=posix                                               \
+          --pkg=libsoup-2.4                                         \
+          --pkg=json-glib-1.0           -o
 
 # Making the target.
 $(EXEC): $(SRCS)
