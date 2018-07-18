@@ -16,6 +16,10 @@ PREF = dnsresolv
 EXEC = $(PREF)d
 SRCS = $(PREF)d.vala \
        $(PREF)h.gs
+#                ^ ^
+#                | |
+#                | +----- Main   module, in Vala.
+#                +------- Helper module, in Genie.
 
 # Specify flags and other vars here.
 # If we're on OpenBSD, invoke its gcc from packages

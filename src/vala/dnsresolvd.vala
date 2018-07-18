@@ -168,6 +168,15 @@ public static int main(string[] args) {
                if (mtd == AUX.MTD_HTTP_GET ) {
             if (qry      != null) {
                 hostname  = qry.get("h");
+                //                   ^
+                //                   |
+                //                   +-------------+
+                //                                 |
+                // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+                //                                              |
+                //                   +--------------------------+
+                //                   |
+                //                   v
                 fmt       = qry.get("f");
             }
         } else if (mtd == AUX.MTD_HTTP_POST) {
@@ -180,10 +189,15 @@ public static int main(string[] args) {
 
                 var qry_ary = req_body_data.split(AUX.AMPER);
 
-                for (uint i = 0; i < qry_ary.length; i++) {
-                           if (qry_ary[i].has_prefix("h=")) {
-                        hostname = qry_ary[i].substring(2);
-                    } else if (qry_ary[i].has_prefix("f=")) {
+            // $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
+            //            |            |
+            //            |            +-------------------------------+
+            //            +------------------------------------------+ |
+            //                                                       | |
+                for (uint i = 0; i < qry_ary.length; i++) {   //     | |
+                           if (qry_ary[i].has_prefix("h=")) { // <---+ |
+                        hostname = qry_ary[i].substring(2);   //       |
+                    } else if (qry_ary[i].has_prefix("f=")) { // <-----+
                         fmt      = qry_ary[i].substring(2);
                     }
                 }
