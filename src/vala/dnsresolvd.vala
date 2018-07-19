@@ -235,6 +235,7 @@ public static int main(string[] args) {
         // --------------------------------------------------------------------
 
         var node = new Json.Node(Json.NodeType.OBJECT);
+        var jobj = new Json.Object();
 
         var e    = false; // <--------------+   +--- Setting these vars
         var addr = AUX.EMPTY_STRING; // <---+---+------- as dummies
@@ -253,7 +254,7 @@ public static int main(string[] args) {
 + "<body>"                                                                                  + AUX.NEW_LINE
 + "<div>"   + hostname     + AUX.SPACE;
         } else if (fmt == AUX.PRM_FMT_JSON) {
-            node = node.init_object(new Json.Object());
+            jobj.set_string_member(AUX.DAT_HOSTNAME_N, hostname);
         }
 
         if (e) {
@@ -262,7 +263,8 @@ public static int main(string[] args) {
                             +  AUX.COLON_SPACE_SEP
                             +  AUX.ERR_COULD_NOT_LOOKUP;
             } else if (fmt  == AUX.PRM_FMT_JSON) {
-                resp_buffer  = Json.to_string(node, false);
+        jobj.set_string_member(AUX.ERR_PREFIX,
+                               AUX.ERR_COULD_NOT_LOOKUP);
             }
         } else {
                    if (fmt  == AUX.PRM_FMT_HTML) {
@@ -271,14 +273,17 @@ public static int main(string[] args) {
                             +  AUX.DAT_VERSION_V
                             +  ver;
             } else if (fmt  == AUX.PRM_FMT_JSON) {
-                resp_buffer  = Json.to_string(node, true );
+        jobj.set_string_member(AUX.DAT_ADDRESS_N, addr);
+        jobj.set_string_member(AUX.DAT_VERSION_N, ver );
             }
         }
 
-        if (fmt == AUX.PRM_FMT_HTML) {
+               if (fmt  == AUX.PRM_FMT_HTML) {
             resp_buffer += "</div>"  + AUX.NEW_LINE
                         +  "</body>" + AUX.NEW_LINE
                         +  "</html>" + AUX.NEW_LINE;
+        } else if (fmt  == AUX.PRM_FMT_JSON) {
+            resp_buffer  = Json.to_string(node.init_object(jobj), false);
         }
 
         // Adding headers to the response.
