@@ -19,10 +19,8 @@ class AUX
     const COLON_SPACE_SEP  : string = ": "
     const COMMA_SPACE_SEP  : string = ", "
     const NEW_LINE         : string = "\n"
-    const S_FMT            : string = "%s"
     const C_FMT            : string = "%c"
     const AMPER            : string =  "&"
-    const V_BAR            : string =  "|"
     const SPACE            : string =  " "
     const PRINT_BANNER_OPT : string = "-V"
 
@@ -40,8 +38,6 @@ class AUX
                                                  +  "requested is in use. "
                                                  +  "Exiting...")
     const ERR_COULD_NOT_LOOKUP          : string =  "could not lookup hostname"
-//  const ERR_ADDR_ALREADY_IN_USE       : string =  "Address already in use"
-
     const ERR_ADDR_ALREADY_IN_USE       : string =  "^.*(\\ is\\ |\\ in\\ ).*$"
 
     // Print this error message when there are no any args passed.

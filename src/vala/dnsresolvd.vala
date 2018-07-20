@@ -78,12 +78,6 @@ public static int main(string[] args) {
         port_number = 0;
     }
 
-//  stdout.printf(AUX.S_FMT,  AUX.V_BAR + AUX.SPACE + argc.to_string()
-//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + daemon_name
-//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + port_number.to_string()
-//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + print_banner_opt
-//              + AUX.SPACE + AUX.V_BAR + AUX.NEW_LINE);
-
     if (print_banner_opt == AUX.PRINT_BANNER_OPT) {
         aux.separator_draw(AUX.DMN_DESCRIPTION);
 
@@ -323,10 +317,6 @@ public static int main(string[] args) {
         // Adding headers to the response.
         var HDR_CONTENT_TYPE_V = aux.add_response_headers(msg.response_headers,
                                  fmt);
-
-        stdout.printf("---" + resp_buffer.length.to_string()
-                    + "---" + resp_buffer
-                    + "---" + AUX.NEW_LINE);
 
         msg.set_status(Soup.Status.OK);msg.set_response(HDR_CONTENT_TYPE_V,
                        Soup.MemoryUse.COPY,    resp_buffer.data);
