@@ -16,7 +16,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
 * :small_blue_diamond: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
 * :small_blue_diamond: **Python 3 ([Twisted](http://twistedmatrix.com "Twisted"))**: `src/python/`
-* :cd: **Vala ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/vala/`
+* :small_blue_diamond: **Vala ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/vala/`
 * :small_orange_diamond: **Genie ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/genie/`
 
 ## Building
@@ -326,6 +326,8 @@ Server started on port 8765
 
 #### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
 
+Install the necessary dependencies (`cpanminus`, `Mojolicious`, `Net::DNS::Native`):
+
 ```
 $ sudo apt-get update && sudo apt-get install cpanminus -y && sudo cpanm App::cpanminus
 ```
@@ -356,8 +358,22 @@ This version is up to date, have fun!
 
 #### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
 
+Install the necessary dependencies (`python3-twisted`, `python3-dnspython`):
+
 ```
 $ sudo apt-get update && sudo apt-get install python3-twisted python3-dnspython -y
+```
+
+**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
+
+### Vala (libsoup)
+
+#### Building under OpenBSD/amd64 6.3
+
+Install the necessary dependencies (`vala`, `libsoup`, `json-glib`):
+
+```
+$ sudo pkg_add -vvvvv vala libsoup json-glib
 ```
 
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
