@@ -14,6 +14,32 @@
 
 /** The main class of the daemon. */
 class DnsResolvd : Soup.Server {
+    /**
+     * Performs DNS lookup action for the given hostname,
+     * i.e. (in this case) IP address retrieval by hostname.
+     *
+     * @param hostname The effective hostname to look up for.
+     *
+     * @return The array containing IP address of the analyzing host/service
+     *         and corresponding IP version (family) used to look up in DNS:
+     *         <code>4</code> for IPv4-only hosts,
+     *         <code>6</code> for IPv6-capable hosts.
+     */
+    public string[] dns_lookup(string hostname) {
+        string[] addr_ver = {};
+
+        // TODO: Implement performing DNS lookup for the given hostname.
+        var addr = hostname;
+        var ver  = 4.to_string();
+
+        addr_ver.resize(2);
+
+        addr_ver[0] = addr;
+        addr_ver[1] = ver;
+
+        return addr_ver;
+    }
+
     /** Default constructor. */
     public DnsResolvd() {}
 }
@@ -153,7 +179,7 @@ public static int main(string[] args) {
      * @param  pth The path  component of the <code>msg</code> request URI.
      * @param  qry The query component of the <code>msg</code> request URI.
      */
-    dmn.add_handler(null, (dmn, msg, pth, qry) => {
+    dmn.add_handler(null, (_dmn, msg, pth, qry) => {
         var resp_buffer = AUX.EMPTY_STRING;
 
         var mtd      = msg.method;
@@ -234,12 +260,14 @@ public static int main(string[] args) {
         // --- Parsing and validating request params - End --------------------
         // --------------------------------------------------------------------
 
+        // Performing DNS lookup for the given hostname.
+        var addr_ver = dmn.dns_lookup(hostname);
+
+        var addr = addr_ver[0];
+        var ver  = addr_ver[1];
+
         var node = new Json.Node(Json.NodeType.OBJECT);
         var jobj = new Json.Object();
-
-        var e    = false; // <--------------+   +--- Setting these vars
-        var addr = AUX.EMPTY_STRING; // <---+---+------- as dummies
-        var ver  = AUX.EMPTY_STRING; // <---+   +------ for a while.
 
                if (fmt == AUX.PRM_FMT_HTML) {
             resp_buffer = "<!DOCTYPE html>"                                                 + AUX.NEW_LINE
@@ -257,7 +285,8 @@ public static int main(string[] args) {
             jobj.set_string_member(AUX.DAT_HOSTNAME_N, hostname);
         }
 
-        if (e) {
+        // If lookup error occurred.
+        if (addr == AUX.ERR_PREFIX) {
                    if (fmt  == AUX.PRM_FMT_HTML) {
                 resp_buffer += AUX.ERR_PREFIX
                             +  AUX.COLON_SPACE_SEP
