@@ -14,6 +14,42 @@
 
 /** The main class of the daemon. */
 class DnsResolvd : Soup.Server {
+    /**
+     * Performs DNS lookup action for the given hostname,
+     * i.e. (in this case) IP address retrieval by hostname.
+     *
+     * @param hostname The effective hostname to look up for.
+     *
+     * @return The array containing IP address of the analyzing host/service
+     *         and corresponding IP version (family) used to look up in DNS:
+     *         <code>4</code> for IPv4-only hosts,
+     *         <code>6</code> for IPv6-capable hosts.
+     */
+    public string[] dns_lookup(string hostname) {
+        string[] addr_ver = {}; addr_ver.resize(2);
+
+        // Trying to perform DNS lookup for the given hostname.
+        try {
+            var _addr_ver = Resolver.get_default   (        )
+                                    .lookup_by_name(hostname)
+                                    .nth_data      (0       );
+
+            addr_ver[0] = _addr_ver.to_string ();
+            var _ver    = _addr_ver.get_family();
+
+                   if (_ver == SocketFamily.IPV6) {
+                addr_ver[1]  = 6.to_string();
+            } else if (_ver == SocketFamily.IPV4) {
+                addr_ver[1]  = 4.to_string();
+            }
+        } catch (Error e) {
+            addr_ver[0] = AUX.ERR_PREFIX;
+            addr_ver[1] = AUX.EMPTY_STRING;
+        }
+
+        return addr_ver;
+    }
+
     /** Default constructor. */
     public DnsResolvd() {}
 }
@@ -41,12 +77,6 @@ public static int main(string[] args) {
     } else {
         port_number = 0;
     }
-
-//  stdout.printf(AUX.S_FMT,  AUX.V_BAR + AUX.SPACE + argc.to_string()
-//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + daemon_name
-//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + port_number.to_string()
-//              + AUX.SPACE + AUX.V_BAR + AUX.SPACE + print_banner_opt
-//              + AUX.SPACE + AUX.V_BAR + AUX.NEW_LINE);
 
     if (print_banner_opt == AUX.PRINT_BANNER_OPT) {
         aux.separator_draw(AUX.DMN_DESCRIPTION);
@@ -153,7 +183,7 @@ public static int main(string[] args) {
      * @param  pth The path  component of the <code>msg</code> request URI.
      * @param  qry The query component of the <code>msg</code> request URI.
      */
-    dmn.add_handler(null, (dmn, msg, pth, qry) => {
+    dmn.add_handler(null, (_dmn, msg, pth, qry) => {
         var resp_buffer = AUX.EMPTY_STRING;
 
         var mtd      = msg.method;
@@ -167,17 +197,11 @@ public static int main(string[] args) {
         // --------------------------------------------------------------------
                if (mtd == AUX.MTD_HTTP_GET ) {
             if (qry      != null) {
-                hostname  = qry.get("h");
-                //                   ^
-                //                   |
-                //                   +-------------+
+                hostname  = qry.get("h"); // <-----+
                 //                                 |
                 // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
                 //                                              |
-                //                   +--------------------------+
-                //                   |
-                //                   v
-                fmt       = qry.get("f");
+                fmt       = qry.get("f"); // <------------------+
             }
         } else if (mtd == AUX.MTD_HTTP_POST) {
             if((req_body != null) && (req_body.length > 0)) {
@@ -234,12 +258,14 @@ public static int main(string[] args) {
         // --- Parsing and validating request params - End --------------------
         // --------------------------------------------------------------------
 
+        // Performing DNS lookup for the given hostname.
+        var addr_ver = dmn.dns_lookup(hostname);
+
+        var addr = addr_ver[0];
+        var ver  = addr_ver[1];
+
         var node = new Json.Node(Json.NodeType.OBJECT);
         var jobj = new Json.Object();
-
-        var e    = false; // <--------------+   +--- Setting these vars
-        var addr = AUX.EMPTY_STRING; // <---+---+------- as dummies
-        var ver  = AUX.EMPTY_STRING; // <---+   +------ for a while.
 
                if (fmt == AUX.PRM_FMT_HTML) {
             resp_buffer = "<!DOCTYPE html>"                                                 + AUX.NEW_LINE
@@ -257,7 +283,8 @@ public static int main(string[] args) {
             jobj.set_string_member(AUX.DAT_HOSTNAME_N, hostname);
         }
 
-        if (e) {
+        // If lookup error occurred.
+        if (addr == AUX.ERR_PREFIX) {
                    if (fmt  == AUX.PRM_FMT_HTML) {
                 resp_buffer += AUX.ERR_PREFIX
                             +  AUX.COLON_SPACE_SEP
@@ -274,7 +301,8 @@ public static int main(string[] args) {
                             +  ver;
             } else if (fmt  == AUX.PRM_FMT_JSON) {
         jobj.set_string_member(AUX.DAT_ADDRESS_N, addr);
-        jobj.set_string_member(AUX.DAT_VERSION_N, ver );
+        jobj.set_string_member(AUX.DAT_VERSION_N,
+                               AUX.DAT_VERSION_V + ver);
             }
         }
 
@@ -289,10 +317,6 @@ public static int main(string[] args) {
         // Adding headers to the response.
         var HDR_CONTENT_TYPE_V = aux.add_response_headers(msg.response_headers,
                                  fmt);
-
-        stdout.printf("---" + resp_buffer.length.to_string()
-                    + "---" + resp_buffer
-                    + "---" + AUX.NEW_LINE);
 
         msg.set_status(Soup.Status.OK);msg.set_response(HDR_CONTENT_TYPE_V,
                        Soup.MemoryUse.COPY,    resp_buffer.data);
