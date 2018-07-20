@@ -26,16 +26,26 @@ class DnsResolvd : Soup.Server {
      *         <code>6</code> for IPv6-capable hosts.
      */
     public string[] dns_lookup(string hostname) {
-        string[] addr_ver = {};
+        string[] addr_ver = {}; addr_ver.resize(2);
 
-        // TODO: Implement performing DNS lookup for the given hostname.
-        var addr = hostname;
-        var ver  = 4.to_string();
+        // Trying to perform DNS lookup for the given hostname.
+        try {
+            var _addr_ver = Resolver.get_default   (        )
+                                    .lookup_by_name(hostname)
+                                    .nth_data      (0       );
 
-        addr_ver.resize(2);
+            addr_ver[0] = _addr_ver.to_string ();
+            var _ver    = _addr_ver.get_family();
 
-        addr_ver[0] = addr;
-        addr_ver[1] = ver;
+                   if (_ver == SocketFamily.IPV6) {
+                addr_ver[1]  = 6.to_string();
+            } else if (_ver == SocketFamily.IPV4) {
+                addr_ver[1]  = 4.to_string();
+            }
+        } catch (Error e) {
+            addr_ver[0] = AUX.ERR_PREFIX;
+            addr_ver[1] = AUX.EMPTY_STRING;
+        }
 
         return addr_ver;
     }
