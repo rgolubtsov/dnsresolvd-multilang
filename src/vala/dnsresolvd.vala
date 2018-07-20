@@ -307,7 +307,8 @@ public static int main(string[] args) {
                             +  ver;
             } else if (fmt  == AUX.PRM_FMT_JSON) {
         jobj.set_string_member(AUX.DAT_ADDRESS_N, addr);
-        jobj.set_string_member(AUX.DAT_VERSION_N, ver );
+        jobj.set_string_member(AUX.DAT_VERSION_N,
+                               AUX.DAT_VERSION_V + ver);
             }
         }
 
