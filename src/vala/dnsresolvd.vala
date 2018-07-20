@@ -193,17 +193,11 @@ public static int main(string[] args) {
         // --------------------------------------------------------------------
                if (mtd == AUX.MTD_HTTP_GET ) {
             if (qry      != null) {
-                hostname  = qry.get("h");
-                //                   ^
-                //                   |
-                //                   +-------------+
+                hostname  = qry.get("h"); // <-----+
                 //                                 |
                 // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
                 //                                              |
-                //                   +--------------------------+
-                //                   |
-                //                   v
-                fmt       = qry.get("f");
+                fmt       = qry.get("f"); // <------------------+
             }
         } else if (mtd == AUX.MTD_HTTP_POST) {
             if((req_body != null) && (req_body.length > 0)) {
