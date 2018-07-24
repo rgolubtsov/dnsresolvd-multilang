@@ -376,4 +376,22 @@ Install the necessary dependencies (`vala`, `libsoup`, `json-glib`):
 $ sudo pkg_add -vvvvv vala libsoup json-glib
 ```
 
+Now the daemon might be built.
+
+```
+$ cd src/vala
+$ gmake clean && gmake all
+rm -f dnsresolvd
+valac --target-glib=2.40 --cc=egcc -X -s -X -O3 -X -mtune=generic -X -pipe -X -fstack-protector-strong --pkg=posix --pkg=libsoup-2.4 --pkg=json-glib-1.0           -o dnsresolvd dnsresolvd.vala dnsresolvh.gs
+/home/radic/dev/misc/github/dnsresolvd-multilang/src/vala/dnsresolvd.vala.c: In function '__lambda6_':
+/home/radic/dev/misc/github/dnsresolvd-multilang/src/vala/dnsresolvd.vala.c:721:16: warning: assignment discards 'const' qualifier from pointer target type
+        _tmp30_ = _tmp29_->data;
+                ^
+/usr/local/lib/libsoup-2.4.so.10.0: warning: strcpy() is almost always misused, please use strlcpy()
+/usr/local/lib/libglib-2.0.so.4200.6: warning: stpcpy() is dangerous; do not use it
+/usr/local/lib/libxml2.so.16.1: warning: strcat() is almost always misused, please use strlcat()
+/usr/local/lib/libglib-2.0.so.4200.6: warning: vsprintf() is often misused, please use vsnprintf()
+/usr/local/lib/libxml2.so.16.1: warning: sprintf() is often misused, please use snprintf()
+```
+
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
