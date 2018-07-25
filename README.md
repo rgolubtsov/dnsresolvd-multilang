@@ -438,6 +438,74 @@ dnsresolvd:
         000000f4c9200000 000000f4c9200000 ld.so 0    1   0      /usr/libexec/ld.so
 ```
 
+#### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
+
+Install the necessary dependencies (`valac`, `libsoup2.4-dev`, `libjson-glib-dev`):
+
+```
+$ sudo apt-get update && sudo apt-get install valac libsoup2.4-dev libjson-glib-dev -y
+```
+
+```
+$ valac --version
+Vala 0.30.1
+```
+
+Now the daemon might be built.
+
+```
+$ cd src/vala
+$ make clean && make all
+rm -f dnsresolvd
+valac --target-glib=2.40 --cc=cc -X -s -X -O3 -X -mtune=generic -X -pipe -X -fstack-protector-strong --pkg=posix --pkg=libsoup-2.4 --pkg=json-glib-1.0           -o dnsresolvd dnsresolvd.vala dnsresolvh.gs
+/home/<username>/dnsresolvd-multilang/src/vala/dnsresolvd.vala.c: In function ‘__lambda6_’:
+/home/<username>/dnsresolvd-multilang/src/vala/dnsresolvd.vala.c:728:16: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+        _tmp30_ = _tmp29_->data;
+                ^
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al
+total 64
+drwxr-xr-x 2 <username> <usergroup>  4096 Jul 25 18:10 .
+drwxr-xr-x 8 <username> <usergroup>  4096 Jul 25 17:05 ..
+-rwxr-xr-x 1 <username> <usergroup> 27440 Jul 25 18:10 dnsresolvd
+-rw-r--r-- 1 <username> <usergroup> 14614 Jul 25 18:10 dnsresolvd.vala
+-rw-r--r-- 1 <username> <usergroup>  6070 Jul 25 18:10 dnsresolvh.gs
+-rw-r--r-- 1 <username> <usergroup>  1733 Jul 25 18:10 Makefile
+$
+$ file dnsresolvd
+dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=713cf6062e35b337b340e3628d756fdfc6237c69, stripped
+$
+$ ldd dnsresolvd
+        linux-vdso.so.1 =>  (0x00007ffdcc3f2000)
+        libsoup-2.4.so.1 => /usr/lib/x86_64-linux-gnu/libsoup-2.4.so.1 (0x00007f584f217000)
+        libjson-glib-1.0.so.0 => /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 (0x00007f584efef000)
+        libgio-2.0.so.0 => /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0 (0x00007f584ec67000)
+        libgobject-2.0.so.0 => /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0 (0x00007f584ea14000)
+        libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x00007f584e703000)
+        libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f584e4e6000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f584e11c000)
+        libxml2.so.2 => /usr/lib/x86_64-linux-gnu/libxml2.so.2 (0x00007f584dd61000)
+        libsqlite3.so.0 => /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 (0x00007f584da8c000)
+        libgmodule-2.0.so.0 => /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0 (0x00007f584d888000)
+        libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007f584d66e000)
+        libselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f584d44c000)
+        libresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f584d231000)
+        libffi.so.6 => /usr/lib/x86_64-linux-gnu/libffi.so.6 (0x00007f584d029000)
+        libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f584cdb9000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f584f4ee000)
+        libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f584cbb5000)
+        libicuuc.so.55 => /usr/lib/x86_64-linux-gnu/libicuuc.so.55 (0x00007f584c821000)
+        liblzma.so.5 => /lib/x86_64-linux-gnu/liblzma.so.5 (0x00007f584c5ff000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f584c2f6000)
+        libicudata.so.55 => /usr/lib/x86_64-linux-gnu/libicudata.so.55 (0x00007f584a83f000)
+        libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f584a4bd000)
+        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f584a2a7000)
+```
+
 #### Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)
 
 Install the necessary dependencies (`vala`, `libsoup`, `json-glib`):
@@ -519,5 +587,3 @@ $ ldd dnsresolvd
         libstdc++.so.6 => /usr/lib/libstdc++.so.6 (0x00007fbd1cff0000)
         libgcc_s.so.1 => /usr/lib/libgcc_s.so.1 (0x00007fbd1cdd8000)
 ```
-
-**TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server.
