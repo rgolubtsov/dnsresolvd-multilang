@@ -433,4 +433,81 @@ dnsresolvd:
         000000f4c9200000 000000f4c9200000 ld.so 0    1   0      /usr/libexec/ld.so
 ```
 
-**TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server and Arch Linux.
+#### Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)
+
+Install the necessary dependencies (`vala`, `libsoup`, `json-glib`):
+
+```
+$ sudo pacman -Sy vala libsoup json-glib
+```
+
+Now the daemon might be built.
+
+```
+$ cd src/vala
+$ make clean && make all
+rm -f dnsresolvd
+valac --target-glib=2.40 --cc=cc -X -s -X -O3 -X -mtune=generic -X -pipe -X -fstack-protector-strong --pkg=posix --pkg=libsoup-2.4 --pkg=json-glib-1.0           -o dnsresolvd dnsresolvd.vala dnsresolvh.gs
+dnsresolvd.vala:158.21-158.32: warning: Posix.SIGINT has been deprecated since vala-0.40. Use Posix.Signal.INT
+dnsresolvd.vala:161.38-161.49: warning: Posix.SIGINT has been deprecated since vala-0.40. Use Posix.Signal.INT
+dnsresolvd.vala:164.21-164.33: warning: Posix.SIGTERM has been deprecated since vala-0.40. Use Posix.Signal.TERM
+dnsresolvd.vala:167.38-167.50: warning: Posix.SIGTERM has been deprecated since vala-0.40. Use Posix.Signal.TERM
+/home/<username>/dnsresolvd-multilang/src/vala/dnsresolvd.vala.c: In function ‘__lambda6_’:
+/home/<username>/dnsresolvd-multilang/src/vala/dnsresolvd.vala.c:749:16: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+        _tmp25_ = _tmp24_->data;
+                ^
+Compilation succeeded - 4 warning(s)
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al
+total 64
+drwxr-xr-x 2 <username> <usergroup>  4096 Jul 25 14:00 .
+drwxr-xr-x 8 <username> <usergroup>  4096 Jun 29 12:40 ..
+-rwxr-xr-x 1 <username> <usergroup> 27352 Jul 25 14:00 dnsresolvd
+-rw-r--r-- 1 <username> <usergroup> 14614 Jul 25 14:00 dnsresolvd.vala
+-rw-r--r-- 1 <username> <usergroup>  6070 Jul 25 14:00 dnsresolvh.gs
+-rw-r--r-- 1 <username> <usergroup>  1733 Jul 25 14:00 Makefile
+$
+$ file dnsresolvd
+dnsresolvd: ELF 64-bit LSB pie executable x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=f445af34724f340d262106e87192748ea0e42237, stripped
+$
+$ ldd dnsresolvd
+        linux-vdso.so.1 (0x00007ffdddfed000)
+        libsoup-2.4.so.1 => /usr/lib/libsoup-2.4.so.1 (0x00007fbd23304000)
+        libjson-glib-1.0.so.0 => /usr/lib/libjson-glib-1.0.so.0 (0x00007fbd230dd000)
+        libgio-2.0.so.0 => /usr/lib/libgio-2.0.so.0 (0x00007fbd22d3d000)
+        libgobject-2.0.so.0 => /usr/lib/libgobject-2.0.so.0 (0x00007fbd22ae9000)
+        libglib-2.0.so.0 => /usr/lib/libglib-2.0.so.0 (0x00007fbd227d2000)
+        libpthread.so.0 => /usr/lib/libpthread.so.0 (0x00007fbd225b4000)
+        libc.so.6 => /usr/lib/libc.so.6 (0x00007fbd221f8000)
+        libxml2.so.2 => /usr/lib/libxml2.so.2 (0x00007fbd21e92000)
+        libsqlite3.so.0 => /usr/lib/libsqlite3.so.0 (0x00007fbd21b7a000)
+        libgssapi_krb5.so.2 => /usr/lib/libgssapi_krb5.so.2 (0x00007fbd2192c000)
+        libgmodule-2.0.so.0 => /usr/lib/libgmodule-2.0.so.0 (0x00007fbd21728000)
+        libz.so.1 => /usr/lib/libz.so.1 (0x00007fbd21511000)
+        libresolv.so.2 => /usr/lib/libresolv.so.2 (0x00007fbd212fa000)
+        libmount.so.1 => /usr/lib/libmount.so.1 (0x00007fbd210a2000)
+        libffi.so.6 => /usr/lib/libffi.so.6 (0x00007fbd20e99000)
+        libpcre.so.1 => /usr/lib/libpcre.so.1 (0x00007fbd20c27000)
+        /lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x00007fbd23801000)
+        libdl.so.2 => /usr/lib/libdl.so.2 (0x00007fbd20a23000)
+        libicuuc.so.61 => /usr/lib/libicuuc.so.61 (0x00007fbd20669000)
+        liblzma.so.5 => /usr/lib/liblzma.so.5 (0x00007fbd20443000)
+        libm.so.6 => /usr/lib/libm.so.6 (0x00007fbd200ae000)
+        libkrb5.so.3 => /usr/lib/libkrb5.so.3 (0x00007fbd1fdc5000)
+        libk5crypto.so.3 => /usr/lib/libk5crypto.so.3 (0x00007fbd1fb92000)
+        libcom_err.so.2 => /usr/lib/libcom_err.so.2 (0x00007fbd1f98e000)
+        libkrb5support.so.0 => /usr/lib/libkrb5support.so.0 (0x00007fbd1f781000)
+        libkeyutils.so.1 => /usr/lib/libkeyutils.so.1 (0x00007fbd1f57d000)
+        libblkid.so.1 => /usr/lib/libblkid.so.1 (0x00007fbd1f32d000)
+        libuuid.so.1 => /usr/lib/libuuid.so.1 (0x00007fbd1f126000)
+        librt.so.1 => /usr/lib/librt.so.1 (0x00007fbd1ef1e000)
+        libicudata.so.61 => /usr/lib/libicudata.so.61 (0x00007fbd1d379000)
+        libstdc++.so.6 => /usr/lib/libstdc++.so.6 (0x00007fbd1cff0000)
+        libgcc_s.so.1 => /usr/lib/libgcc_s.so.1 (0x00007fbd1cdd8000)
+```
+
+**TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server.
