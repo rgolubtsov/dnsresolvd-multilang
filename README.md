@@ -376,6 +376,11 @@ Install the necessary dependencies (`vala`, `libsoup`, `json-glib`):
 $ sudo pkg_add -vvvvv vala libsoup json-glib
 ```
 
+```
+$ valac --version
+Vala 0.38.8
+```
+
 Now the daemon might be built.
 
 ```
@@ -439,6 +444,11 @@ Install the necessary dependencies (`vala`, `libsoup`, `json-glib`):
 
 ```
 $ sudo pacman -Sy vala libsoup json-glib
+```
+
+```
+$ valac --version
+Vala 0.40.6
 ```
 
 Now the daemon might be built.
