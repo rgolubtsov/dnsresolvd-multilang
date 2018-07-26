@@ -93,6 +93,49 @@ class AUX {
     /** Constant: The default hostname to look up for. */
     const string DEF_HOSTNAME = "openbsd.org";
 
+    /**
+     * Adds headers to the response.
+     *
+     * @param resp_hdrs The response headers object.
+     * @param fmt       The response format selector.
+     *
+     * @return The <code>"Content-Type"</code> response header value
+     *         used in the caller's <code>msg.set_response()</code> method.
+     */
+    string add_response_headers(Soup.MessageHeaders resp_hdrs, string fmt) {
+        resp_hdrs.append(HDR_CACHE_CONTROL_N, HDR_CACHE_CONTROL_V);
+        resp_hdrs.append(HDR_EXPIRES_N,       HDR_EXPIRES_V      );
+        resp_hdrs.append(HDR_PRAGMA_N,        HDR_PRAGMA_V       );
+
+        var HDR_CONTENT_TYPE_V = EMPTY_STRING;
+
+               if (fmt == PRM_FMT_HTML) {
+            HDR_CONTENT_TYPE_V = HDR_CONTENT_TYPE_V_HTML;
+        } else if (fmt == PRM_FMT_JSON) {
+            HDR_CONTENT_TYPE_V = HDR_CONTENT_TYPE_V_JSON;
+        }
+
+        return HDR_CONTENT_TYPE_V;
+    }
+
+    // Helper method. Makes final buffer cleanups, closes streams, etc.
+    void cleanups_fixate(MainLoop loop = (MainLoop) null) {
+        // Stopping the daemon.
+        if (loop != null) {
+            loop.quit();
+        }
+
+        // Closing the system logger.
+        Posix.closelog();
+    }
+
+    // Helper method. Draws a horizontal separator banner.
+    void separator_draw(string banner_text) {
+        int i = banner_text.length;
+
+        do { stdout.putc('='); i--; } while (i > 0); stdout.puts(NEW_LINE);
+    }
+
     /** Default constructor. */
     public AUX() {}
 }
