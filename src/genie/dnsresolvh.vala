@@ -15,47 +15,47 @@
 /** The helper class for the daemon. */
 class AUX {
     // Helper constants.
-    const string EMPTY_STRING     =   "";
-    const string COLON_SPACE_SEP  = ": ";
-    const string COMMA_SPACE_SEP  = ", ";
-    const string NEW_LINE         = "\n";
-    const string C_FMT            = "%c";
-    const string AMPER            =  "&";
-    const string SPACE            =  " ";
-    const string PRINT_BANNER_OPT = "-V";
+    public const string EMPTY_STRING     =   "";
+    public const string COLON_SPACE_SEP  = ": ";
+    public const string COMMA_SPACE_SEP  = ", ";
+    public const string NEW_LINE         = "\n";
+    public const string C_FMT            = "%c";
+    public const string AMPER            =  "&";
+    public const string SPACE            =  " ";
+    public const string PRINT_BANNER_OPT = "-V";
 
     // Common error messages.
-    const string ERR_PREFIX                    = "error";
-    const string ERR_PORT_MUST_BE_POSITIVE_INT = "%s: <port_number> must "
-                                               + "be a positive integer "
-                                               + "value, in the range "
-                                               + "1024-49151.";
-    const string ERR_CANNOT_START_SERVER       = "%s: FATAL: "
-                                               + "Cannot start server ";
-    const string ERR_SRV_UNKNOWN_REASON        = "for an unknown reason. "
-                                               + "Exiting...";
-    const string ERR_SRV_PORT_IS_IN_USE        = "due to the port "
-                                               + "requested is in use. "
-                                               + "Exiting...";
-    const string ERR_COULD_NOT_LOOKUP          = "could not lookup hostname";
-    const string ERR_ADDR_ALREADY_IN_USE       = "^.*(\\ is\\ |\\ in\\ ).*$";
+    public const string ERR_PREFIX                    = "error";
+    public const string ERR_PORT_MUST_BE_POSITIVE_INT = "%s: <port_number> must "
+                                                      + "be a positive integer "
+                                                      + "value, in the range "
+                                                      + "1024-49151.";
+    public const string ERR_CANNOT_START_SERVER       = "%s: FATAL: "
+                                                      + "Cannot start server ";
+    public const string ERR_SRV_UNKNOWN_REASON        = "for an unknown reason. "
+                                                      + "Exiting...";
+    public const string ERR_SRV_PORT_IS_IN_USE        = "due to the port "
+                                                      + "requested is in use. "
+                                                      + "Exiting...";
+    public const string ERR_COULD_NOT_LOOKUP          = "could not lookup hostname";
+    public const string ERR_ADDR_ALREADY_IN_USE       = "^.*(\\ is\\ |\\ in\\ ).*$";
 
     // Print this error message when there are no any args passed.
-    const string ERR_MUST_BE_ONE_TWO_ARGS = "%s: There must be one or two "
-                                          + "args passed: %u args found";
+    public const string ERR_MUST_BE_ONE_TWO_ARGS = "%s: There must be one or two "
+                                                 + "args passed: %u args found";
 
     // Print this usage info just after any inappropriate input.
-    const string MSG_USAGE_TEMPLATE = "Usage: %s <port_number> [-V]";
+    public const string MSG_USAGE_TEMPLATE = "Usage: %s <port_number> [-V]";
 
     /** Constant: The minimum port number allowed. */
-    const uint MIN_PORT = 1024;
+    public const uint MIN_PORT = 1024;
 
     /** Constant: The maximum port number allowed. */
-    const uint MAX_PORT = 49151;
+    public const uint MAX_PORT = 49151;
 
     // Common notification messages.
-    const string MSG_SERVER_STARTED_1 = "Server started on port %u";
-    const string MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it.";
+    public const string MSG_SERVER_STARTED_1 = "Server started on port %u";
+    public const string MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it.";
 
     // HTTP request methods and params.
     const string MTD_HTTP_GET  = "GET";
@@ -82,13 +82,13 @@ class AUX {
     const string DAT_VERSION_V  = "IPv";
 
     // Daemon name, version, and copyright banners.
-    const string DMN_NAME        = "DNS Resolver Daemon (dnsresolvd)";
-    const string DMN_DESCRIPTION = "Performs DNS lookups for the given "
-                                 + "hostname passed in an HTTP request";
-    const string DMN_VERSION_S__ = "Version";
-    const string DMN_VERSION     = "0.1";
-    const string DMN_COPYRIGHT__ = "Copyright (C) 2017-2018";
-    const string DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
+    public const string DMN_NAME        = "DNS Resolver Daemon (dnsresolvd)";
+    public const string DMN_DESCRIPTION = "Performs DNS lookups for the given "
+                                        + "hostname passed in an HTTP request";
+    public const string DMN_VERSION_S__ = "Version";
+    public const string DMN_VERSION     = "0.1";
+    public const string DMN_COPYRIGHT__ = "Copyright (C) 2017-2018";
+    public const string DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
 
     /** Constant: The default hostname to look up for. */
     const string DEF_HOSTNAME = "openbsd.org";
@@ -119,7 +119,7 @@ class AUX {
     }
 
     // Helper method. Makes final buffer cleanups, closes streams, etc.
-    void cleanups_fixate(MainLoop loop = (MainLoop) null) {
+    public void cleanups_fixate(MainLoop loop = (MainLoop) null) {
         // Stopping the daemon.
         if (loop != null) {
             loop.quit();
@@ -130,7 +130,7 @@ class AUX {
     }
 
     // Helper method. Draws a horizontal separator banner.
-    void separator_draw(string banner_text) {
+    public void separator_draw(string banner_text) {
         int i = banner_text.length;
 
         do { stdout.putc('='); i--; } while (i > 0); stdout.puts(NEW_LINE);
