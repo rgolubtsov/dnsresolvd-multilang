@@ -20,6 +20,7 @@
 # === Executables =============================================================
 src/c/dnsresolvd
 src/vala/dnsresolvd
+src/genie/dnsresolvd
 
 # === Node modules ============================================================
 node_modules/
