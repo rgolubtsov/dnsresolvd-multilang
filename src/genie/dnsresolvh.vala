@@ -102,7 +102,9 @@ class AUX {
      * @return The <code>"Content-Type"</code> response header value
      *         used in the caller's <code>msg.set_response()</code> method.
      */
-    public string add_response_headers(Soup.MessageHeaders resp_hdrs, string fmt) {
+    public string add_response_headers(Soup.MessageHeaders resp_hdrs,
+                                       string              fmt) {
+
         resp_hdrs.append(HDR_CACHE_CONTROL_N, HDR_CACHE_CONTROL_V);
         resp_hdrs.append(HDR_EXPIRES_N,       HDR_EXPIRES_V      );
         resp_hdrs.append(HDR_PRAGMA_N,        HDR_PRAGMA_V       );
