@@ -226,11 +226,11 @@ init//(string[] args)
         // Setting up the daemon to listen on all TCP IPv4 interfaces.
         if (dmn.listen_all(port_number, Soup.ServerListenOptions.IPV4_ONLY))
             stdout.printf(AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
-                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE,port_number)
+                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE, port_number)
 
             Posix.syslog(Posix.LOG_INFO,
                           AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
-                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE,port_number)
+                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE, port_number)
 
             // Starting up the daemon by running the main loop.
             loop.run()
