@@ -112,16 +112,125 @@ init//(string[] args)
 
         Posix.exit(ret)
 
+    // ------------------------------------------------------------------------
+    // --- Attaching Unix signal handlers to ensure daemon clean shutdown -----
+    // --- Begin --------------------------------------------------------------
+    SIGINT_callback  : SourceFunc = def() // <== SIGINT  handler.
+        aux.cleanups_fixate(loop)
+
+        return new Unix.SignalSource(Posix.SIGINT ).REMOVE
+
+    SIGTERM_callback : SourceFunc = def() // <== SIGTERM handler.
+        aux.cleanups_fixate(loop)
+
+        return new Unix.SignalSource(Posix.SIGTERM).REMOVE
+
+    Unix.signal_add(Posix.SIGINT,  (owned) SIGINT_callback )
+    Unix.signal_add(Posix.SIGTERM, (owned) SIGTERM_callback)
+    // ------------------------------------------------------------------------
+    // --- Attaching Unix signal handlers to ensure daemon clean shutdown -----
+    // --- End ----------------------------------------------------------------
+
+    /*
+     * Attaching HTTP request handlers to process incoming requests
+     * and producing the response. ---+------+------+------+------+
+     *                                |      |      |      |      |
+     *                                v      v      v      v      v
+     *
+     * Default request handler.
+     *
+     * @param _dmn The daemon instance running.
+     * @param  msg The HTTP message being processed.
+     * @param  pth The path  component of the <code>msg</code> request URI.
+     * @param  qry The query component of the <code>msg</code> request URI.
+     */
+    DEF_REQ_HNDLR_callback : Soup.ServerCallback = def(_dmn, msg, pth, qry)
+        var resp_buffer = AUX.EMPTY_STRING
+
+        var mtd      = msg.method
+        var req_body = msg.request_body
+
+        var hostname = (string) null // The effective hostname to look up for.
+        var fmt      = (string) null // The response format selector.
+
+        // --------------------------------------------------------------------
+        // --- Parsing and validating request params - Begin ------------------
+        // --------------------------------------------------------------------
+        if      (mtd == AUX.MTD_HTTP_GET )
+            if (qry      != null)
+                hostname  = qry.get("h") // <------+
+                //                                 |
+                // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+                //                                              |
+                fmt       = qry.get("f") // <-------------------+
+        else if (mtd == AUX.MTD_HTTP_POST)
+            if((req_body != null) && (req_body.length > 0))
+                var req_body_data = AUX.EMPTY_STRING
+
+                for i : uint = 0 to (req_body.length - 1)
+                    req_body_data += req_body.data[i].to_string(AUX.C_FMT)
+
+                var qry_ary = req_body_data.split(AUX.AMPER)
+
+            // $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
+            //            |            |
+            //            |            +----------------------------+
+            //            +---------------------------------------+ |
+            //                                                    | |
+
+                for i : uint = 0 to (qry_ary.length - 1)   //     | |
+                    if      (qry_ary[i].has_prefix("h="))  // <---+ |
+                        hostname = qry_ary[i].substring(2) //       |
+                    else if (qry_ary[i].has_prefix("f="))  // <-----+
+                        fmt      = qry_ary[i].substring(2)
+
+        if((hostname == null) || (hostname.length == 0))
+            hostname  = AUX.DEF_HOSTNAME
+
+        if((fmt      == null) || (fmt.length      == 0))
+            fmt       = AUX.PRM_FMT_JSON
+        else
+            fmt       = fmt.down()
+
+            fmt_ : array of string = { AUX.PRM_FMT_HTML, AUX.PRM_FMT_JSON }
+
+            _fmt : bool = false
+
+            for i : uint = 0 to (fmt_.length - 1)
+                if (fmt == fmt_[i])
+                   _fmt  = true; break
+
+            if (!_fmt)
+                fmt   = AUX.PRM_FMT_JSON
+        // --------------------------------------------------------------------
+        // --- Parsing and validating request params - End --------------------
+        // --------------------------------------------------------------------
+
+        // Adding headers to the response.
+        var HDR_CONTENT_TYPE_V = aux.add_response_headers(msg.response_headers,
+                                 fmt)
+
+        msg.set_status(Soup.Status.OK);msg.set_response(HDR_CONTENT_TYPE_V,
+                       Soup.MemoryUse.COPY,    resp_buffer.data)
+
+    /*
+     * The first argument in this call is the URI path for serving requests.
+     * Values <code>null</code> or &quot;/&quot; mean that this will be
+     * the default handler for all requests.
+     * The second argument is the default handler callback itself.
+     */
+    dmn.add_handler(null, (owned) DEF_REQ_HNDLR_callback)
+
     // Trying to start up the daemon.
     try
         // Setting up the daemon to listen on all TCP IPv4 interfaces.
         if (dmn.listen_all(port_number, Soup.ServerListenOptions.IPV4_ONLY))
             stdout.printf(AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
-                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE,port_number)
+                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE, port_number)
 
             Posix.syslog(Posix.LOG_INFO,
                           AUX.MSG_SERVER_STARTED_1 + AUX.NEW_LINE
-                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE,port_number)
+                        + AUX.MSG_SERVER_STARTED_2 + AUX.NEW_LINE, port_number)
 
             // Starting up the daemon by running the main loop.
             loop.run()
