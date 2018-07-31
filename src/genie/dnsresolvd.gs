@@ -112,6 +112,25 @@ init//(string[] args)
 
         Posix.exit(ret)
 
+    // ------------------------------------------------------------------------
+    // --- Attaching Unix signal handlers to ensure daemon clean shutdown -----
+    // --- Begin --------------------------------------------------------------
+    SIGINT_callback  : SourceFunc = def() // <== SIGINT  handler.
+        aux.cleanups_fixate(loop)
+
+        return new Unix.SignalSource(Posix.SIGINT ).REMOVE
+
+    SIGTERM_callback : SourceFunc = def() // <== SIGTERM handler.
+        aux.cleanups_fixate(loop)
+
+        return new Unix.SignalSource(Posix.SIGTERM).REMOVE
+
+    Unix.signal_add(Posix.SIGINT,  (owned) SIGINT_callback )
+    Unix.signal_add(Posix.SIGTERM, (owned) SIGTERM_callback)
+    // ------------------------------------------------------------------------
+    // --- Attaching Unix signal handlers to ensure daemon clean shutdown -----
+    // --- End ----------------------------------------------------------------
+
     // Trying to start up the daemon.
     try
         // Setting up the daemon to listen on all TCP IPv4 interfaces.
