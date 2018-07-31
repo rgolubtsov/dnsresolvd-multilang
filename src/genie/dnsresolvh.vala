@@ -58,10 +58,10 @@ class AUX {
     public const string MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it.";
 
     // HTTP request methods and params.
-    const string MTD_HTTP_GET  = "GET";
-    const string MTD_HTTP_POST = "POST";
-    const string PRM_FMT_HTML  = "html";
-    const string PRM_FMT_JSON  = "json";
+    public const string MTD_HTTP_GET  = "GET";
+    public const string MTD_HTTP_POST = "POST";
+    public const string PRM_FMT_HTML  = "html";
+    public const string PRM_FMT_JSON  = "json";
 
     // HTTP response headers.
     const string HDR_CONTENT_TYPE_N      = "Content-Type";
@@ -91,7 +91,7 @@ class AUX {
     public const string DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
 
     /** Constant: The default hostname to look up for. */
-    const string DEF_HOSTNAME = "openbsd.org";
+    public const string DEF_HOSTNAME = "openbsd.org";
 
     /**
      * Adds headers to the response.
@@ -102,7 +102,7 @@ class AUX {
      * @return The <code>"Content-Type"</code> response header value
      *         used in the caller's <code>msg.set_response()</code> method.
      */
-    string add_response_headers(Soup.MessageHeaders resp_hdrs, string fmt) {
+    public string add_response_headers(Soup.MessageHeaders resp_hdrs, string fmt) {
         resp_hdrs.append(HDR_CACHE_CONTROL_N, HDR_CACHE_CONTROL_V);
         resp_hdrs.append(HDR_EXPIRES_N,       HDR_EXPIRES_V      );
         resp_hdrs.append(HDR_PRAGMA_N,        HDR_PRAGMA_V       );
