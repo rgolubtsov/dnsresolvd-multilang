@@ -14,6 +14,39 @@
 
 /** The main class of the daemon. */
 class DnsResolvd : Soup.Server
+    /**
+     * Performs DNS lookup action for the given hostname,
+     * i.e. (in this case) IP address retrieval by hostname.
+     *
+     * @param hostname The effective hostname to look up for.
+     *
+     * @return The array containing IP address of the analyzing host/service
+     *         and corresponding IP version (family) used to look up in DNS:
+     *         <code>4</code> for IPv4-only hosts,
+     *         <code>6</code> for IPv6-capable hosts.
+     */
+    def dns_lookup(hostname : string) : array of string
+        addr_ver : array of string = { AUX.EMPTY_STRING }; addr_ver.resize(2)
+
+        // Trying to perform DNS lookup for the given hostname.
+        try
+            var _addr_ver = (Resolver.get_default   (        )
+                                     .lookup_by_name(hostname)
+                                     .nth_data      (0       ))
+
+            addr_ver[0] = _addr_ver.to_string ()
+            var _ver    = _addr_ver.get_family()
+
+            if        (_ver == SocketFamily.IPV6)
+                addr_ver[1]  = 6.to_string()
+            else if   (_ver == SocketFamily.IPV4)
+                addr_ver[1]  = 4.to_string()
+        except e : Error
+            addr_ver[0] = AUX.ERR_PREFIX
+            addr_ver[1] = AUX.EMPTY_STRING
+
+        return addr_ver
+
     /** Default constructor. */
     construct()
         pass
@@ -205,6 +238,57 @@ init//(string[] args)
         // --------------------------------------------------------------------
         // --- Parsing and validating request params - End --------------------
         // --------------------------------------------------------------------
+
+        // Performing DNS lookup for the given hostname.
+        var addr_ver = dmn.dns_lookup(hostname)
+
+        var addr = addr_ver[0]
+        var ver  = addr_ver[1]
+
+        var node = new Json.Node(Json.NodeType.OBJECT)
+        var jobj = new Json.Object()
+
+        if      (fmt == AUX.PRM_FMT_HTML)
+            resp_buffer = ("<!DOCTYPE html>"                                                + AUX.NEW_LINE
++ "<html lang=\"en-US\" dir=\"ltr\">"                                                       + AUX.NEW_LINE
++ "<head>"                                                                                  + AUX.NEW_LINE
++ "<meta http-equiv=\""    + AUX.HDR_CONTENT_TYPE_N      +               "\"    content=\""
+                           + AUX.HDR_CONTENT_TYPE_V_HTML +               "\"           />"  + AUX.NEW_LINE
++ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + AUX.NEW_LINE
++ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + AUX.NEW_LINE
++ "<title>" + AUX.DMN_NAME + "</title>"                                                     + AUX.NEW_LINE
++ "</head>"                                                                                 + AUX.NEW_LINE
++ "<body>"                                                                                  + AUX.NEW_LINE
++ "<div>"   + hostname     + AUX.SPACE)
+        else if (fmt == AUX.PRM_FMT_JSON)
+            jobj.set_string_member(AUX.DAT_HOSTNAME_N, hostname)
+
+        // If lookup error occurred.
+        if (addr == AUX.ERR_PREFIX)
+            if      (fmt  == AUX.PRM_FMT_HTML)
+                resp_buffer += (AUX.ERR_PREFIX
+                            +   AUX.COLON_SPACE_SEP
+                            +   AUX.ERR_COULD_NOT_LOOKUP)
+            else if (fmt  == AUX.PRM_FMT_JSON)
+                jobj.set_string_member(AUX.ERR_PREFIX,
+                                       AUX.ERR_COULD_NOT_LOOKUP)
+        else
+            if      (fmt  == AUX.PRM_FMT_HTML)
+                resp_buffer += (addr
+                            +   AUX.SPACE
+                            +   AUX.DAT_VERSION_V
+                            +   ver)
+            else if (fmt  == AUX.PRM_FMT_JSON)
+                jobj.set_string_member(AUX.DAT_ADDRESS_N, addr)
+                jobj.set_string_member(AUX.DAT_VERSION_N,
+                                       AUX.DAT_VERSION_V + ver)
+
+        if      (fmt  == AUX.PRM_FMT_HTML)
+            resp_buffer += ("</div>"  + AUX.NEW_LINE
+                        +   "</body>" + AUX.NEW_LINE
+                        +   "</html>" + AUX.NEW_LINE)
+        else if (fmt  == AUX.PRM_FMT_JSON)
+            resp_buffer  = Json.to_string(node.init_object(jobj), false)
 
         // Adding headers to the response.
         var HDR_CONTENT_TYPE_V = aux.add_response_headers(msg.response_headers,

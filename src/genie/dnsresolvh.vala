@@ -64,22 +64,22 @@ class AUX {
     public const string PRM_FMT_JSON  = "json";
 
     // HTTP response headers.
-    const string HDR_CONTENT_TYPE_N      = "Content-Type";
-    const string HDR_CONTENT_TYPE_V_HTML = "text/html; charset=UTF-8";
-    const string HDR_CONTENT_TYPE_V_JSON = "application/json";
-    const string HDR_CACHE_CONTROL_N     = "Cache-Control";
-    const string HDR_CACHE_CONTROL_V     = "no-cache, no-store, "
-                                         + "must-revalidate";
-    const string HDR_EXPIRES_N           = "Expires";
-    const string HDR_EXPIRES_V           = "Thu, 01 Dec 1994 16:00:00 GMT";
-    const string HDR_PRAGMA_N            = "Pragma";
-    const string HDR_PRAGMA_V            = "no-cache";
+    public const string HDR_CONTENT_TYPE_N      = "Content-Type";
+    public const string HDR_CONTENT_TYPE_V_HTML = "text/html; charset=UTF-8";
+           const string HDR_CONTENT_TYPE_V_JSON = "application/json";
+           const string HDR_CACHE_CONTROL_N     = "Cache-Control";
+           const string HDR_CACHE_CONTROL_V     = "no-cache, no-store, "
+                                                + "must-revalidate";
+           const string HDR_EXPIRES_N           = "Expires";
+           const string HDR_EXPIRES_V           = "Thu, 01 Dec 1994 16:00:00 GMT";
+           const string HDR_PRAGMA_N            = "Pragma";
+           const string HDR_PRAGMA_V            = "no-cache";
 
     // Response data names.
-    const string DAT_HOSTNAME_N = "hostname";
-    const string DAT_ADDRESS_N  = "address";
-    const string DAT_VERSION_N  = "version";
-    const string DAT_VERSION_V  = "IPv";
+    public const string DAT_HOSTNAME_N = "hostname";
+    public const string DAT_ADDRESS_N  = "address";
+    public const string DAT_VERSION_N  = "version";
+    public const string DAT_VERSION_V  = "IPv";
 
     // Daemon name, version, and copyright banners.
     public const string DMN_NAME        = "DNS Resolver Daemon (dnsresolvd)";
