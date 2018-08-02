@@ -651,6 +651,6 @@ dnsresolvd:
         0000064692300000 0000064692300000 ld.so 0    1   0      /usr/libexec/ld.so
 ```
 
-**TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server and Arch Linux.
+The Genie daemon's build processes under Ubuntu Server and Arch Linux are exactly the same to those ones which are being used for Vala on those operating systems.
 
 :small_blue_diamond:
