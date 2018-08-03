@@ -298,9 +298,9 @@ init//(string[] args)
                        Soup.MemoryUse.COPY,    resp_buffer.data)
 
     /*
-     * The first argument in this call is the URI path for serving requests.
-     * Values <code>null</code> or &quot;/&quot; mean that this will be
-     * the default handler for all requests.
+     * The first argument in this call (<code>_pth</code>) is the URI path
+     * for serving requests. Values <code>null</code> or <code>"/"</code>
+     * mean that this will be the default handler for all requests.
      * The second argument is the default handler callback itself.
      */
     dmn.add_handler(null, (owned) DEF_REQ_HNDLR_callback)
