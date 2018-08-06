@@ -43,7 +43,7 @@ def main(argc, argv):
         port_number = argv[1]
 
         if (argc > 1):
-            print_banner_opt = argv[2]
+            print_banner_opt = argv[2].upper()
     else:
         port_number = 0
 

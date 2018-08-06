@@ -285,7 +285,7 @@ var main = function(argc, argv) {
     var print_banner_opt = aux._EMPTY_STRING;
 
     if (argc > 3) {
-        print_banner_opt = argv[3];
+        print_banner_opt = argv[3].toUpperCase();
     }
 
     if (print_banner_opt === aux._PRINT_BANNER_OPT) {

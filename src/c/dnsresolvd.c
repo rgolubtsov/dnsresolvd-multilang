@@ -601,9 +601,22 @@ int main(int argc, char *const *argv) {
 
     char *print_banner_opt = _EMPTY_STRING;
 
+    int argv2_len, /*
+        ^
+        |
+        +-------- Needs this for toupper'ing  argv[2] only.
+        |
+        v
+    */  i;
+
     if (argc > 2) {
-        print_banner_opt = malloc(strlen(           argv[2]));
-        print_banner_opt = strcpy(print_banner_opt, argv[2]);
+        argv2_len = strlen(argv[2]);
+
+        print_banner_opt = malloc(argv2_len);
+
+        for (i = 0; i <= argv2_len; i++) {
+            print_banner_opt[i] = toupper(argv[2][i]);
+        }
     }
 
     if (strcmp(print_banner_opt, _PRINT_BANNER_OPT) == 0) {

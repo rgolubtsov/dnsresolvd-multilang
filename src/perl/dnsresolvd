@@ -87,7 +87,7 @@ my $port_number = $ARGV[0];
 my $print_banner_opt = _EMPTY_STRING;
 
 if ($argc > 1) {
-    $print_banner_opt = $ARGV[1];
+    $print_banner_opt = uc($ARGV[1]);
 }
 
 # Opening the system logger.

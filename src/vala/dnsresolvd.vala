@@ -72,7 +72,7 @@ public static int main(string[] args) {
         port_number = int.parse(args[1]);
 
         if (argc > 1) {
-            print_banner_opt = args[2];
+            print_banner_opt = args[2].up();
         }
     } else {
         port_number = 0;
