@@ -212,11 +212,6 @@ drwxr-xr-x  7 <username>  <usergroup>    512 May  8 22:20 ..
 $
 $ file dnsresolvd.js
 dnsresolvd.js: a node script text executable
-$
-$ cd ../..
-$ NODE_PATH=/usr/local/lib/node_modules ./src/js/dnsresolvd.js 8765
-Server started on port 8765
-=== Hit Ctrl+C to terminate it.
 ```
 
 #### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
@@ -263,11 +258,6 @@ drwxrwxr-x 7 <username> <usergroup>  4096 Nov  3  2017 ..
 $
 $ file dnsresolvd.js
 dnsresolvd.js: a /usr/bin/env node script, ASCII text executable
-$
-$ cd ../..
-$ NODE_PATH=/usr/local/lib/node_modules ./src/js/dnsresolvd.js 8765
-Server started on port 8765
-=== Hit Ctrl+C to terminate it.
 ```
 
 #### Building under Arch Linux (kernel 4.15.10-1-ARCH x86-64)
@@ -310,11 +300,6 @@ drwxr-xr-x 7 <username> <usergroup>  4096 Nov 10  2017 ..
 $
 $ file dnsresolvd.js
 dnsresolvd.js: a /usr/bin/env node script, ASCII text executable
-$
-$ cd ../..
-$ NODE_PATH=/usr/lib/node_modules ./src/js/dnsresolvd.js 8765
-Server started on port 8765
-=== Hit Ctrl+C to terminate it.
 ```
 
 ### Lua (Luvit)
@@ -324,6 +309,30 @@ Server started on port 8765
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
 
 ### Perl 5 (Mojolicious)
+
+#### Building under OpenBSD/amd64 6.3
+
+Install the necessary dependencies (`cpanminus`, `Mojolicious`, `Net::DNS`):
+
+```
+$ sudo pkg_add -vvvvv p5-Mojolicious p5-Net-DNS
+```
+
+```
+$ mojo version
+CORE
+  Perl        (v5.24.3, openbsd)
+  Mojolicious (7.70, Doughnut)
+
+OPTIONAL
+  EV 4.0+                 (4.22)
+  IO::Socket::Socks 0.64+ (n/a)
+  IO::Socket::SSL 1.94+   (2.056)
+  Net::DNS::Native 0.15+  (n/a)
+  Role::Tiny 2.000001+    (n/a)
+
+You might want to update your Mojolicious to 7.89!
+```
 
 #### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
 
@@ -353,9 +362,22 @@ OPTIONAL
 This version is up to date, have fun!
 ```
 
-**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
+**TODO:** Describe the daemon's dependencies' build/install process under Arch Linux.
 
 ### Python 3 (Twisted)
+
+#### Building under OpenBSD/amd64 6.3
+
+Install the necessary dependencies (`py3-pip`, `twisted`, `py3-dnspython`):
+
+```
+$ sudo pkg_add -vvvvv py3-pip py3-dnspython
+$ sudo ln -sfn /usr/local/bin/pip3.6 /usr/local/bin/pip
+```
+
+```
+$ sudo pip install twisted
+```
 
 #### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
 
@@ -365,7 +387,7 @@ Install the necessary dependencies (`python3-twisted`, `python3-dnspython`):
 $ sudo apt-get update && sudo apt-get install python3-twisted python3-dnspython -y
 ```
 
-**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
+**TODO:** Describe the daemon's dependencies' build/install process under Arch Linux.
 
 ### Vala (libsoup)
 
@@ -653,6 +675,154 @@ dnsresolvd:
 ```
 
 The Genie daemon's build processes under Ubuntu Server and Arch Linux are exactly the same to those ones which are being used for Vala on those operating systems.
+
+## Running
+
+Starting the daemon is quite easy and very similar for all its implementations.
+
+### C (GNU libmicrohttpd)
+
+OpenBSD/amd64:
+
+```
+$ ./src/c/dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+Example of making GET and POST requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=openports.se&f=xml'
+{"hostname":"openports.se","address":"37.49.241.43","version":"IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=openports.se&f=xml' http://localhost:8765
+{"hostname":"openbsd.org","address":"129.128.5.194","version":"IPv4"}
+=== 200
+=== application/json
+```
+
+### JavaScript (Node.js)
+
+OpenBSD/amd64:
+
+```
+$ ./src/js/dnsresolvd.js 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+Example of making GET and POST requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=cybernode.com&f=xml'
+{"hostname":"cybernode.com","address":"64.62.244.231","version":"IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.cybernode.com&f=xml' http://localhost:8765
+{"hostname":"ipv6.cybernode.com","address":"2001:470:1:1b9::31","version":"IPv6"}
+=== 200
+=== application/json
+```
+
+### Perl 5 (Mojolicious)
+
+OpenBSD/amd64:
+
+```
+$ ./src/perl/dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+[Tue Aug  7 15:00:00 2018] [info] Listening at "http://*:8765"
+Server available at http://127.0.0.1:8765
+```
+
+### Python 3 (Twisted)
+
+OpenBSD/amd64:
+
+```
+$ ./src/python/dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+Example of making GET and POST requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=google.com&f=xml'
+{"hostname": "google.com", "address": "216.58.207.78", "version": "IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.google.com&f=xml' http://localhost:8765
+{"hostname": "ipv6.google.com", "address": "2a00:1450:4001:825::200e", "version": "IPv6"}
+=== 200
+=== application/json
+```
+
+### Vala (libsoup)
+
+OpenBSD/amd64:
+
+```
+$ ./src/vala/dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+Example of making GET and POST requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xml&h=valadoc.org'
+{"hostname":"valadoc.org","address":"104.131.12.61","version":"IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=elementary.io&f=json' http://localhost:8765
+{"hostname":"elementary.io","address":"104.28.4.44","version":"IPv4"}
+=== 200
+=== application/json
+```
+
+### Genie (libsoup)
+
+OpenBSD/amd64:
+
+```
+$ ./src/genie/dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+Example of making GET and POST requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=github.com&f=html'
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+<meta http-equiv="Content-Type"    content="text/html; charset=UTF-8"           />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"                            />
+<meta       name="viewport"        content="width=device-width,initial-scale=1" />
+<title>DNS Resolver Daemon (dnsresolvd)</title>
+</head>
+<body>
+<div>github.com 192.30.253.113 IPv4</div>
+</body>
+</html>
+
+=== 200
+=== text/html; charset=UTF-8
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=yaml.org' http://localhost:8765
+{"hostname":"yaml.org","address":"192.30.252.154","version":"IPv4"}
+=== 200
+=== application/json
+```
 
 ---
 
