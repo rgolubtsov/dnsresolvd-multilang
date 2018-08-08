@@ -304,9 +304,51 @@ dnsresolvd.js: a /usr/bin/env node script, ASCII text executable
 
 ### Lua (Luvit)
 
-#### Building/installing dependencies
+#### Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)
 
-**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD, Ubuntu Server, and Arch Linux.
+Install the necessary dependencies (`luvi`, `lit`, `luvit`, `luarocks`, `luaposix`). Note that some of these packages are not in the Arch Linux official repositories. Hence they have to be installed from the AUR repository. The AUR helper `yaourt` might be used for that:
+
+```
+$ yaourt -S luvi-bin
+$ yaourt -S luvit
+```
+
+The `lit` package will be built and installed as a dependency to the `luvit` package. And after that it will no be longer required. So it is safe to remove it from the system:
+
+```
+$ sudo pacman -Rsc lit
+```
+
+```
+$ sudo pacman -S luarocks
+$ sudo luarocks install luaposix
+```
+
+```
+$ luvit -v
+luvit version: 2.14.1
+luvi version: v2.7.6
+rex version: 8.37 2015-04-28
+libuv version: 1.9.1
+ssl version: OpenSSL 1.0.2h  3 May 2016, lua-openssl 0.5.1
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ cd src/lua
+$ ls -al
+total 32
+drwxr-xr-x 2 <username> <usergroup>  4096 Aug  8 19:15 .
+drwxr-xr-x 9 <username> <usergroup>  4096 Aug  8 19:10 ..
+-rwxr-xr-x 1 <username> <usergroup> 13664 Aug  8 19:15 dnsresolvd.lua
+-rw-r--r-- 1 <username> <usergroup>  4290 Aug  8 19:15 dnsresolvh.lua
+$
+$ file dnsresolvd.lua
+dnsresolvd.lua: a /usr/bin/env luvit script, ASCII text executable
+```
+
+**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD and Ubuntu Server.
 
 ### Perl 5 (Mojolicious)
 
