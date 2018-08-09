@@ -71,7 +71,8 @@ dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1
 **Dependencies:** The only build and runtime dependency is the main library &ndash; **GNU libmicrohttpd**. It has to be installed from packages:
 
 ```
-$ sudo apt-get update && sudo apt-get install libmicrohttpd-dev -y
+$ sudo apt-get update                       && \
+  sudo apt-get install libmicrohttpd-dev -y
 ```
 
 This package contains all the development stuff and is actually depends on the package `libmicrohttpd10` which provides runtime library (.so). The latter will be installed alongside automatically. The version of the GNU libmicrohttpd library is 0.9.44. (Also it needs to have the package `build-essential` installed, ensuring that the compiler GCC (version 5.4.0 in this Ubuntu release), GNU make, and all the required standard libs are always at hands.)
@@ -109,9 +110,7 @@ This is quite equal to the process of building the daemon under Ubuntu. Install 
 
 ```
 $ sudo pacman -Sy make gcc    (or $ sudo pacman -S make gcc-multilib)
-```
-
-```
+$
 $ sudo pacman -Sy libmicrohttpd
 ```
 
@@ -162,9 +161,7 @@ Install the necessary dependencies (`node`, `posix`):
 
 ```
 $ sudo pkg_add -vvvvv node
-```
-
-```
+$
 $ node -v
 v8.9.4
 ```
@@ -219,13 +216,12 @@ dnsresolvd.js: a node script text executable
 Install the necessary dependencies (`nodejs`, `npm`, `posix`):
 
 ```
-$ sudo apt-get update && sudo apt-get install nodejs npm -y
+$ sudo apt-get update                && \
+  sudo apt-get install nodejs npm -y
 $
 $ sudo ln -sfnv /usr/bin/nodejs /usr/local/bin/node
 '/usr/local/bin/node' -> '/usr/bin/nodejs'
-```
-
-```
+$
 $ node -v
 v4.2.6
 ```
@@ -266,9 +262,7 @@ Install the necessary dependencies (`nodejs`, `npm`, `posix`):
 
 ```
 $ sudo pacman -Sy nodejs npm
-```
-
-```
+$
 $ node -v
 v9.8.0
 ```
@@ -306,7 +300,7 @@ dnsresolvd.js: a /usr/bin/env node script, ASCII text executable
 
 #### Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)
 
-Install the necessary dependencies (`luvi`, `lit`, `luvit`, `luarocks`, `luaposix`). Note that some of these packages are not in the Arch Linux official repositories. Hence they have to be installed from the AUR repository. The AUR helper `yaourt` might be used for that:
+Install the necessary dependencies (`luvi`, `lit`, `luvit`, `luarocks5.1`, `luaposix`). Note that some of these packages are not in the Arch Linux official repositories. Hence they have to be installed from the AUR repository. The AUR helper `yaourt` might be used for that:
 
 ```
 $ yaourt -S luvi-bin
@@ -319,12 +313,23 @@ The `lit` package will be built and installed as a dependency to the `luvit` pac
 $ sudo pacman -Rsc lit
 ```
 
-```
-$ sudo pacman -S luarocks
-$ sudo luarocks install luaposix
-```
+The `luaposix` package can be installed from the AUR repository, but for now AUR suggests its outdated version, so a better way is to install it via **LuaRocks**:
 
 ```
+$ sudo pacman -S luarocks5.1
+$
+$ sudo luarocks-5.1 install luaposix
+```
+
+Since **Luvit** searches modules based on &quot;local&quot; tree (`/usr/local/share/`, `/usr/local/lib/`), it needs to create the following symlinks:
+
+```
+$ sudo mkdir    /usr/local/share/lua /usr/local/lib/lua       && \
+  sudo ln -sfnv /usr/share/lua/5.1   /usr/local/share/lua/5.1 && \
+  sudo ln -sfnv /usr/lib/lua/5.1     /usr/local/lib/lua/5.1
+'/usr/local/share/lua/5.1' -> '/usr/share/lua/5.1'
+'/usr/local/lib/lua/5.1' -> '/usr/lib/lua/5.1'
+$
 $ luvit -v
 luvit version: 2.14.1
 luvi version: v2.7.6
@@ -358,9 +363,7 @@ Install the necessary dependencies (`cpanminus`, `Mojolicious`, `Net::DNS`):
 
 ```
 $ sudo pkg_add -vvvvv p5-Mojolicious p5-Net-DNS
-```
-
-```
+$
 $ mojo version
 CORE
   Perl        (v5.24.3, openbsd)
@@ -381,14 +384,12 @@ You might want to update your Mojolicious to 7.89!
 Install the necessary dependencies (`cpanminus`, `Mojolicious`, `Net::DNS::Native`):
 
 ```
-$ sudo apt-get update && sudo apt-get install cpanminus -y && sudo cpanm App::cpanminus
-```
-
-```
+$ sudo apt-get update               && \
+  sudo apt-get install cpanminus -y && \
+  sudo cpanm App::cpanminus
+$
 $ sudo cpanm Mojolicious Net::DNS::Native
-```
-
-```
+$
 $ mojo version
 CORE
   Perl        (v5.22.1, linux)
@@ -427,7 +428,8 @@ $ sudo pip install twisted
 Install the necessary dependencies (`python3-twisted`, `python3-dnspython`):
 
 ```
-$ sudo apt-get update && sudo apt-get install python3-twisted python3-dnspython -y
+$ sudo apt-get update                                       && \
+  sudo apt-get install python3-twisted python3-dnspython -y
 ```
 
 **TODO:** Describe the daemon's dependencies' build/install process under Arch Linux.
@@ -440,9 +442,7 @@ Install the necessary dependencies (`vala`, `libsoup`, `json-glib`):
 
 ```
 $ sudo pkg_add -vvvvv vala libsoup json-glib
-```
-
-```
+$
 $ valac --version
 Vala 0.38.8
 ```
@@ -509,10 +509,9 @@ dnsresolvd:
 Install the necessary dependencies (`valac`, `libsoup2.4-dev`, `libjson-glib-dev`):
 
 ```
-$ sudo apt-get update && sudo apt-get install valac libsoup2.4-dev libjson-glib-dev -y
-```
-
-```
+$ sudo apt-get update                                           && \
+  sudo apt-get install valac libsoup2.4-dev libjson-glib-dev -y
+$
 $ valac --version
 Vala 0.30.1
 ```
@@ -578,9 +577,7 @@ Install the necessary dependencies (`vala`, `libsoup`, `json-glib`):
 
 ```
 $ sudo pacman -Sy vala libsoup json-glib
-```
-
-```
+$
 $ valac --version
 Vala 0.40.6
 ```
