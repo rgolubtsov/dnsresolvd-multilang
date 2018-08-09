@@ -12,12 +12,13 @@
  * (See the LICENSE file at the top of the source tree.)
 --]]
 
-local path  = require("path" )
-local http  = require("http" )
-local url   = require("url"  )
-local dns   = require("dns"  )
-local json  = require("json" )
-local posix = require("posix")
+local path  = require("path"        )
+local http  = require("http"        )
+local url   = require("url"         )
+local dns   = require("dns"         )
+local json  = require("json"        )
+local posix = require("posix.syslog")
+local bit32 = require("bit32"       )
 
 local aux = require("dnsresolvh")
 
@@ -322,8 +323,8 @@ local main = function(argc, argv)
     local port_number = tonumber(argv[2], 10)
 
     -- Opening the system logger.
-    posix.openlog(path.basename(daemon_name,  aux._LOG_DAEMON_EXT),
-                  {cons = true, pid = true}, posix.LOG_DAEMON)
+    posix.openlog(path.basename(daemon_name,   aux._LOG_DAEMON_EXT),
+    bit32.bor(posix.LOG_CONS, posix.LOG_PID), posix.LOG_DAEMON)
 
     local print_banner_opt = aux._EMPTY_STRING
 
