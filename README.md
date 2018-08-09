@@ -414,6 +414,7 @@ Install the necessary dependencies (`py3-pip`, `twisted`, `py3-dnspython`):
 
 ```
 $ sudo pkg_add -vvvvv py3-pip py3-dnspython
+$
 $ sudo ln -sfn /usr/local/bin/pip3.6 /usr/local/bin/pip
 ```
 
@@ -732,7 +733,7 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
-Example of making GET and POST requests:
+Example of making **GET** and **POST** requests:
 
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=openports.se&f=xml'
@@ -756,7 +757,7 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
-Example of making GET and POST requests:
+Example of making **GET** and **POST** requests:
 
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=cybernode.com&f=xml'
@@ -792,7 +793,7 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
-Example of making GET and POST requests:
+Example of making **GET** and **POST** requests:
 
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=google.com&f=xml'
@@ -816,7 +817,7 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
-Example of making GET and POST requests:
+Example of making **GET** and **POST** requests:
 
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xml&h=valadoc.org'
@@ -840,7 +841,7 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
-Example of making GET and POST requests:
+Example of making **GET** and **POST** requests:
 
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=github.com&f=html'
