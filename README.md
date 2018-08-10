@@ -344,10 +344,10 @@ Once this is done, check it out... just for fun:))
 $ cd src/lua
 $ ls -al
 total 32
-drwxr-xr-x 2 <username> <usergroup>  4096 Aug  8 19:15 .
+drwxr-xr-x 2 <username> <usergroup>  4096 Aug  9 20:20 .
 drwxr-xr-x 9 <username> <usergroup>  4096 Aug  8 19:10 ..
--rwxr-xr-x 1 <username> <usergroup> 13664 Aug  8 19:15 dnsresolvd.lua
--rw-r--r-- 1 <username> <usergroup>  4290 Aug  8 19:15 dnsresolvh.lua
+-rwxr-xr-x 1 <username> <usergroup> 13746 Aug  9 20:20 dnsresolvd.lua
+-rw-r--r-- 1 <username> <usergroup>  4290 Aug  9 20:20 dnsresolvh.lua
 $
 $ file dnsresolvd.lua
 dnsresolvd.lua: a /usr/bin/env luvit script, ASCII text executable
@@ -722,7 +722,7 @@ Starting the daemon is quite easy and very similar for all its implementations.
 
 ### C (GNU libmicrohttpd)
 
-OpenBSD/amd64:
+OpenBSD/amd64 | Arch Linux:
 
 ```
 $ ./src/c/dnsresolvd 8765
@@ -754,6 +754,14 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
+Arch Linux:
+
+```
+$ NODE_PATH=/usr/lib/node_modules ./src/js/dnsresolvd.js 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
 Example of making **GET** and **POST** requests:
 
 ```
@@ -768,9 +776,34 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.cybernode.com&f
 === application/json
 ```
 
+### Lua (Luvit)
+
+Arch Linux:
+
+```
+$ cd src/lua
+$ ./dnsresolvd.lua 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+Example of making **GET** and **POST** requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=ipv6.testvitesse.videotron.ca&f=xml'
+{"address":"2607:fa48:2:30ff:0:0:0:a","hostname":"ipv6.testvitesse.videotron.ca","version":"IPv6"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=xml&h=testvitesse.videotron.ca' http://localhost:8765
+{"address":"135.19.0.17","hostname":"testvitesse.videotron.ca","version":"IPv4"}
+=== 200
+=== application/json
+```
+
 ### Perl 5 (Mojolicious)
 
-OpenBSD/amd64:
+OpenBSD/amd64 | Arch Linux:
 
 ```
 $ ./src/perl/dnsresolvd 8765
@@ -778,6 +811,22 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 [Tue Aug  7 15:00:00 2018] [info] Listening at "http://*:8765"
 Server available at http://127.0.0.1:8765
+```
+
+Example of making **GET** and **POST** requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xml&h=testvitesse.videotron.ca'
+{"address":"135.19.0.17","hostname":"testvitesse.videotron.ca","version":"IPv4"}
+
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.testvitesse.videotron.ca&f=xml' http://localhost:8765
+{"address":"129.128.5.194","hostname":"openbsd.org","version":"IPv4"}
+
+=== 200
+=== application/json
 ```
 
 ### Python 3 (Twisted)
@@ -806,7 +855,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.google.com&f=xm
 
 ### Vala (libsoup)
 
-OpenBSD/amd64:
+OpenBSD/amd64 | Arch Linux:
 
 ```
 $ ./src/vala/dnsresolvd 8765
@@ -830,7 +879,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=elementary.io&f=json
 
 ### Genie (libsoup)
 
-OpenBSD/amd64:
+OpenBSD/amd64 | Arch Linux:
 
 ```
 $ ./src/genie/dnsresolvd 8765
