@@ -35,6 +35,4 @@ defmodule Dnsresolvd do
     end
 end
 
-Dnsresolvd.dns_lookup(Dnsresolvd._DEF_HOSTNAME)
-
 # vim:set nu ts=4 sw=4:
