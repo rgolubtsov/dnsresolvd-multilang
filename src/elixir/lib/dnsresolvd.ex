@@ -31,6 +31,9 @@ defmodule Dnsresolvd do
                  `4` for IPv4-only hosts, `6` for IPv6-capable hosts.
     """
     def dns_lookup(hostname) do
+        # TODO: Implement performing DNS lookup action for the given hostname.
+        #       This function currently is a dummy thing and hence
+        #       it should be populated with the actual code.
         IO.puts("=== " <> hostname)
     end
 end

@@ -12,6 +12,8 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
+# TODO: Replace this call with invoking the main or startup function,
+#       then do all the rest.
 Dnsresolvd.dns_lookup(Dnsresolvd._DEF_HOSTNAME)
 
 # vim:set nu et ts=4 sw=4:
