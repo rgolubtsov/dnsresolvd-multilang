@@ -25,4 +25,8 @@ src/genie/dnsresolvd
 # === Node modules ============================================================
 node_modules/
 
+# === Elixir/Erlang builds (apps/BEAMs) =======================================
+_build/
+*.beam
+
 # vim:set nu et ts=4 sw=4:
