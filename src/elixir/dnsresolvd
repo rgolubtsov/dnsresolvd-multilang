@@ -12,10 +12,6 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-# TODO: Replace this call with invoking the main or startup function,
-#       then do all the rest.
-Dnsresolvd.dns_lookup(AUX._DEF_HOSTNAME)
-
 defmodule Main do
     @moduledoc "The entry point container of the daemon."
 
@@ -101,6 +97,9 @@ defmodule Main do
 
             System.halt(ret)
         end
+
+        # Trying to start up the daemon.
+        Dnsresolvd.startup(port_number)
 
         # Making final cleanups.
         AUX._cleanups_fixate()

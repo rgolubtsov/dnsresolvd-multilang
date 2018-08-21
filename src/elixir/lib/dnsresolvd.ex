@@ -16,6 +16,20 @@ defmodule Dnsresolvd do
     @moduledoc "The main module of the daemon."
 
     @doc """
+    Starts up the daemon.
+
+    **Args:**<br />
+        `port_number`: The server port number to listen on.
+
+    **Returns:**<br />
+        The server exit code when interrupted.
+    """
+    def startup(port_number) do
+        dns_lookup(to_string(port_number) <> AUX._ONE_SPACE_STRING
+                                          <> AUX._DEF_HOSTNAME)
+    end
+
+    @doc """
     Performs DNS lookup action for the given hostname,
     i.e. (in this case) IP address retrieval by hostname.
 
@@ -32,6 +46,8 @@ defmodule Dnsresolvd do
         #       This function currently is a dummy thing and hence
         #       it should be populated with the actual code.
         IO.puts("=== " <> hostname)
+
+        AUX._EXIT_SUCCESS
     end
 end
 
