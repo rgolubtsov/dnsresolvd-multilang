@@ -14,6 +14,52 @@
 
 # TODO: Replace this call with invoking the main or startup function,
 #       then do all the rest.
-Dnsresolvd.dns_lookup(Dnsresolvd._DEF_HOSTNAME)
+Dnsresolvd.dns_lookup(AUX._DEF_HOSTNAME)
+
+defmodule Main do
+    @moduledoc "The entry point container of the daemon."
+
+    @doc """
+    The daemon entry point.
+
+    **Args:**<br />
+        `argc`: The number of command-line arguments.
+        `argv`: The list   of command-line arguments.
+
+    **Returns:**<br />
+        The exit code indicating the daemon overall execution status.
+    """
+    def main(argc, argv) do
+        ret = AUX._EXIT_SUCCESS
+#       ret = AUX._EXIT_FAILURE
+
+        port_number      = if (argc > 0),   do: Enum.at(argv, 0),
+                                          else: 0
+        print_banner_opt = if (argc > 1),   do: Enum.at(argv, 1),
+                                          else: AUX._EMPTY_STRING
+
+        print_banner_opt = String.upcase(print_banner_opt, :ascii)
+
+        if (print_banner_opt === AUX._PRINT_BANNER_OPT) do
+            AUX._separator_draw(AUX._DMN_DESCRIPTION)
+
+        IO.puts(AUX._DMN_NAME <> AUX._COMMA_SPACE_SEP  <> AUX._DMN_VERSION_S__
+     <> AUX._ONE_SPACE_STRING <> AUX._DMN_VERSION      <> AUX._NEW_LINE
+     <> AUX._DMN_DESCRIPTION                           <> AUX._NEW_LINE
+     <> AUX._DMN_COPYRIGHT__  <> AUX._ONE_SPACE_STRING <> AUX._DMN_AUTHOR)
+
+            AUX._separator_draw(AUX._DMN_DESCRIPTION)
+        end
+
+        IO.puts("=== " <> to_string(port_number))
+
+        System.stop(ret)
+    end
+end
+
+argv = System.argv()
+argc = length(argv)
+
+Main.main(argc, argv)
 
 # vim:set nu et ts=4 sw=4:
