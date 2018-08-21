@@ -30,8 +30,8 @@ defmodule Main do
         The exit code indicating the daemon overall execution status.
     """
     def main(argc, argv) do
-        ret = AUX._EXIT_SUCCESS
-#       ret = AUX._EXIT_FAILURE
+        daemon_name = String.trim_leading(__ENV__.file,
+                                                  File.cwd!() <> AUX._SLASH)
 
         port_number      = if (argc > 0),   do: Enum.at(argv, 0),
                                           else: 0
@@ -51,15 +51,69 @@ defmodule Main do
             AUX._separator_draw(AUX._DMN_DESCRIPTION)
         end
 
-        IO.puts("=== " <> to_string(port_number))
+        # Opening the system logger.
+        # Posix.openlog((string) null,
+        #               (Posix.LOG_CONS | Posix.LOG_PID), Posix.LOG_DAEMON)
 
-        System.stop(ret)
+        # Checking for args presence.
+        if (argc === 0) do
+            ret = AUX._EXIT_FAILURE
+
+            IO.puts(:stderr, daemon_name <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_1
+                      <> to_string(argc) <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_2
+                                         <> AUX._NEW_LINE)
+
+            # Posix.syslog(Posix.LOG_ERR,
+            #                  daemon_name <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_1
+            #           <> to_string(argc) <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_2
+            #                              <> AUX._NEW_LINE)
+
+            IO.puts(:stderr, AUX._MSG_USAGE_TEMPLATE_1 <> daemon_name
+                          <> AUX._MSG_USAGE_TEMPLATE_2 <> AUX._NEW_LINE)
+
+            AUX._cleanups_fixate()
+
+            System.halt(ret)
+        end
+
+        # Validating the port number and discarding any rubbish it may contain.
+        port_number = try do
+            String.to_integer(port_number)
+        rescue
+            ArgumentError -> 0
+        end
+
+        # Checking for port correctness.
+        if ((port_number < AUX._MIN_PORT) or (port_number > AUX._MAX_PORT)) do
+            ret = AUX._EXIT_FAILURE
+
+            IO.puts(:stderr, daemon_name <> AUX._ERR_PORT_MUST_BE_POSITIVE_INT
+                                         <> AUX._NEW_LINE)
+
+            # Posix.syslog(Posix.LOG_ERR,
+            #                  daemon_name <> AUX._ERR_PORT_MUST_BE_POSITIVE_INT
+            #                              <> AUX._NEW_LINE)
+
+            IO.puts(:stderr, AUX._MSG_USAGE_TEMPLATE_1 <> daemon_name
+                          <> AUX._MSG_USAGE_TEMPLATE_2 <> AUX._NEW_LINE)
+
+            AUX._cleanups_fixate()
+
+            System.halt(ret)
+        end
+
+        # Making final cleanups.
+        AUX._cleanups_fixate()
+
+        AUX._EXIT_SUCCESS
     end
 end
 
 argv = System.argv()
 argc = length(argv)
 
-Main.main(argc, argv)
+ret = Main.main(argc, argv)
+
+System.stop(ret)
 
 # vim:set nu et ts=4 sw=4:
