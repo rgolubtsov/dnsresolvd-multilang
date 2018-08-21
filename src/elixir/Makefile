@@ -20,7 +20,7 @@ EC      = elixirc
 ECFLAGS = -o
 
 # Making the target.
-$(BEAM): $(____)
+$(BEAM): $(____)/*.ex
 	$(EC) $(ECFLAGS) $(____) $(____)
 
 .PHONY: all clean
