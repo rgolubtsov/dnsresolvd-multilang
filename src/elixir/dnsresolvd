@@ -12,8 +12,114 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-# TODO: Replace this call with invoking the main or startup function,
-#       then do all the rest.
-Dnsresolvd.dns_lookup(Dnsresolvd._DEF_HOSTNAME)
+defmodule Main do
+    @moduledoc "The entry point container of the daemon."
+
+    @doc """
+    The daemon entry point.
+
+    **Args:**<br />
+        `argc`: The number of command-line arguments.
+        `argv`: The list   of command-line arguments.
+
+    **Returns:**<br />
+        The exit code indicating the daemon overall execution status.
+    """
+    def main(argc, argv) do
+        daemon_name = String.trim_leading(__ENV__.file,
+                                                  File.cwd!() <> AUX._SLASH)
+
+        port_number      = if (argc > 0),   do: Enum.at(argv, 0),
+                                          else: 0
+        print_banner_opt = if (argc > 1),   do: Enum.at(argv, 1),
+                                          else: AUX._EMPTY_STRING
+
+        print_banner_opt = String.upcase(print_banner_opt, :ascii)
+
+        if (print_banner_opt === AUX._PRINT_BANNER_OPT) do
+            AUX._separator_draw(AUX._DMN_DESCRIPTION)
+
+        IO.puts(AUX._DMN_NAME <> AUX._COMMA_SPACE_SEP  <> AUX._DMN_VERSION_S__
+     <> AUX._ONE_SPACE_STRING <> AUX._DMN_VERSION      <> AUX._NEW_LINE
+     <> AUX._DMN_DESCRIPTION                           <> AUX._NEW_LINE
+     <> AUX._DMN_COPYRIGHT__  <> AUX._ONE_SPACE_STRING <> AUX._DMN_AUTHOR)
+
+            AUX._separator_draw(AUX._DMN_DESCRIPTION)
+        end
+
+        # Opening the system logger.
+        # Posix.openlog((string) null,
+        #               (Posix.LOG_CONS | Posix.LOG_PID), Posix.LOG_DAEMON)
+
+        # Checking for args presence.
+        if (argc === 0) do
+            ret = AUX._EXIT_FAILURE
+
+            IO.puts(:stderr, daemon_name <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_1
+                      <> to_string(argc) <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_2
+                                         <> AUX._NEW_LINE)
+
+            # Posix.syslog(Posix.LOG_ERR,
+            #                  daemon_name <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_1
+            #           <> to_string(argc) <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_2
+            #                              <> AUX._NEW_LINE)
+
+            IO.puts(:stderr, AUX._MSG_USAGE_TEMPLATE_1 <> daemon_name
+                          <> AUX._MSG_USAGE_TEMPLATE_2 <> AUX._NEW_LINE)
+
+            AUX._cleanups_fixate()
+
+            System.halt(ret)
+        end
+
+        # Validating the port number and discarding any rubbish it may contain.
+        port_number = try do
+            String.to_integer(port_number)
+        rescue
+            ArgumentError -> 0
+        end
+
+        # Checking for port correctness.
+        if ((port_number < AUX._MIN_PORT) or (port_number > AUX._MAX_PORT)) do
+            ret = AUX._EXIT_FAILURE
+
+            IO.puts(:stderr, daemon_name <> AUX._ERR_PORT_MUST_BE_POSITIVE_INT
+                                         <> AUX._NEW_LINE)
+
+            # Posix.syslog(Posix.LOG_ERR,
+            #                  daemon_name <> AUX._ERR_PORT_MUST_BE_POSITIVE_INT
+            #                              <> AUX._NEW_LINE)
+
+            IO.puts(:stderr, AUX._MSG_USAGE_TEMPLATE_1 <> daemon_name
+                          <> AUX._MSG_USAGE_TEMPLATE_2 <> AUX._NEW_LINE)
+
+            AUX._cleanups_fixate()
+
+            System.halt(ret)
+        end
+
+        # Trying to start up the daemon. <------------------------------+
+        try do #                                                        |
+            Dnsresolvd.startup(port_number) # <---------------------+   |
+        rescue #                                                    |   |
+            e in RuntimeError -> RuntimeError.message(e) # <-----+  |   |
+        end #                                                    |  |   |
+        #      ^         ^        ^   ^   ^         ^   ^        |  |   |
+        #      |         |        |   |   |         |   |        |  |   |
+        # TODO:Implement properly the try construct for starting up the daemon.
+
+        # Making final cleanups.
+        AUX._cleanups_fixate()
+
+        AUX._EXIT_SUCCESS
+    end
+end
+
+argv = System.argv()
+argc = length(argv)
+
+ret = Main.main(argc, argv)
+
+System.stop(ret)
 
 # vim:set nu et ts=4 sw=4:
