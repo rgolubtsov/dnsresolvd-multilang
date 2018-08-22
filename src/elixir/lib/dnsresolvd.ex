@@ -25,6 +25,9 @@ defmodule Dnsresolvd do
         The server exit code when interrupted.
     """
     def startup(port_number) do
+        # TODO: Implement starting up the daemon.
+        #       This function currently is a dummy thing and hence
+        #       it should be populated with the actual code.
         dns_lookup(to_string(port_number) <> AUX._ONE_SPACE_STRING
                                           <> AUX._DEF_HOSTNAME)
     end

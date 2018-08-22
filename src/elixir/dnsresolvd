@@ -98,8 +98,15 @@ defmodule Main do
             System.halt(ret)
         end
 
-        # Trying to start up the daemon.
-        Dnsresolvd.startup(port_number)
+        # Trying to start up the daemon. <------------------------------+
+        try do #                                                        |
+            Dnsresolvd.startup(port_number) # <---------------------+   |
+        rescue #                                                    |   |
+            e in RuntimeError -> RuntimeError.message(e) # <-----+  |   |
+        end #                                                    |  |   |
+        #      ^         ^        ^   ^   ^         ^   ^        |  |   |
+        #      |         |        |   |   |         |   |        |  |   |
+        # TODO:Implement properly the try construct for starting up the daemon.
 
         # Making final cleanups.
         AUX._cleanups_fixate()
