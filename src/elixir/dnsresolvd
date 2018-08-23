@@ -100,7 +100,7 @@ defmodule Main do
 
         # Trying to start up the daemon. <------------------------------+
         try do #                                                        |
-            Dnsresolvd.startup(port_number) # <---------------------+   |
+            DnsResolvd.startup(port_number) # <---------------------+   |
         rescue #                                                    |   |
             e in RuntimeError -> RuntimeError.message(e) # <-----+  |   |
         end #                                                    |  |   |
