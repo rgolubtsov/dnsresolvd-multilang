@@ -12,7 +12,7 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-defmodule Dnsresolvd do
+defmodule DnsResolvd do
     @moduledoc "The main module of the daemon."
 
     @doc """

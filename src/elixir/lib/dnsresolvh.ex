@@ -22,7 +22,6 @@ defmodule AUX do
     def _COLON_SPACE_SEP , do: ": "
     def _COMMA_SPACE_SEP , do: ", "
     def _NEW_LINE        , do: "\n"
-    def _SLASH           , do:  "/"
     def _AMPER           , do:  "&"
     def _ONE_SPACE_STRING, do:  " "
     def _PRINT_BANNER_OPT, do: "-V"
