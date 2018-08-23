@@ -26,8 +26,7 @@ defmodule Main do
         The exit code indicating the daemon overall execution status.
     """
     def main(argc, argv) do
-        daemon_name = String.trim_leading(__ENV__.file,
-                                                  File.cwd!() <> AUX._SLASH)
+        daemon_name = Path.basename(__ENV__.file)
 
         port_number      = if (argc > 0),   do: Enum.at(argv, 0),
                                           else: 0
