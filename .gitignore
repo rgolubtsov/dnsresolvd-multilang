@@ -22,11 +22,11 @@ src/c/dnsresolvd
 src/vala/dnsresolvd
 src/genie/dnsresolvd
 
-# === Node modules ============================================================
+# === Node/Erlang modules =====================================================
 node_modules/
+erlang_modules/
 
-# === Elixir/Erlang builds (apps/BEAMs) =======================================
-_build/
+# === Erlang builds (BEAMs) ===================================================
 *.beam
 
 # vim:set nu et ts=4 sw=4:
