@@ -735,6 +735,102 @@ dnsresolvd:
 
 The Genie daemon's build processes under Ubuntu Server and Arch Linux are exactly the same to those ones which are being used for Vala on those operating systems.
 
+### Elixir (Cowboy)
+
+#### Building under OpenBSD/amd64 6.3
+
+Install the necessary dependencies (`elixir`, `rebar19`, `syslog`). Note that the `erlang` package will be installed automatically as a dependency to the `elixir` package:
+
+```
+$ sudo pkg_add -vvvvv elixir rebar19
+```
+
+The `syslog` package is an *Erlang* package and it can be installed using normal Elixir'ish way &ndash; via its standard Mix build tool. But since the Mix utility doesn't used at all, let's build and install the `syslog` package via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will do the job:
+
+```
+$ cd src/elixir
+```
+
+```
+$ export       E_LIB_ID=erlang_modules       && \
+  mkdir   -p ${E_LIB_ID}                     && \
+  cd         ${E_LIB_ID}                     && \
+  rebar19 -f create-lib libid=${E_LIB_ID}    && \
+  echo       '% ==============
+% ./rebar.config
+% ==============
+{deps, [
+    {syslog, {
+        git, "git://github.com/Vagabond/erlang-syslog.git", {branch, "master"}
+    }}
+]}.
+% vim:set nu et ts=4 sw=4:' > ./rebar.config && \
+  unset      E_LIB_ID                        && \
+  rebar19    g-d                             && \
+  rebar19    c-d                             && \
+  rebar19    co                              && \
+  cd         - # <== Hit Ctrl+D after hitting Enter here.
+==> erlang_modules (create-lib)
+Writing src/erlang_modules.app.src
+Writing src/erlang_modules.erl
+==> erlang_modules (get-deps)
+Pulling syslog from {git,"git://github.com/Vagabond/erlang-syslog.git",
+                         {branch,"master"}}
+Cloning into 'syslog'...
+==> syslog (get-deps)
+==> syslog (check-deps)
+==> erlang_modules (check-deps)
+==> syslog (compile)
+Compiled src/syslog_sup.erl
+Compiled src/syslog_app.erl
+Compiled src/syslog.erl
+Compiling c_src/syslog_drv.c
+==> erlang_modules (compile)
+Compiled src/erlang_modules.erl
+/home/<username>/dnsresolvd-multilang/src/elixir
+```
+
+Now the daemon might be built.
+
+```
+$ cd src/elixir
+$ gmake clean && gmake all
+rm -f lib/*.beam
+elixirc -o lib lib
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al . lib
+.:
+total 32
+drwxr-xr-x   4 <username>  <usergroup>   512 Aug 29 19:20 .
+drwxr-xr-x  10 <username>  <usergroup>   512 Aug 15 19:40 ..
+-rw-r--r--   1 <username>  <usergroup>   879 Aug 29 19:20 Makefile
+-rwxr-xr-x   1 <username>  <usergroup>  5560 Aug 29 19:20 dnsresolvd
+drwxr-xr-x   6 <username>  <usergroup>   512 Aug 29 19:20 erlang_modules
+drwxr-xr-x   2 <username>  <usergroup>   512 Aug 29 19:20 lib
+
+lib:
+total 40
+drwxr-xr-x  2 <username>  <usergroup>   512 Aug 29 19:20 .
+drwxr-xr-x  4 <username>  <usergroup>   512 Aug 29 19:20 ..
+-rw-r--r--  1 <username>  <usergroup>  5644 Aug 29 19:20 Elixir.AUX.beam
+-rw-r--r--  1 <username>  <usergroup>  2496 Aug 29 19:20 Elixir.DnsResolvd.beam
+-rw-r--r--  1 <username>  <usergroup>  2027 Aug 29 19:20 dnsresolvd.ex
+-rw-r--r--  1 <username>  <usergroup>  3212 Aug 29 19:20 dnsresolvh.ex
+$
+$ file dnsresolvd lib/*
+dnsresolvd:                 a elixir script text executable
+lib/Elixir.AUX.beam:        Erlang BEAM file
+lib/Elixir.DnsResolvd.beam: Erlang BEAM file
+lib/dnsresolvd.ex:          ASCII English text
+lib/dnsresolvh.ex:          ASCII English text
+```
+
+**TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server and Arch Linux.
+
 ## Running
 
 Starting the daemon is quite easy and very similar for all its implementations.
