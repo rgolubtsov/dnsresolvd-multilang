@@ -30,6 +30,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [Python 3 (Twisted)](#python-3-twisted)
   * [Vala (libsoup)](#vala-libsoup)
   * [Genie (libsoup)](#genie-libsoup)
+  * [Elixir (Cowboy)](#elixir-cowboy)
 * **[Running](#running)**
   * [C (GNU libmicrohttpd)](#c-gnu-libmicrohttpd-1)
   * [JavaScript (Node.js)](#javascript-nodejs-1)
