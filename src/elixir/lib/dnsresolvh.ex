@@ -46,6 +46,10 @@ defmodule AUX do
     # Constant: The maximum port number allowed.
     def _MAX_PORT, do: 49151
 
+    # Common notification messages.
+    def _MSG_SERVER_STARTED_1, do: "Server started on port "
+    def _MSG_SERVER_STARTED_2, do: "=== Hit Ctrl+C to terminate it."
+
     # Daemon name, version, and copyright banners.
     def _DMN_NAME       , do: "DNS Resolver Daemon (dnsresolvd)"
     def _DMN_DESCRIPTION, do: "Performs DNS lookups for the given "
@@ -59,9 +63,14 @@ defmodule AUX do
     def _DEF_HOSTNAME, do: "openbsd.org"
 
     # Helper function. Makes final buffer cleanups, closes streams, etc.
-    def _cleanups_fixate() do
+    def _cleanups_fixate(log) do
         # Closing the system logger.
-        # Posix.closelog()
+        if (log !== nil) do
+            IO.puts("--- log is not nil ---")
+            # ----- Calling Erlang -----+---+
+            :syslog.close(log) # <------+   |
+            :syslog.stop()     # <----------+
+        end
     end
 
     # Helper function. Draws a horizontal separator banner.

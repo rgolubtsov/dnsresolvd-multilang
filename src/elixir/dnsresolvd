@@ -46,9 +46,11 @@ defmodule Main do
             AUX._separator_draw(AUX._DMN_DESCRIPTION)
         end
 
-        # Opening the system logger.
-        # Posix.openlog((string) null,
-        #               (Posix.LOG_CONS | Posix.LOG_PID), Posix.LOG_DAEMON)
+        # Opening the system logger.----- Calling Erlang -----+---+---+---+
+        :code.load_file(:syslog)        # <-------------------+   |   |   |
+                        :syslog.start() # <-----------------------+   |   |
+        {:ok,    log} = :syslog.open(to_charlist(daemon_name),# <-----+   |
+        [:cons, :pid],  :daemon)        # <-------------------------------+
 
         # Checking for args presence.
         if (argc === 0) do
@@ -58,15 +60,15 @@ defmodule Main do
                       <> to_string(argc) <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_2
                                          <> AUX._NEW_LINE)
 
-            # Posix.syslog(Posix.LOG_ERR,
-            #                  daemon_name <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_1
-            #           <> to_string(argc) <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_2
-            #                              <> AUX._NEW_LINE)
+            :syslog.log(log, :err, # <----- Calling Erlang -----
+                             daemon_name <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_1
+                      <> to_string(argc) <> AUX._ERR_MUST_BE_ONE_TWO_ARGS_2
+                                         <> AUX._NEW_LINE)
 
             IO.puts(:stderr, AUX._MSG_USAGE_TEMPLATE_1 <> daemon_name
                           <> AUX._MSG_USAGE_TEMPLATE_2 <> AUX._NEW_LINE)
 
-            AUX._cleanups_fixate()
+            AUX._cleanups_fixate(log)
 
             System.halt(ret)
         end
@@ -85,20 +87,29 @@ defmodule Main do
             IO.puts(:stderr, daemon_name <> AUX._ERR_PORT_MUST_BE_POSITIVE_INT
                                          <> AUX._NEW_LINE)
 
-            # Posix.syslog(Posix.LOG_ERR,
-            #                  daemon_name <> AUX._ERR_PORT_MUST_BE_POSITIVE_INT
-            #                              <> AUX._NEW_LINE)
+            :syslog.log(log, :err, # <----- Calling Erlang -----
+                             daemon_name <> AUX._ERR_PORT_MUST_BE_POSITIVE_INT
+                                         <> AUX._NEW_LINE)
 
             IO.puts(:stderr, AUX._MSG_USAGE_TEMPLATE_1 <> daemon_name
                           <> AUX._MSG_USAGE_TEMPLATE_2 <> AUX._NEW_LINE)
 
-            AUX._cleanups_fixate()
+            AUX._cleanups_fixate(log)
 
             System.halt(ret)
         end
 
         # Trying to start up the daemon. <------------------------------+
         try do #                                                        |
+            IO.puts(AUX._MSG_SERVER_STARTED_1 #                         |
+                 <> to_string(port_number) <> AUX._NEW_LINE #           |
+                 <> AUX._MSG_SERVER_STARTED_2) #                        |
+        #                                                               |
+            :syslog.log(log, :info, # <----- Calling Erlang -----       |
+                    AUX._MSG_SERVER_STARTED_1 #                         |
+                 <> to_string(port_number) <> AUX._NEW_LINE #           |
+                 <> AUX._MSG_SERVER_STARTED_2) #                        |
+        #                                                               |
             DnsResolvd.startup(port_number) # <---------------------+   |
         rescue #                                                    |   |
             e in RuntimeError -> RuntimeError.message(e) # <-----+  |   |
@@ -108,7 +119,7 @@ defmodule Main do
         # TODO:Implement properly the try construct for starting up the daemon.
 
         # Making final cleanups.
-        AUX._cleanups_fixate()
+        AUX._cleanups_fixate(log)
 
         AUX._EXIT_SUCCESS
     end
