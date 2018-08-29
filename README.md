@@ -20,6 +20,25 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **Genie ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/genie/`
 * :cd: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
 
+---
+
+* [Building](#building)
+  * [C (GNU libmicrohttpd)](#c-gnu-libmicrohttpd)
+  * [JavaScript (Node.js)](#javascript-nodejs)
+  * [Lua (Luvit)](#lua-luvit)
+  * [Perl 5 (Mojolicious)](#perl-5-mojolicious)
+  * [Python 3 (Twisted)](#python-3-twisted)
+  * [Vala (libsoup)](#vala-libsoup)
+  * [Genie (libsoup)](#genie-libsoup)
+* [Running](#running)
+  * [C (GNU libmicrohttpd)](#c-gnu-libmicrohttpd-1)
+  * [JavaScript (Node.js)](#javascript-nodejs-1)
+  * [Lua (Luvit)](#lua-luvit-1)
+  * [Perl 5 (Mojolicious)](#perl-5-mojolicious-1)
+  * [Python 3 (Twisted)](#python-3-twisted-1)
+  * [Vala (libsoup)](#vala-libsoup-1)
+  * [Genie (libsoup)](#genie-libsoup-1)
+
 ## Building
 
 Every daemon implementation has its own build rules, so let's describe them sequentially.
