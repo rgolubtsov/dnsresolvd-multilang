@@ -22,7 +22,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 
 ## Table of Contents
 
-* [Building](#building)
+* **[Building](#building)**
   * [C (GNU libmicrohttpd)](#c-gnu-libmicrohttpd)
   * [JavaScript (Node.js)](#javascript-nodejs)
   * [Lua (Luvit)](#lua-luvit)
@@ -30,7 +30,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [Python 3 (Twisted)](#python-3-twisted)
   * [Vala (libsoup)](#vala-libsoup)
   * [Genie (libsoup)](#genie-libsoup)
-* [Running](#running)
+* **[Running](#running)**
   * [C (GNU libmicrohttpd)](#c-gnu-libmicrohttpd-1)
   * [JavaScript (Node.js)](#javascript-nodejs-1)
   * [Lua (Luvit)](#lua-luvit-1)
