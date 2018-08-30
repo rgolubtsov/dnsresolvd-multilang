@@ -39,6 +39,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [Python 3 (Twisted)](#python-3-twisted-1)
   * [Vala (libsoup)](#vala-libsoup-1)
   * [Genie (libsoup)](#genie-libsoup-1)
+  * [Elixir (Cowboy)](#elixir-cowboy-1)
 
 ## Building
 
@@ -1027,6 +1028,18 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=yaml.org' htt
 === 200
 === application/json
 ```
+
+### Elixir (Cowboy)
+
+OpenBSD/amd64:
+
+```
+$ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin" ./dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+**TODO:** Provide a couple of examples on how to make **GET** and **POST** requests against the daemon.
 
 ---
 
