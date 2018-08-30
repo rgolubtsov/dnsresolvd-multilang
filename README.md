@@ -746,7 +746,7 @@ Install the necessary dependencies (`elixir`, `rebar19`, `syslog`). Note that th
 $ sudo pkg_add -vvvvv elixir rebar19
 ```
 
-The `syslog` package is an *Erlang* package and it can be installed using normal Elixir'ish way &ndash; via its standard Mix build tool. But since the Mix utility doesn't used at all, let's build and install the `syslog` package via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will do the job:
+The `syslog` package is an **Erlang** package and it can be installed using normal Elixir'ish way &ndash; via its standard Mix build tool. But since the Mix utility doesn't used at all, let's build and install the `syslog` package via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will do the job:
 
 ```
 $ cd src/elixir
@@ -794,7 +794,6 @@ Compiled src/erlang_modules.erl
 Now the daemon might be built.
 
 ```
-$ cd src/elixir
 $ gmake clean && gmake all
 rm -f lib/*.beam
 elixirc -o lib lib
