@@ -39,6 +39,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [Python 3 (Twisted)](#python-3-twisted-1)
   * [Vala (libsoup)](#vala-libsoup-1)
   * [Genie (libsoup)](#genie-libsoup-1)
+  * [Elixir (Cowboy)](#elixir-cowboy-1)
 
 ## Building
 
@@ -746,7 +747,7 @@ Install the necessary dependencies (`elixir`, `rebar19`, `syslog`). Note that th
 $ sudo pkg_add -vvvvv elixir rebar19
 ```
 
-The `syslog` package is an *Erlang* package and it can be installed using normal Elixir'ish way &ndash; via its standard Mix build tool. But since the Mix utility doesn't used at all, let's build and install the `syslog` package via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will do the job:
+The `syslog` package is an **Erlang** package and it can be installed using normal Elixir'ish way &ndash; via its standard Mix build tool. But since the Mix utility doesn't used at all, let's build and install the `syslog` package via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will do the job:
 
 ```
 $ cd src/elixir
@@ -794,7 +795,6 @@ Compiled src/erlang_modules.erl
 Now the daemon might be built.
 
 ```
-$ cd src/elixir
 $ gmake clean && gmake all
 rm -f lib/*.beam
 elixirc -o lib lib
@@ -1028,6 +1028,18 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=yaml.org' htt
 === 200
 === application/json
 ```
+
+### Elixir (Cowboy)
+
+OpenBSD/amd64:
+
+```
+$ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin" ./dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+**TODO:** Provide a couple of examples on how to make **GET** and **POST** requests against the daemon.
 
 ---
 
