@@ -741,13 +741,15 @@ The Genie daemon's build processes under Ubuntu Server and Arch Linux are exactl
 
 #### Building under OpenBSD/amd64 6.3
 
-Install the necessary dependencies (`elixir`, `rebar19`, `syslog`). Note that the `erlang` package will be installed automatically as a dependency to the `elixir` package:
+Install the necessary dependencies (`elixir`, `rebar19`, `syslog`, `cowboy`). Note that the `erlang` package will be installed automatically as a dependency to the `elixir` package:
 
 ```
 $ sudo pkg_add -vvvvv elixir rebar19
 ```
 
-The `syslog` package is an **Erlang** package and it can be installed using normal Elixir'ish way &ndash; via its standard Mix build tool. But since the Mix utility doesn't used at all, let's build and install the `syslog` package via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will do the job:
+The `syslog` and `cowboy` packages are essentially **Erlang** packages and they can be installed using normal **Elixir**'ish way &ndash; via its standard Mix build tool. But since the Mix utility doesn't used at all, let's build and install these packages via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will actually do this job.
+
+(Note that the `cowboy` package depends on the others: `cowlib` and `ranch`. They will be built and installed automatically too.)
 
 ```
 $ cd src/elixir
@@ -764,6 +766,9 @@ $ export       E_LIB_ID=erlang_modules       && \
 {deps, [
     {syslog, {
         git, "git://github.com/Vagabond/erlang-syslog.git", {branch, "master"}
+    }},
+    {cowboy, {
+        git, "git://github.com/ninenines/cowboy.git",       {branch, "master"}
     }}
 ]}.
 % vim:set nu et ts=4 sw=4:' > ./rebar.config && \
@@ -779,14 +784,30 @@ Writing src/erlang_modules.erl
 Pulling syslog from {git,"git://github.com/Vagabond/erlang-syslog.git",
                          {branch,"master"}}
 Cloning into 'syslog'...
+Pulling cowboy from {git,"git://github.com/ninenines/cowboy.git",
+                         {branch,"master"}}
+Cloning into 'cowboy'...
 ==> syslog (get-deps)
+==> cowboy (get-deps)
+Pulling cowlib from {git,"https://github.com/ninenines/cowlib","master"}
+Cloning into 'cowlib'...
+Pulling ranch from {git,"https://github.com/ninenines/ranch","1.6.1"}
+Cloning into 'ranch'...
+==> cowlib (get-deps)
+==> ranch (get-deps)
 ==> syslog (check-deps)
+==> cowlib (check-deps)
+==> ranch (check-deps)
+==> cowboy (check-deps)
 ==> erlang_modules (check-deps)
 ==> syslog (compile)
-Compiled src/syslog_sup.erl
-Compiled src/syslog_app.erl
-Compiled src/syslog.erl
-Compiling c_src/syslog_drv.c
+...
+==> cowlib (compile)
+...
+==> ranch (compile)
+...
+==> cowboy (compile)
+...
 ==> erlang_modules (compile)
 Compiled src/erlang_modules.erl
 /home/<username>/dnsresolvd-multilang/src/elixir
@@ -1034,7 +1055,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=yaml.org' htt
 OpenBSD/amd64:
 
 ```
-$ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin" ./dnsresolvd 8765
+$ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin erlang_modules/deps/cowboy/ebin erlang_modules/deps/ranch/ebin" ./dnsresolvd 8765
 Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
