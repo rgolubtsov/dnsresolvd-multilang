@@ -1066,7 +1066,7 @@ $ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin \
                               erlang_modules/deps/ranch/ebin" \
   ./dnsresolvd 8765
 Server started on port 8765
-=== Hit Ctrl+C to terminate it.
+=== Hit Ctrl+\ to terminate it.
 ```
 
 Example of making **GET** and **POST** requests:
