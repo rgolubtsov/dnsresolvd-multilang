@@ -48,7 +48,7 @@ defmodule AUX do
 
     # Common notification messages.
     def _MSG_SERVER_STARTED_1, do: "Server started on port "
-    def _MSG_SERVER_STARTED_2, do: "=== Hit Ctrl+C to terminate it."
+    def _MSG_SERVER_STARTED_2, do: "=== Hit Ctrl+\\ to terminate it."
 
     # Daemon name, version, and copyright banners.
     def _DMN_NAME       , do: "DNS Resolver Daemon (dnsresolvd)"

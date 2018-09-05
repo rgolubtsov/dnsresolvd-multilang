@@ -745,6 +745,11 @@ Install the necessary dependencies (`elixir`, `rebar19`, `syslog`, `cowboy`). No
 
 ```
 $ sudo pkg_add -vvvvv elixir rebar19
+$
+$ elixir -v
+Erlang/OTP 19 [erts-8.3] [source] [64-bit] [smp:2:2] [async-threads:10] [kernel-poll:false]
+
+Elixir 1.6.4 (compiled with OTP 19)
 ```
 
 The `syslog` and `cowboy` packages are essentially **Erlang** packages and they can be installed using normal **Elixir**'ish way &ndash; via its standard Mix build tool. But since the Mix utility doesn't used at all, let's build and install these packages via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will actually do this job.
@@ -1055,12 +1060,28 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=yaml.org' htt
 OpenBSD/amd64:
 
 ```
-$ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin erlang_modules/deps/cowboy/ebin erlang_modules/deps/ranch/ebin" ./dnsresolvd 8765
+$ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin \
+                              erlang_modules/deps/cowboy/ebin \
+                              erlang_modules/deps/cowlib/ebin \
+                              erlang_modules/deps/ranch/ebin" \
+  ./dnsresolvd 8765
 Server started on port 8765
-=== Hit Ctrl+C to terminate it.
+=== Hit Ctrl+\ to terminate it.
 ```
 
-**TODO:** Provide a couple of examples on how to make **GET** and **POST** requests against the daemon.
+Example of making **GET** and **POST** requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" http://localhost:8765
+
+=== 500
+===
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -XPOST http://localhost:8765
+
+=== 500
+===
+```
 
 ---
 
