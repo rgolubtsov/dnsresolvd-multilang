@@ -41,7 +41,7 @@ defmodule DnsResolvd do
 
         dispatch = :cowboy_router.compile([
             {:_, [
-                {'/', :cowboy_static, []}
+                {'/', :cowboy_static, {:file, 'Makefile'}}
             ]}
         ])
 
@@ -49,7 +49,7 @@ defmodule DnsResolvd do
         {:ok, _} = :cowboy.start_clear(:http_listener, [
             port: port_number
         ], %{
-            env: [dispatch: dispatch]
+            env: %{:dispatch => dispatch}
         })
 
         # Starting up the daemon's provided Supervisor (optional).
