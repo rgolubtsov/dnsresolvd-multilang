@@ -110,6 +110,7 @@ defmodule Main do
                  <> to_string(port_number) <> AUX._NEW_LINE
                  <> AUX._MSG_SERVER_STARTED_2)
 
+            # Starting up the daemon.
             DnsResolvd.start(nil, [port_number])
         rescue
             e in RuntimeError -> RuntimeError.message(e)

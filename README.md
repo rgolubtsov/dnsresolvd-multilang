@@ -1074,12 +1074,12 @@ Example of making **GET** and **POST** requests:
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" http://localhost:8765
 
-=== 500
+=== 204
 ===
 $
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -XPOST http://localhost:8765
 
-=== 500
+=== 204
 ===
 ```
 
