@@ -41,7 +41,7 @@ defmodule DnsResolvd do
 
         dispatch = :cowboy_router.compile([
             {:_, [
-                {'/', :cowboy_static, {:file, 'Makefile'}}
+                {'/', ReqHandler, []}
             ]}
         ])
 
@@ -75,6 +75,29 @@ defmodule DnsResolvd do
         # Process.sleep(:infinity)
         # ---------------------------------------------------------------------
     end
+end
+
+defmodule ReqHandler do
+    @moduledoc "The default HTTP request handler."
+
+    @doc """
+    The request handler `init/2` callback.<br />
+    Gets called when a new incoming HTTP request is received.
+
+    **Args:**<br />
+        `req`:   The incoming HTTP request.
+        `state`: The initial state of the HTTP handler.
+
+    **Returns:**<br />
+        The tuple containing the HTTP response to be rendered
+        and a new state of the HTTP handler.
+    """
+    def init(req, state) do
+        {:ok,
+            req,  # <== For the moment the response is the same as the request.
+            state # <== The state of the handler doesn't need to be changed.
+        }
+    end
 
     ###
     # Performs DNS lookup action for the given hostname,
@@ -90,11 +113,6 @@ defmodule DnsResolvd do
     #
     defp dns_lookup(hostname) do
         # TODO: Implement performing DNS lookup action for the given hostname.
-        #       This function currently is a dummy thing and hence
-        #       it should be populated with the actual code.
-        IO.puts("=== " <> hostname)
-
-        AUX._EXIT_SUCCESS
     end
 end
 
@@ -115,7 +133,7 @@ defmodule DnsResolvs do
     end
 
     @doc """
-    Supervisor init/1 callback.<br />
+    Supervisor `init/1` callback.<br />
     Gets called when the `DnsResolvs` supervisor is about to be started up.
 
     **Returns:**<br />
