@@ -50,6 +50,12 @@ defmodule AUX do
     def _MSG_SERVER_STARTED_1, do: "Server started on port "
     def _MSG_SERVER_STARTED_2, do: "=== Hit Ctrl+\\ to terminate it."
 
+    # HTTP request methods and params.
+    def _MTD_HTTP_GET , do: "GET"
+    def _MTD_HTTP_POST, do: "POST"
+    def _PRM_FMT_HTML , do: "html"
+    def _PRM_FMT_JSON , do: "json"
+
     # Daemon name, version, and copyright banners.
     def _DMN_NAME       , do: "DNS Resolver Daemon (dnsresolvd)"
     def _DMN_DESCRIPTION, do: "Performs DNS lookups for the given "

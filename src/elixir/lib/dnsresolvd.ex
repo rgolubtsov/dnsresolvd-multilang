@@ -85,7 +85,7 @@ defmodule ReqHandler do
     Gets called when a new incoming HTTP request is received.
 
     **Args:**<br />
-        `req`:   The incoming HTTP request.
+        `req`:   The incoming HTTP request object.
         `state`: The initial state of the HTTP handler.
 
     **Returns:**<br />
@@ -93,6 +93,69 @@ defmodule ReqHandler do
         and a new state of the HTTP handler.
     """
     def init(req, state) do
+        mtd = :cowboy_req.method(req)
+
+        IO.puts(mtd)
+
+        # ---------------------------------------------------------------------
+        # --- Parsing and validating request params - Begin -------------------
+        # ---------------------------------------------------------------------
+        {hostname, fmt} = cond do
+            (mtd === AUX._MTD_HTTP_GET ) ->
+                query = :cowboy_req.parse_qs(req)
+
+                IO.inspect(query)
+
+                for (i <- 0..(length(query) - 1)) do
+                    IO.inspect(Enum.at(query, i))
+                end
+
+                hostname = for (param <- query) do
+                    {k, v} = param; if (k === "h"), do: v
+                end
+
+                fmt      = for (param <- query) do
+                    {k, v} = param; if (k === "f"), do: v
+                end
+
+                hostname = hostname |> Enum.filter(fn(v) -> (v !== nil) end)
+                hostname = hostname |> Enum.at(length(hostname) - 1)
+                           hostname |> IO.inspect()
+
+                fmt      = fmt      |> Enum.filter(fn(v) -> (v !== nil) end)
+                fmt      = fmt      |> Enum.at(length(fmt     ) - 1)
+                           fmt      |> IO.inspect()
+
+                {hostname, fmt}
+            (mtd === AUX._MTD_HTTP_POST) ->
+                hostname = nil
+                fmt      = nil
+
+                {hostname, fmt}
+        end
+
+        hostname = if ((              hostname  === nil )
+                   or  (              hostname  === true)
+                   or  (String.length(hostname) === 0   )) do
+            AUX._DEF_HOSTNAME
+        else
+            hostname
+        end
+
+        fmt      = if ((              fmt       === nil )
+                   or  (              fmt       === true)
+                   or  (String.length(fmt     ) === 0   )) do
+            AUX._PRM_FMT_JSON
+        else
+            String.downcase(fmt, :ascii)
+        end
+
+        IO.puts(hostname)
+        IO.puts(fmt     )
+        # ---------------------------------------------------------------------
+        # --- Parsing and validating request params - End ---------------------
+        # ---------------------------------------------------------------------
+
         {:ok,
             req,  # <== For the moment the response is the same as the request.
             state # <== The state of the handler doesn't need to be changed.
