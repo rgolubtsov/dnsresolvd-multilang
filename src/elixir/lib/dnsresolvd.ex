@@ -97,69 +97,64 @@ defmodule ReqHandler do
 
         IO.puts(mtd)
 
-        cond do
+        # ---------------------------------------------------------------------
+        # --- Parsing and validating request params - Begin -------------------
+        # ---------------------------------------------------------------------
+        {hostname, fmt} = cond do
             (mtd === AUX._MTD_HTTP_GET ) ->
                 query = :cowboy_req.parse_qs(req)
 
                 IO.inspect(query)
 
-                # Parsing and validating query params.
-                num_params = length(query)
-
-                IO.inspect(num_params)
-
-                for (i <- 0..(num_params - 1)) do
+                for (i <- 0..(length(query) - 1)) do
                     IO.inspect(Enum.at(query, i))
-
-                    {k, v} = Enum.at(query, i)
-
-                    IO.puts("===" <> k <> "===" <> v <> "===")
                 end
 
                 hostname = for (param <- query) do
-                    {k, v} = param
-
-                    if (k === "h"), do: v
+                    {k, v} = param; if (k === "h"), do: v
                 end
 
                 fmt      = for (param <- query) do
-                    {k, v} = param
-
-                    if (k === "f"), do: v
+                    {k, v} = param; if (k === "f"), do: v
                 end
 
-                IO.inspect(hostname)
-                IO.inspect(fmt     )
+                hostname = hostname |> Enum.filter(fn(v) -> (v !== nil) end)
+                hostname = hostname |> Enum.at(length(hostname) - 1)
+                           hostname |> IO.inspect()
 
-                hostname = for (i <- hostname) do
-                    IO.inspect(i)
+                fmt      = fmt      |> Enum.filter(fn(v) -> (v !== nil) end)
+                fmt      = fmt      |> Enum.at(length(fmt     ) - 1)
+                           fmt      |> IO.inspect()
 
-                    i2 = i
-
-                    if (i2 !== nil) do
-                        i2
-                    end
-
-                    i2
-                end
-
-                fmt      = for (i <-      fmt) do
-                    IO.inspect(i)
-
-                    i2 = i
-
-                    if (i2 !== nil) do
-                        i2
-                    end
-
-                    i2
-                end
-
-                IO.inspect(hostname)
-                IO.inspect(fmt)
+                {hostname, fmt}
             (mtd === AUX._MTD_HTTP_POST) ->
-                IO.puts("===POST===")
+                hostname = nil
+                fmt      = nil
+
+                {hostname, fmt}
         end
+
+        hostname = if ((              hostname  === nil )
+                   or  (              hostname  === true)
+                   or  (String.length(hostname) === 0   )) do
+            AUX._DEF_HOSTNAME
+        else
+            hostname
+        end
+
+        fmt      = if ((              fmt       === nil )
+                   or  (              fmt       === true)
+                   or  (String.length(fmt     ) === 0   )) do
+            AUX._PRM_FMT_JSON
+        else
+            String.downcase(fmt, :ascii)
+        end
+
+        IO.puts(hostname)
+        IO.puts(fmt     )
+        # ---------------------------------------------------------------------
+        # --- Parsing and validating request params - End ---------------------
+        # ---------------------------------------------------------------------
 
         {:ok,
             req,  # <== For the moment the response is the same as the request.
