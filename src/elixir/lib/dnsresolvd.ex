@@ -100,39 +100,36 @@ defmodule ReqHandler do
         # ---------------------------------------------------------------------
         # --- Parsing and validating request params - Begin -------------------
         # ---------------------------------------------------------------------
-        {hostname, fmt} = cond do
+        {:ok, params, req} = cond do
             (mtd === AUX._MTD_HTTP_GET ) ->
-                query = :cowboy_req.parse_qs(req)
-
-                IO.inspect(query)
-
-                for (i <- 0..(length(query) - 1)) do
-                    IO.inspect(Enum.at(query, i))
-                end
-
-                hostname = for (param <- query) do
-                    {k, v} = param; if (k === "h"), do: v
-                end
-
-                fmt      = for (param <- query) do
-                    {k, v} = param; if (k === "f"), do: v
-                end
-
-                hostname = hostname |> Enum.filter(fn(v) -> (v !== nil) end)
-                hostname = hostname |> Enum.at(length(hostname) - 1)
-                           hostname |> IO.inspect()
-
-                fmt      = fmt      |> Enum.filter(fn(v) -> (v !== nil) end)
-                fmt      = fmt      |> Enum.at(length(fmt     ) - 1)
-                           fmt      |> IO.inspect()
-
-                {hostname, fmt}
+                {:ok, :cowboy_req.parse_qs(req), req}
             (mtd === AUX._MTD_HTTP_POST) ->
-                hostname = nil
-                fmt      = nil
-
-                {hostname, fmt}
+                :cowboy_req.read_urlencoded_body(req)
         end
+
+        IO.inspect(params)
+
+        for (i <- 0..(length(params) - 1)) do
+            IO.inspect(Enum.at(params, i))
+        end
+
+        hostname = for (param <- params) do
+            {k, v} = param; if (k === "h"), do: v
+        end
+
+        fmt      = for (param <- params) do
+            {k, v} = param; if (k === "f"), do: v
+        end
+
+        hostname = hostname |> Enum.filter(fn(v) -> (v !== nil) end)
+        hostname = hostname |> Enum.at(length(hostname) - 1)
+                   hostname |> IO.inspect()
+
+        fmt      = fmt      |> Enum.filter(fn(v) -> (v !== nil) end)
+        fmt      = fmt      |> Enum.at(length(fmt     ) - 1)
+                   fmt      |> IO.inspect()
+
+        {hostname, fmt}
 
         hostname = if ((              hostname  === nil )
                    or  (              hostname  === true)
