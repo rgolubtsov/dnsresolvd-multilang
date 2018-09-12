@@ -156,6 +156,17 @@ defmodule ReqHandler do
             String.downcase(fmt, :ascii)
         end
 
+        # This if-construct is almost identically ported
+        # from its Pythonic equivalent ! :-)
+        fmt = if (fmt not in [
+            AUX._PRM_FMT_HTML,
+            AUX._PRM_FMT_JSON,
+        ]) do
+            AUX._PRM_FMT_JSON
+        else
+            fmt
+        end
+
         IO.puts(hostname)
         IO.puts(fmt     )
         # ---------------------------------------------------------------------
