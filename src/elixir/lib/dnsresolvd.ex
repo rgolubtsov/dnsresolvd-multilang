@@ -114,11 +114,20 @@ defmodule ReqHandler do
         end
 
         hostname = for (param <- params) do
-            {k, v} = param; if (k === "h"), do: v
-        end
-
-        fmt      = for (param <- params) do
-            {k, v} = param; if (k === "f"), do: v
+            {k, v} = param; if (k === "h"), do: v # <---+-----------------+
+        end #     +----GET----+-----+-----+             |                 |
+        #         |     |     |     |     |       +-----+      +----------+-+
+        #         v     v     v     v     v       |            |          | |
+        # $ curl 'http://localhost:<port_number>/?h=<hostname>&f=<fmt>'   | |
+        # $                                                               | |
+        # $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number> | |
+        #         ^  |            |                                       | |
+        #         |  +------------+---------------------------------------+ |
+        #         |               |                                         |
+        # POST----+               +---------------------+                   |
+        #                                               |                   |
+        fmt      = for (param <- params) do #           |                   |
+            {k, v} = param; if (k === "f"), do: v # <---+-------------------+
         end
 
         hostname = hostname |> Enum.filter(fn(v) -> (v !== nil) end)
