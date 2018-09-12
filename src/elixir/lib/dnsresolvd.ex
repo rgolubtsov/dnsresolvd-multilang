@@ -95,8 +95,6 @@ defmodule ReqHandler do
     def init(req, state) do
         mtd = :cowboy_req.method(req)
 
-        IO.puts(mtd)
-
         # ---------------------------------------------------------------------
         # --- Parsing and validating request params - Begin -------------------
         # ---------------------------------------------------------------------
@@ -105,12 +103,6 @@ defmodule ReqHandler do
                 {:ok, :cowboy_req.parse_qs(req), req}
             (mtd === AUX._MTD_HTTP_POST) ->
                 :cowboy_req.read_urlencoded_body(req)
-        end
-
-        IO.inspect(params)
-
-        for (i <- 0..(length(params) - 1)) do
-            IO.inspect(Enum.at(params, i))
         end
 
         hostname = for (param <- params) do
@@ -132,13 +124,9 @@ defmodule ReqHandler do
 
         hostname = hostname |> Enum.filter(fn(v) -> (v !== nil) end)
         hostname = hostname |> Enum.at(length(hostname) - 1)
-                   hostname |> IO.inspect()
 
         fmt      = fmt      |> Enum.filter(fn(v) -> (v !== nil) end)
         fmt      = fmt      |> Enum.at(length(fmt     ) - 1)
-                   fmt      |> IO.inspect()
-
-        {hostname, fmt}
 
         hostname = if ((              hostname  === nil )
                    or  (              hostname  === true)
@@ -166,9 +154,6 @@ defmodule ReqHandler do
         else
             fmt
         end
-
-        IO.puts(hostname)
-        IO.puts(fmt     )
         # ---------------------------------------------------------------------
         # --- Parsing and validating request params - End ---------------------
         # ---------------------------------------------------------------------
