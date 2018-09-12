@@ -95,44 +95,38 @@ defmodule ReqHandler do
     def init(req, state) do
         mtd = :cowboy_req.method(req)
 
-        IO.puts(mtd)
-
         # ---------------------------------------------------------------------
         # --- Parsing and validating request params - Begin -------------------
         # ---------------------------------------------------------------------
-        {hostname, fmt} = cond do
+        {:ok, params, req} = cond do
             (mtd === AUX._MTD_HTTP_GET ) ->
-                query = :cowboy_req.parse_qs(req)
-
-                IO.inspect(query)
-
-                for (i <- 0..(length(query) - 1)) do
-                    IO.inspect(Enum.at(query, i))
-                end
-
-                hostname = for (param <- query) do
-                    {k, v} = param; if (k === "h"), do: v
-                end
-
-                fmt      = for (param <- query) do
-                    {k, v} = param; if (k === "f"), do: v
-                end
-
-                hostname = hostname |> Enum.filter(fn(v) -> (v !== nil) end)
-                hostname = hostname |> Enum.at(length(hostname) - 1)
-                           hostname |> IO.inspect()
-
-                fmt      = fmt      |> Enum.filter(fn(v) -> (v !== nil) end)
-                fmt      = fmt      |> Enum.at(length(fmt     ) - 1)
-                           fmt      |> IO.inspect()
-
-                {hostname, fmt}
+                {:ok, :cowboy_req.parse_qs(req), req}
             (mtd === AUX._MTD_HTTP_POST) ->
-                hostname = nil
-                fmt      = nil
-
-                {hostname, fmt}
+                :cowboy_req.read_urlencoded_body(req)
         end
+
+        hostname = for (param <- params) do
+            {k, v} = param; if (k === "h"), do: v # <---+-----------------+
+        end #     +----GET----+-----+-----+             |                 |
+        #         |     |     |     |     |       +-----+      +----------+-+
+        #         v     v     v     v     v       |            |          | |
+        # $ curl 'http://localhost:<port_number>/?h=<hostname>&f=<fmt>'   | |
+        # $                                                               | |
+        # $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number> | |
+        #         ^  |            |                                       | |
+        #         |  +------------+---------------------------------------+ |
+        #         |               |                                         |
+        # POST----+               +---------------------+                   |
+        #                                               |                   |
+        fmt      = for (param <- params) do #           |                   |
+            {k, v} = param; if (k === "f"), do: v # <---+-------------------+
+        end
+
+        hostname = hostname |> Enum.filter(fn(v) -> (v !== nil) end)
+        hostname = hostname |> Enum.at(length(hostname) - 1)
+
+        fmt      = fmt      |> Enum.filter(fn(v) -> (v !== nil) end)
+        fmt      = fmt      |> Enum.at(length(fmt     ) - 1)
 
         hostname = if ((              hostname  === nil )
                    or  (              hostname  === true)
@@ -150,8 +144,16 @@ defmodule ReqHandler do
             String.downcase(fmt, :ascii)
         end
 
-        IO.puts(hostname)
-        IO.puts(fmt     )
+        # This if-construct is almost identically ported
+        # from its Pythonic equivalent ! :-)
+        fmt = if (fmt not in [
+            AUX._PRM_FMT_HTML,
+            AUX._PRM_FMT_JSON,
+        ]) do
+            AUX._PRM_FMT_JSON
+        else
+            fmt
+        end
         # ---------------------------------------------------------------------
         # --- Parsing and validating request params - End ---------------------
         # ---------------------------------------------------------------------
