@@ -158,6 +158,15 @@ defmodule ReqHandler do
         # --- Parsing and validating request params - End ---------------------
         # ---------------------------------------------------------------------
 
+        # Performing DNS lookup for the given hostname.
+        addr_ver = dns_lookup(hostname)
+
+        addr = elem(addr_ver, 0)
+        ver  = elem(addr_ver, 1)
+
+        IO.puts(addr)
+        IO.puts(ver )
+
         {:ok,
             req,  # <== For the moment the response is the same as the request.
             state # <== The state of the handler doesn't need to be changed.
@@ -172,12 +181,40 @@ defmodule ReqHandler do
     #     hostname: The effective hostname to look up for.
     #
     # Returns:
-    #     The array containing IP address of the analyzing host/service
+    #     The tuple containing IP address of the analyzing host/service
     #     and corresponding IP version (family) used to look up in DNS:
     #     "4" for IPv4-only hosts, "6" for IPv6-capable hosts.
     #
     defp dns_lookup(hostname) do
-        # TODO: Implement performing DNS lookup action for the given hostname.
+        hostent4 = :inet.gethostbyname(String.to_charlist(hostname), :inet )
+
+        # If the host doesn't have an A record (IPv4),
+        # trying to find its AAAA record (IPv6).
+        hostent6 = if (elem(hostent4, 0) === :error) do
+                   :inet.gethostbyname(String.to_charlist(hostname), :inet6)
+        end
+
+             if (elem(hostent4, 0) === :ok) do
+            {
+                elem(hostent4, 1)
+                    |> elem(5)
+                    |> hd()
+                    |> :inet.ntoa(),
+                4
+            }
+        else if (elem(hostent6, 0) === :ok) do
+            {
+                elem(hostent6, 1)
+                    |> elem(5)
+                    |> hd()
+                    |> :inet.ntoa(),
+                6
+            }
+        else
+            {AUX._ERR_PREFIX, nil}
+        end
+            # --- Block-separator-prettifier ---
+        end
     end
 end
 
