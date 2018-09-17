@@ -166,6 +166,74 @@ defmodule ReqHandler do
 
         IO.puts(addr)
         IO.puts(ver )
+        IO.puts(fmt )
+
+        resp_buffer = if (fmt === AUX._PRM_FMT_HTML) do
+            "<!DOCTYPE html>"                                                                <> AUX._NEW_LINE
+<> "<html lang=\"en-US\" dir=\"ltr\">"                                                       <> AUX._NEW_LINE
+<> "<head>"                                                                                  <> AUX._NEW_LINE
+<> "<meta http-equiv=\""      <> AUX._HDR_CONTENT_TYPE_N      <>          "\"    content=\""
+                              <> AUX._HDR_CONTENT_TYPE_V_HTML <>          "\"           />"  <> AUX._NEW_LINE
+<> "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  <> AUX._NEW_LINE
+<> "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  <> AUX._NEW_LINE
+<> "<title>" <> AUX._DMN_NAME <> "</title>"                                                     <> AUX._NEW_LINE
+<> "</head>"                                                                                 <> AUX._NEW_LINE
+<> "<body>"                                                                                  <> AUX._NEW_LINE
+<> "<div>"   <> hostname      <> AUX._ONE_SPACE_STRING
+        else          if (fmt === AUX._PRM_FMT_JSON) do
+               AUX._CB1
+            <> AUX._DAT_HOSTNAME_N
+            <> AUX._DQ1
+            <> hostname
+            <> AUX._DQ2
+        end
+            # --- Block-separator-prettifier ---
+        end
+
+        # If lookup error occurred.
+        resp_buffer = if (addr === AUX._ERR_PREFIX) do
+                 if (fmt === AUX._PRM_FMT_HTML) do
+                resp_buffer <> AUX._ERR_PREFIX
+                            <> AUX._COLON_SPACE_SEP
+                            <> AUX._ERR_COULD_NOT_LOOKUP
+            else if (fmt === AUX._PRM_FMT_JSON) do
+                resp_buffer <> AUX._ERR_PREFIX
+                            <> AUX._DQ1
+                            <> AUX._ERR_COULD_NOT_LOOKUP
+            end
+                # --- Block-separator-prettifier ---
+            end
+        else
+                 if (fmt === AUX._PRM_FMT_HTML) do
+                resp_buffer <> to_string(addr)
+                            <> AUX._ONE_SPACE_STRING
+                            <> AUX._DAT_VERSION_V
+                            <> to_string(ver )
+            else if (fmt === AUX._PRM_FMT_JSON) do
+                resp_buffer <> AUX._DAT_ADDRESS_N
+                            <> AUX._DQ1
+                            <> to_string(addr)
+                            <> AUX._DQ2
+                            <> AUX._DAT_VERSION_N
+                            <> AUX._DQ1
+                            <> AUX._DAT_VERSION_V
+                            <> to_string(ver )
+            end
+                # --- Block-separator-prettifier ---
+            end
+        end
+
+        resp_buffer = if (fmt === AUX._PRM_FMT_HTML) do
+            resp_buffer <> "</div>"  <> AUX._NEW_LINE
+                        <> "</body>" <> AUX._NEW_LINE
+                        <> "</html>" <> AUX._NEW_LINE
+        else          if (fmt === AUX._PRM_FMT_JSON) do
+            resp_buffer <> AUX._CB2
+        end
+            # --- Block-separator-prettifier ---
+        end
+
+        IO.puts(resp_buffer)
 
         {:ok,
             req,  # <== For the moment the response is the same as the request.
