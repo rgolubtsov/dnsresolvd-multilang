@@ -232,10 +232,11 @@ defmodule ReqHandler do
         # Adding headers to the response.
         req = AUX._add_response_headers(fmt, req)
 
-        :cowboy_req.reply(AUX._RSC_HTTP_200_OK, req)
+        req = :cowboy_req.set_resp_body(resp_buffer , req)
+        req = :cowboy_req.reply(AUX._RSC_HTTP_200_OK, req)
 
         {:ok,
-            req,  # <== For the moment the response is the same as the request.
+            req,
             state # <== The state of the handler doesn't need to be changed.
         }
     end
