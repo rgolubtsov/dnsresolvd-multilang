@@ -235,6 +235,11 @@ defmodule ReqHandler do
 
         IO.puts(resp_buffer)
 
+        # Adding headers to the response.
+        req = AUX._add_response_headers(fmt, req)
+
+        :cowboy_req.reply(AUX._RSC_HTTP_200_OK, req)
+
         {:ok,
             req,  # <== For the moment the response is the same as the request.
             state # <== The state of the handler doesn't need to be changed.

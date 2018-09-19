@@ -75,6 +75,7 @@ defmodule AUX do
     def _HDR_EXPIRES_V          , do: "Thu, 01 Dec 1994 16:00:00 GMT"
     def _HDR_PRAGMA_N           , do: "Pragma"
     def _HDR_PRAGMA_V           , do: "no-cache"
+    def _RSC_HTTP_200_OK        , do: 200
 
     # Response data names.
     def _DAT_HOSTNAME_N, do: "hostname"
@@ -93,6 +94,33 @@ defmodule AUX do
 
     # Constant: The default hostname to look up for.
     def _DEF_HOSTNAME, do: "openbsd.org"
+
+    @doc """
+    Adds headers to the response.
+
+    **Args:**<br />
+        `fmt`: The response format selector.
+        `req`: The consolidated HTTP request/response object.
+
+    **Returns:**<br />
+        The new consolidated HTTP request/response object.
+    """
+    def _add_response_headers(fmt, req) do
+        hDR_CONTENT_TYPE_V = if (fmt === _PRM_FMT_HTML()) do
+            _HDR_CONTENT_TYPE_V_HTML()
+        else                 if (fmt === _PRM_FMT_JSON()) do
+            _HDR_CONTENT_TYPE_V_JSON()
+        end
+            # --- Block-separator-prettifier ---
+        end
+
+        :cowboy_req.set_resp_headers(%{
+            _HDR_CONTENT_TYPE_N()  =>  hDR_CONTENT_TYPE_V,
+            _HDR_CACHE_CONTROL_N() => _HDR_CACHE_CONTROL_V(),
+            _HDR_EXPIRES_N()       => _HDR_EXPIRES_V(),
+            _HDR_PRAGMA_N()        => _HDR_PRAGMA_V()
+        }, req)
+    end
 
     # Helper function. Makes final buffer cleanups, closes streams, etc.
     def _cleanups_fixate(log) do
