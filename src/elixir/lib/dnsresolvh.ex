@@ -65,15 +65,15 @@ defmodule AUX do
     def _PRM_FMT_JSON , do: "json"
 
     # HTTP response headers.
-    def _HDR_CONTENT_TYPE_N     , do: "Content-Type"
+    def _HDR_CONTENT_TYPE_N     , do: "content-type"
     def _HDR_CONTENT_TYPE_V_HTML, do: "text/html; charset=UTF-8"
     def _HDR_CONTENT_TYPE_V_JSON, do: "application/json"
-    def _HDR_CACHE_CONTROL_N    , do: "Cache-Control"
+    def _HDR_CACHE_CONTROL_N    , do: "cache-control"
     def _HDR_CACHE_CONTROL_V    , do: "no-cache, no-store, "
                                   <>  "must-revalidate"
-    def _HDR_EXPIRES_N          , do: "Expires"
+    def _HDR_EXPIRES_N          , do: "expires"
     def _HDR_EXPIRES_V          , do: "Thu, 01 Dec 1994 16:00:00 GMT"
-    def _HDR_PRAGMA_N           , do: "Pragma"
+    def _HDR_PRAGMA_N           , do: "pragma"
     def _HDR_PRAGMA_V           , do: "no-cache"
     def _RSC_HTTP_200_OK        , do: 200
 
