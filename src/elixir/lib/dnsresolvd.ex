@@ -164,10 +164,6 @@ defmodule ReqHandler do
         addr = elem(addr_ver, 0)
         ver  = elem(addr_ver, 1)
 
-        IO.puts(addr)
-        IO.puts(ver )
-        IO.puts(fmt )
-
         resp_buffer = if (fmt === AUX._PRM_FMT_HTML) do
             "<!DOCTYPE html>"                                                                <> AUX._NEW_LINE
 <> "<html lang=\"en-US\" dir=\"ltr\">"                                                       <> AUX._NEW_LINE
@@ -232,8 +228,6 @@ defmodule ReqHandler do
         end
             # --- Block-separator-prettifier ---
         end
-
-        IO.puts(resp_buffer)
 
         # Adding headers to the response.
         req = AUX._add_response_headers(fmt, req)
