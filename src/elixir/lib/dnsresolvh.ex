@@ -130,7 +130,6 @@ defmodule AUX do
     def _cleanups_fixate(log) do
         # Closing the system logger.
         if (log !== nil) do
-            IO.puts("--- log is not nil ---")
             # ----- Calling Erlang -----+---+
             :syslog.close(log) # <------+   |
             :syslog.stop()     # <----------+
