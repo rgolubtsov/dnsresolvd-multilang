@@ -22,7 +22,6 @@ defmodule AUX do
     def _COLON_SPACE_SEP , do: ": "
     def _COMMA_SPACE_SEP , do: ", "
     def _NEW_LINE        , do: "\n"
-    def _AMPER           , do:  "&"
     def _ONE_SPACE_STRING, do:  " "
     def _PRINT_BANNER_OPT, do: "-V"
 
@@ -37,7 +36,12 @@ defmodule AUX do
     def _ERR_PORT_MUST_BE_POSITIVE_INT, do: ": <port_number> must be "
                                         <>  "a positive integer value, "
                                         <>  "in the range 1024-49151."
-    def _ERR_COULD_NOT_LOOKUP         , do:  "could not lookup hostname"
+    def _ERR_CANNOT_START_SERVER      , do: ": FATAL: Cannot start server "
+    def _ERR_SRV_UNKNOWN_REASON       , do: "for an unknown reason. "
+                                        <>  "Exiting..."
+    def _ERR_SRV_PORT_IS_IN_USE       , do: "due to the port requested "
+                                        <>  "is in use. Exiting..."
+    def _ERR_COULD_NOT_LOOKUP         , do: "could not lookup hostname"
 
     # Print this error message when there are no any args passed.
     def _ERR_MUST_BE_ONE_TWO_ARGS_1, do: ": There must be one or two args "
@@ -126,7 +130,6 @@ defmodule AUX do
     def _cleanups_fixate(log) do
         # Closing the system logger.
         if (log !== nil) do
-            IO.puts("--- log is not nil ---")
             # ----- Calling Erlang -----+---+
             :syslog.close(log) # <------+   |
             :syslog.stop()     # <----------+
@@ -143,4 +146,4 @@ defmodule AUX do
     end
 end
 
-# vim:set nu ts=4 sw=4:
+# vim:set nu et ts=4 sw=4:

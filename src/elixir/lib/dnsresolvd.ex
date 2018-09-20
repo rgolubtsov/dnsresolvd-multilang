@@ -32,7 +32,7 @@ defmodule DnsResolvd do
     """
     @impl (true)
     def start(_, args) do
-        [port_number | _] = args
+        {port_number, daemon_name, log} = args
 
         # Using this call instead of passing "--app dnsresolvd"
         # to the Elixir interpreter. See the file "dnsresolvd.app"
@@ -46,11 +46,49 @@ defmodule DnsResolvd do
         ])
 
         # Starting up the plain HTTP listener on <port_number>.
-        {:ok, _} = :cowboy.start_clear(:http_listener, [
+        ret_ = :cowboy.start_clear(:http_listener, [
             port: port_number
         ], %{
             env: %{:dispatch => dispatch}
         })
+
+        # Handling errors during start up of the listener.
+        if (elem(ret_, 0) === :error) do
+            ret = AUX._EXIT_FAILURE
+
+            if (elem(ret_, 1) === :eaddrinuse) do
+                IO.puts(:stderr, daemon_name <> AUX._ERR_CANNOT_START_SERVER
+                                             <> AUX._ERR_SRV_PORT_IS_IN_USE
+                                             <> AUX._NEW_LINE)
+
+                :syslog.log(log, :err,
+                                 daemon_name <> AUX._ERR_CANNOT_START_SERVER
+                                             <> AUX._ERR_SRV_PORT_IS_IN_USE
+                                             <> AUX._NEW_LINE)
+            else
+                IO.puts(:stderr, daemon_name <> AUX._ERR_CANNOT_START_SERVER
+                                             <> AUX._ERR_SRV_UNKNOWN_REASON
+                                             <> AUX._NEW_LINE)
+
+                :syslog.log(log, :err,
+                                 daemon_name <> AUX._ERR_CANNOT_START_SERVER
+                                             <> AUX._ERR_SRV_UNKNOWN_REASON
+                                             <> AUX._NEW_LINE)
+            end
+
+            AUX._cleanups_fixate(log)
+
+            System.halt(ret)
+        end
+
+        IO.puts(AUX._MSG_SERVER_STARTED_1
+             <> to_string(port_number) <> AUX._NEW_LINE
+             <> AUX._MSG_SERVER_STARTED_2)
+
+        :syslog.log(log, :info,
+                AUX._MSG_SERVER_STARTED_1
+             <> to_string(port_number) <> AUX._NEW_LINE
+             <> AUX._MSG_SERVER_STARTED_2)
 
         # Starting up the daemon's provided Supervisor (optional).
         DnsResolvs.start_link()
@@ -318,4 +356,4 @@ defmodule DnsResolvs do
     end
 end
 
-# vim:set nu ts=4 sw=4:
+# vim:set nu et ts=4 sw=4:
