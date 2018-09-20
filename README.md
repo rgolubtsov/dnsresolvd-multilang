@@ -18,7 +18,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **Python 3 ([Twisted](http://twistedmatrix.com "Twisted"))**: `src/python/`
 * :small_blue_diamond: **Vala ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/vala/`
 * :small_blue_diamond: **Genie ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/genie/`
-* :cd: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
+* :small_blue_diamond: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
 
 ## Table of Contents
 
@@ -1057,7 +1057,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=yaml.org' htt
 
 ### Elixir (Cowboy)
 
-OpenBSD/amd64:
+OpenBSD/amd64 | Arch Linux 32:
 
 ```
 $ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin \
@@ -1072,15 +1072,27 @@ Server started on port 8765
 Example of making **GET** and **POST** requests:
 
 ```
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" http://localhost:8765
-
-=== 204
-===
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=github.com&h=hexdocs.pm&f=abc&f=xyz'
+{"hostname":"hexdocs.pm","address":"151.101.245.181","version":"IPv4"}
+=== 200
+=== application/json
 $
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -XPOST http://localhost:8765
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=hexdocs.pm&h=IPv6.CYBERNODE.com&f=HtMl' http://localhost:8765
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+<meta http-equiv="content-type"    content="text/html; charset=UTF-8"           />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"                            />
+<meta       name="viewport"        content="width=device-width,initial-scale=1" />
+<title>DNS Resolver Daemon (dnsresolvd)</title>
+</head>
+<body>
+<div>IPv6.CYBERNODE.com 2001:470:1:1b9::31 IPv6</div>
+</body>
+</html>
 
-=== 204
-===
+=== 200
+=== text/html; charset=UTF-8
 ```
 
 ---
