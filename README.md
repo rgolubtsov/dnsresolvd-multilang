@@ -1072,12 +1072,12 @@ Server started on port 8765
 Example of making **GET** and **POST** requests:
 
 ```
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=github.com&h=hexdocs.pm&f=abc&f=xyz'
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xyz&h=hexdocs.pm'
 {"hostname":"hexdocs.pm","address":"151.101.245.181","version":"IPv4"}
 === 200
 === application/json
 $
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=hexdocs.pm&h=IPv6.CYBERNODE.com&f=HtMl' http://localhost:8765
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f=HtmL' http://localhost:8765
 <!DOCTYPE html>
 <html lang="en-US" dir="ltr">
 <head>
