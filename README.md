@@ -19,6 +19,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **Vala ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/vala/`
 * :small_blue_diamond: **Genie ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/genie/`
 * :small_blue_diamond: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
+* :small_orange_diamond: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
 
 ## Table of Contents
 
