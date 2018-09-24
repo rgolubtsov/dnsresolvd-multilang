@@ -782,7 +782,7 @@ $ export       E_LIB_ID=erlang_modules       && \
   rebar19    g-d                             && \
   rebar19    c-d                             && \
   rebar19    co                              && \
-  cd         - # <== Hit Ctrl+D after hitting Enter here.
+  cd         - # <== Just hit Enter here and wait for a while.))
 ==> erlang_modules (create-lib)
 Writing src/erlang_modules.app.src
 Writing src/erlang_modules.erl
@@ -795,9 +795,9 @@ Pulling cowboy from {git,"git://github.com/ninenines/cowboy.git",
 Cloning into 'cowboy'...
 ==> syslog (get-deps)
 ==> cowboy (get-deps)
-Pulling cowlib from {git,"https://github.com/ninenines/cowlib","master"}
+Pulling cowlib from {git,"https://github.com/ninenines/cowlib","2.6.0"}
 Cloning into 'cowlib'...
-Pulling ranch from {git,"https://github.com/ninenines/ranch","1.6.1"}
+Pulling ranch from {git,"https://github.com/ninenines/ranch","1.6.2"}
 Cloning into 'ranch'...
 ==> cowlib (get-deps)
 ==> ranch (get-deps)
@@ -832,27 +832,32 @@ Once this is done, check it out... just for fun:))
 ```
 $ ls -al . lib
 .:
-total 32
-drwxr-xr-x   4 <username>  <usergroup>   512 Aug 29 19:20 .
-drwxr-xr-x  10 <username>  <usergroup>   512 Aug 15 19:40 ..
--rw-r--r--   1 <username>  <usergroup>   879 Aug 29 19:20 Makefile
--rwxr-xr-x   1 <username>  <usergroup>  5560 Aug 29 19:20 dnsresolvd
-drwxr-xr-x   6 <username>  <usergroup>   512 Aug 29 19:20 erlang_modules
-drwxr-xr-x   2 <username>  <usergroup>   512 Aug 29 19:20 lib
+total 40
+drwxr-xr-x   4 <username>  <usergroup>   512 Sep 24 16:20 .
+drwxr-xr-x  11 <username>  <usergroup>   512 Sep  8 01:25 ..
+-rw-r--r--   1 <username>  <usergroup>   879 Sep 24 16:20 Makefile
+-rwxr-xr-x   1 <username>  <usergroup>  4365 Sep 24 16:20 dnsresolvd
+-rw-r--r--   1 <username>  <usergroup>  2256 Sep 24 16:20 dnsresolvd.app
+drwxr-xr-x   6 <username>  <usergroup>   512 Sep 24 16:20 erlang_modules
+drwxr-xr-x   2 <username>  <usergroup>   512 Sep 24 16:20 lib
 
 lib:
-total 40
-drwxr-xr-x  2 <username>  <usergroup>   512 Aug 29 19:20 .
-drwxr-xr-x  4 <username>  <usergroup>   512 Aug 29 19:20 ..
--rw-r--r--  1 <username>  <usergroup>  5644 Aug 29 19:20 Elixir.AUX.beam
--rw-r--r--  1 <username>  <usergroup>  2496 Aug 29 19:20 Elixir.DnsResolvd.beam
--rw-r--r--  1 <username>  <usergroup>  2027 Aug 29 19:20 dnsresolvd.ex
--rw-r--r--  1 <username>  <usergroup>  3212 Aug 29 19:20 dnsresolvh.ex
+total 108
+drwxr-xr-x  2 <username>  <usergroup>    512 Sep 24 16:20 .
+drwxr-xr-x  4 <username>  <usergroup>    512 Sep 24 16:20 ..
+-rw-r--r--  1 <username>  <usergroup>   9364 Sep 24 16:20 Elixir.AUX.beam
+-rw-r--r--  1 <username>  <usergroup>   5072 Sep 24 16:20 Elixir.DnsResolvd.beam
+-rw-r--r--  1 <username>  <usergroup>   2300 Sep 24 16:20 Elixir.DnsResolvs.beam
+-rw-r--r--  1 <username>  <usergroup>   9860 Sep 24 16:20 Elixir.ReqHandler.beam
+-rw-r--r--  1 <username>  <usergroup>  13741 Sep 24 16:20 dnsresolvd.ex
+-rw-r--r--  1 <username>  <usergroup>   5603 Sep 24 16:20 dnsresolvh.ex
 $
 $ file dnsresolvd lib/*
 dnsresolvd:                 a elixir script text executable
 lib/Elixir.AUX.beam:        Erlang BEAM file
 lib/Elixir.DnsResolvd.beam: Erlang BEAM file
+lib/Elixir.DnsResolvs.beam: Erlang BEAM file
+lib/Elixir.ReqHandler.beam: Erlang BEAM file
 lib/dnsresolvd.ex:          ASCII English text
 lib/dnsresolvh.ex:          ASCII English text
 ```
@@ -1074,7 +1079,7 @@ Example of making **GET** and **POST** requests:
 
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xyz&h=hexdocs.pm'
-{"hostname":"hexdocs.pm","address":"151.101.245.181","version":"IPv4"}
+{"hostname":"hexdocs.pm","address":"151.101.85.181","version":"IPv4"}
 === 200
 === application/json
 $
@@ -1088,7 +1093,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f
 <title>DNS Resolver Daemon (dnsresolvd)</title>
 </head>
 <body>
-<div>IPv6.CYBERNODE.com 2001:470:1:1b9::31 IPv6</div>
+<div>IPv6.CYBERNODE.com 2001:470:1:1B9::31 IPv6</div>
 </body>
 </html>
 
