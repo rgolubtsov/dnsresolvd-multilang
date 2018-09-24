@@ -849,7 +849,7 @@ drwxr-xr-x  4 <username>  <usergroup>    512 Sep 24 16:20 ..
 -rw-r--r--  1 <username>  <usergroup>   5072 Sep 24 16:20 Elixir.DnsResolvd.beam
 -rw-r--r--  1 <username>  <usergroup>   2300 Sep 24 16:20 Elixir.DnsResolvs.beam
 -rw-r--r--  1 <username>  <usergroup>   9860 Sep 24 16:20 Elixir.ReqHandler.beam
--rw-r--r--  1 <username>  <usergroup>  13741 Sep 24 16:20 dnsresolvd.ex
+-rw-r--r--  1 <username>  <usergroup>  13738 Sep 24 16:20 dnsresolvd.ex
 -rw-r--r--  1 <username>  <usergroup>   5603 Sep 24 16:20 dnsresolvh.ex
 $
 $ file dnsresolvd lib/*

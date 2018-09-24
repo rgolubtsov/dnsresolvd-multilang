@@ -210,7 +210,7 @@ defmodule ReqHandler do
                               <> AUX._HDR_CONTENT_TYPE_V_HTML <>          "\"           />"  <> AUX._NEW_LINE
 <> "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  <> AUX._NEW_LINE
 <> "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  <> AUX._NEW_LINE
-<> "<title>" <> AUX._DMN_NAME <> "</title>"                                                     <> AUX._NEW_LINE
+<> "<title>" <> AUX._DMN_NAME <> "</title>"                                                  <> AUX._NEW_LINE
 <> "</head>"                                                                                 <> AUX._NEW_LINE
 <> "<body>"                                                                                  <> AUX._NEW_LINE
 <> "<div>"   <> hostname      <> AUX._ONE_SPACE_STRING
