@@ -1,0 +1,76 @@
+#!/usr/bin/env escript
+% src/erlang/dnsresolvd
+% =============================================================================
+% DNS Resolver Daemon (dnsresolvd). Version 0.1
+% =============================================================================
+% A daemon that performs DNS lookups for the given hostname
+% passed in an HTTP request, with the focus on its implementation
+% using various programming languages. (Cowboy-boosted impl.)
+% =============================================================================
+% Copyright (C) 2017-2018 Radislav (Radicchio) Golubtsov
+%
+% (See the LICENSE file at the top of the source tree.)
+%
+
+% Helper constants.
+-define(_EMPTY_STRING,         "").
+-define(_COMMA_SPACE_SEP,    ", ").
+-define(_NEW_LINE,           "\n").
+-define(_ONE_SPACE_STRING,    " ").
+-define(_PRINT_BANNER_OPT,   "-V").
+-define(_ESCRIPT_NAME,        "_").
+-define(_PORT_NUMBER0,        "0").
+-define(_DBG_PREF,         "==> ").
+
+% Daemon name, version, and copyright banners.
+-define(_DMN_NAME,        "DNS Resolver Daemon (dnsresolvd)").
+-define(_DMN_DESCRIPTION, "Performs DNS lookups for the given "
+                       ++ "hostname passed in an HTTP request").
+-define(_DMN_VERSION_S__, "Version").
+-define(_DMN_VERSION,     "0.1").
+-define(_DMN_COPYRIGHT__, "Copyright (C) 2017-2018").
+-define(_DMN_AUTHOR,      "Radislav Golubtsov <ragolubtsov@my.com>").
+
+%% @doc The daemon entry point.
+%%
+%% @param Args The list of command-line arguments.
+%%
+%% @returns The exit code indicating the daemon overall execution status.
+main(Args) ->
+    Argv = list_to_tuple(Args),
+    Argc = length(       Args),
+
+    Daemon_name = filename:basename(os:getenv(?_ESCRIPT_NAME)),
+
+    Port_number       = if (Argc > 0) -> element(1, Argv);
+                           (true    ) -> ?_PORT_NUMBER0
+                        end,
+    Print_banner_opt_ = if (Argc > 1) -> element(2, Argv);
+                           (true    ) -> ?_EMPTY_STRING
+                        end,
+
+    Print_banner_opt = string:to_upper(Print_banner_opt_),
+
+    % -------------------------------------------------------------------------
+    % --- Debug output - Begin ------------------------------------------------
+    % -------------------------------------------------------------------------
+    io:put_chars(?_DBG_PREF ++ Args                  ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ integer_to_list(Argc) ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ Daemon_name           ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ Port_number           ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ Print_banner_opt_     ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ Print_banner_opt      ++ ?_NEW_LINE),
+    % -------------------------------------------------------------------------
+    % --- Debug output - End --------------------------------------------------
+    % -------------------------------------------------------------------------
+
+    if (Print_banner_opt == ?_PRINT_BANNER_OPT) ->
+        io:put_chars(       ?_DMN_NAME         ++ ?_COMMA_SPACE_SEP
+    ++ ?_DMN_VERSION_S__ ++ ?_ONE_SPACE_STRING ++ ?_DMN_VERSION ++ ?_NEW_LINE
+    ++ ?_DMN_DESCRIPTION                                        ++ ?_NEW_LINE
+    ++ ?_DMN_COPYRIGHT__ ++ ?_ONE_SPACE_STRING ++ ?_DMN_AUTHOR  ++ ?_NEW_LINE);
+       (true                                  ) ->
+        false
+    end.
+
+% vim:set nu et ts=4 sw=4:
