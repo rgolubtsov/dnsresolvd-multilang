@@ -38,4 +38,8 @@
 -define(_DMN_COPYRIGHT__, "Copyright (C) 2017-2018").
 -define(_DMN_AUTHOR,      "Radislav Golubtsov <ragolubtsov@my.com>").
 
+% Helper function. Makes final buffer cleanups, closes streams, etc.
+cleanups_fixate() ->
+    false.
+
 % vim:set nu et ts=4 sw=4:
