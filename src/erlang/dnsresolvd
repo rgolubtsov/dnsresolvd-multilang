@@ -36,20 +36,6 @@ main(Args) ->
 
     Print_banner_opt = string:to_upper(Print_banner_opt_),
 
-    % -------------------------------------------------------------------------
-    % --- Debug output - Begin ------------------------------------------------
-    % -------------------------------------------------------------------------
-    io:put_chars(?_DBG_PREF ++ Args                          ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ integer_to_list(Argc)         ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ Daemon_name                   ++ ?_NEW_LINE),
-%   io:put_chars(?_DBG_PREF ++ Port_number_                  ++ ?_NEW_LINE),
-%   io:put_chars(?_DBG_PREF ++ integer_to_list(Port_number_) ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ Print_banner_opt_             ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ Print_banner_opt              ++ ?_NEW_LINE),
-    % -------------------------------------------------------------------------
-    % --- Debug output - End --------------------------------------------------
-    % -------------------------------------------------------------------------
-
     if (Print_banner_opt =:= ?_PRINT_BANNER_OPT) ->
         separator_draw(?_DMN_DESCRIPTION),
 
