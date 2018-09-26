@@ -95,6 +95,9 @@ main(Args) ->
         false
     end,
 
+    % Starting up the daemon.
+    % TODO: Implement starting up the daemon.
+
     % Making final cleanups.
     cleanups_fixate(),
 
