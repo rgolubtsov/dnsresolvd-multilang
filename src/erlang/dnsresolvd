@@ -51,14 +51,26 @@ main(Args) ->
     % -------------------------------------------------------------------------
 
     if (Print_banner_opt == ?_PRINT_BANNER_OPT) ->
+        separator_draw(?_DMN_DESCRIPTION),
+
         io:put_chars(       ?_DMN_NAME         ++ ?_COMMA_SPACE_SEP
     ++ ?_DMN_VERSION_S__ ++ ?_ONE_SPACE_STRING ++ ?_DMN_VERSION ++ ?_NEW_LINE
     ++ ?_DMN_DESCRIPTION                                        ++ ?_NEW_LINE
-    ++ ?_DMN_COPYRIGHT__ ++ ?_ONE_SPACE_STRING ++ ?_DMN_AUTHOR  ++ ?_NEW_LINE);
+    ++ ?_DMN_COPYRIGHT__ ++ ?_ONE_SPACE_STRING ++ ?_DMN_AUTHOR  ++ ?_NEW_LINE),
+
+        separator_draw(?_DMN_DESCRIPTION);
        (true                                  ) ->
         false
     end,
 
+    cleanups_fixate(),
+
     halt(Ret).
+
+% Helper function. Draws a horizontal separator banner.
+separator_draw(Banner_text) ->
+    I = length(Banner_text),
+
+    [io:put_chars("=") || _ <- lists:seq(1, I)], io:nl().
 
 % vim:set nu et ts=4 sw=4:
