@@ -25,9 +25,28 @@
 -define(_COMMA_SPACE_SEP,    ", ").
 -define(_NEW_LINE,           "\n").
 -define(_ONE_SPACE_STRING,    " ").
--define(_ZERO_STRING,         "0").
 -define(_PRINT_BANNER_OPT,   "-V").
 -define(_DBG_PREF,         "==> ").
+
+% Common error messages.
+-define(_ERR_PORT_MUST_BE_POSITIVE_INT, ": <port_number> must be "
+                                     ++ "a positive integer value, "
+                                     ++ "in the range 1024-49151.").
+
+% Print this error message when there are no any args passed.
+-define(_ERR_MUST_BE_ONE_TWO_ARGS_1, ": There must be one or two args "
+                                  ++ "passed: ").
+-define(_ERR_MUST_BE_ONE_TWO_ARGS_2, " args found").
+
+% Print this usage info just after any inappropriate input.
+-define(_MSG_USAGE_TEMPLATE_1, "Usage: ").
+-define(_MSG_USAGE_TEMPLATE_2, " <port_number> [-V]").
+
+%% Constant: The minimum port number allowed.
+-define(_MIN_PORT, 1024).
+
+%% Constant: The maximum port number allowed.
+-define(_MAX_PORT, 49151).
 
 % Daemon name, version, and copyright banners.
 -define(_DMN_NAME,        "DNS Resolver Daemon (dnsresolvd)").

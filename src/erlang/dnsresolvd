@@ -20,16 +20,15 @@
 %%
 %% @returns The exit code indicating the daemon overall execution status.
 main(Args) ->
-    Ret = ?_EXIT_SUCCESS,
-%   Ret = ?_EXIT_FAILURE,
+    Ret_ = ?_EXIT_SUCCESS,
 
     Argv = list_to_tuple(Args),
     Argc = length(       Args),
 
     Daemon_name = filename:basename(?FILE),
 
-    Port_number       = if (Argc > 0) -> element(1, Argv);
-                           (true    ) -> ?_ZERO_STRING
+    Port_number_      = if (Argc > 0) -> element(1, Argv);
+                           (true    ) -> 0
                         end,
     Print_banner_opt_ = if (Argc > 1) -> element(2, Argv);
                            (true    ) -> ?_EMPTY_STRING
@@ -40,17 +39,18 @@ main(Args) ->
     % -------------------------------------------------------------------------
     % --- Debug output - Begin ------------------------------------------------
     % -------------------------------------------------------------------------
-    io:put_chars(?_DBG_PREF ++ Args                  ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ integer_to_list(Argc) ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ Daemon_name           ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ Port_number           ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ Print_banner_opt_     ++ ?_NEW_LINE),
-    io:put_chars(?_DBG_PREF ++ Print_banner_opt      ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ Args                          ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ integer_to_list(Argc)         ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ Daemon_name                   ++ ?_NEW_LINE),
+%   io:put_chars(?_DBG_PREF ++ Port_number_                  ++ ?_NEW_LINE),
+%   io:put_chars(?_DBG_PREF ++ integer_to_list(Port_number_) ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ Print_banner_opt_             ++ ?_NEW_LINE),
+    io:put_chars(?_DBG_PREF ++ Print_banner_opt              ++ ?_NEW_LINE),
     % -------------------------------------------------------------------------
     % --- Debug output - End --------------------------------------------------
     % -------------------------------------------------------------------------
 
-    if (Print_banner_opt == ?_PRINT_BANNER_OPT) ->
+    if (Print_banner_opt =:= ?_PRINT_BANNER_OPT) ->
         separator_draw(?_DMN_DESCRIPTION),
 
         io:put_chars(       ?_DMN_NAME         ++ ?_COMMA_SPACE_SEP
@@ -63,9 +63,56 @@ main(Args) ->
         false
     end,
 
+    % Checking for args presence.
+    if (Argc =:= 0) ->
+        Ret0 = ?_EXIT_FAILURE,
+
+        io:put_chars(standard_error,
+                     Daemon_name ++ ?_ERR_MUST_BE_ONE_TWO_ARGS_1
+        ++ integer_to_list(Argc) ++ ?_ERR_MUST_BE_ONE_TWO_ARGS_2
+                                 ++ ?_NEW_LINE ++ ?_NEW_LINE),
+
+        io:put_chars(standard_error, ?_MSG_USAGE_TEMPLATE_1 ++ Daemon_name
+                                  ++ ?_MSG_USAGE_TEMPLATE_2 ++ ?_NEW_LINE
+                                                            ++ ?_NEW_LINE),
+
+        cleanups_fixate(),
+
+        halt(Ret0);
+       (true     ) ->
+        false
+    end,
+
+    % Validating the port number and discarding any rubbish it may contain.
+    Port_number = try
+        list_to_integer(Port_number_)
+    catch
+        error:badarg -> 0
+    end,
+
+    % Checking for port correctness.
+    if ((Port_number < ?_MIN_PORT) or (Port_number > ?_MAX_PORT)) ->
+        Ret1 = ?_EXIT_FAILURE,
+
+        io:put_chars(standard_error,
+                     Daemon_name ++ ?_ERR_PORT_MUST_BE_POSITIVE_INT
+                                 ++ ?_NEW_LINE ++ ?_NEW_LINE),
+
+        io:put_chars(standard_error, ?_MSG_USAGE_TEMPLATE_1 ++ Daemon_name
+                                  ++ ?_MSG_USAGE_TEMPLATE_2 ++ ?_NEW_LINE
+                                                            ++ ?_NEW_LINE),
+
+        cleanups_fixate(),
+
+        halt(Ret1);
+       (true                                                    ) ->
+        false
+    end,
+
+    % Making final cleanups.
     cleanups_fixate(),
 
-    halt(Ret).
+    halt(Ret_).
 
 % Helper function. Draws a horizontal separator banner.
 separator_draw(Banner_text) ->
