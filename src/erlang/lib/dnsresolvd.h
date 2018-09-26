@@ -25,9 +25,8 @@
 -define(_COMMA_SPACE_SEP,    ", ").
 -define(_NEW_LINE,           "\n").
 -define(_ONE_SPACE_STRING,    " ").
+-define(_ZERO_STRING,         "0").
 -define(_PRINT_BANNER_OPT,   "-V").
--define(_ESCRIPT_NAME,        "_").
--define(_PORT_NUMBER0,        "0").
 -define(_DBG_PREF,         "==> ").
 
 % Daemon name, version, and copyright banners.

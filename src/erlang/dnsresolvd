@@ -26,10 +26,10 @@ main(Args) ->
     Argv = list_to_tuple(Args),
     Argc = length(       Args),
 
-    Daemon_name = filename:basename(os:getenv(?_ESCRIPT_NAME)),
+    Daemon_name = filename:basename(?FILE),
 
     Port_number       = if (Argc > 0) -> element(1, Argv);
-                           (true    ) -> ?_PORT_NUMBER0
+                           (true    ) -> ?_ZERO_STRING
                         end,
     Print_banner_opt_ = if (Argc > 1) -> element(2, Argv);
                            (true    ) -> ?_EMPTY_STRING
