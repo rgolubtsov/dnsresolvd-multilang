@@ -58,7 +58,13 @@
 -define(_DMN_AUTHOR,      "Radislav Golubtsov <ragolubtsov@my.com>").
 
 % Helper function. Makes final buffer cleanups, closes streams, etc.
-cleanups_fixate() ->
-    false.
+cleanups_fixate(Log) ->
+    % Closing the system logger.
+    if (Log =/= nil) ->
+        syslog:close(Log),
+        syslog:stop();
+       (true       ) ->
+        false
+    end.
 
 % vim:set nu et ts=4 sw=4:

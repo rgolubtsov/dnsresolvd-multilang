@@ -32,6 +32,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [Vala (libsoup)](#vala-libsoup)
   * [Genie (libsoup)](#genie-libsoup)
   * [Elixir (Cowboy)](#elixir-cowboy)
+  * [Erlang (Cowboy)](#erlang-cowboy)
 * **[Running](#running)**
   * [C (GNU libmicrohttpd)](#c-gnu-libmicrohttpd-1)
   * [JavaScript (Node.js)](#javascript-nodejs-1)
@@ -41,6 +42,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [Vala (libsoup)](#vala-libsoup-1)
   * [Genie (libsoup)](#genie-libsoup-1)
   * [Elixir (Cowboy)](#elixir-cowboy-1)
+  * [Erlang (Cowboy)](#erlang-cowboy-1)
 
 ## Building
 
@@ -864,6 +866,65 @@ lib/dnsresolvh.ex:          ASCII English text
 
 **TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server and Arch Linux.
 
+### Erlang (Cowboy)
+
+#### Building under OpenBSD/amd64 6.3
+Install the necessary dependencies (`rebar19`, `syslog`, `cowboy`). Note that the `erlang` package will be installed automatically as a dependency to the `rebar19` package:
+```
+$ sudo pkg_add -vvvvv rebar19
+$
+$ erl19 +V
+Erlang (SMP,ASYNC_THREADS) (BEAM) emulator version 8.3
+```
+
+The `syslog` and `cowboy` packages have to be built and installed via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will actually do this job.
+
+(Note that the `cowboy` package depends on the others: `cowlib` and `ranch`. They will be built and installed automatically too.)
+
+```
+$ cd src/erlang
+```
+
+```
+$ export       E_LIB_ID=erlang_modules       && \
+  mkdir   -p ${E_LIB_ID}                     && \
+  cd         ${E_LIB_ID}                     && \
+  rebar19 -f create-lib libid=${E_LIB_ID}    && \
+  echo       '% ==============
+% ./rebar.config
+% ==============
+{deps, [
+    {syslog, {
+        git, "git://github.com/Vagabond/erlang-syslog.git", {branch, "master"}
+    }}
+]}.
+% vim:set nu et ts=4 sw=4:' > ./rebar.config && \
+  unset      E_LIB_ID                        && \
+  rebar19    g-d                             && \
+  rebar19    c-d                             && \
+  rebar19    co                              && \
+  cd         - # <== Just hit Enter here and wait for a while.))
+==> erlang_modules (create-lib)
+Writing src/erlang_modules.app.src
+Writing src/erlang_modules.erl
+==> erlang_modules (get-deps)
+Pulling syslog from {git,"git://github.com/Vagabond/erlang-syslog.git",
+                         {branch,"master"}}
+Cloning into 'syslog'...
+==> syslog (get-deps)
+==> syslog (check-deps)
+==> erlang_modules (check-deps)
+==> syslog (compile)
+...
+==> erlang_modules (compile)
+Compiled src/erlang_modules.erl
+/home/<username>/dnsresolvd-multilang/src/erlang
+```
+
+Now the daemon might be built.
+
+**TODO:** Describe how to build the daemon.
+
 ## Running
 
 Starting the daemon is quite easy and very similar for all its implementations.
@@ -1099,6 +1160,18 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f
 
 === 200
 === text/html; charset=UTF-8
+```
+
+### Erlang (Cowboy)
+
+OpenBSD/amd64:
+
+```
+$ ERL_LIBS=erlang_modules/deps ./dnsresolvd
+dnsresolvd: There must be one or two args passed: 0 args found
+
+Usage: dnsresolvd <port_number> [-V]
+
 ```
 
 ---
