@@ -1167,7 +1167,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f
 OpenBSD/amd64:
 
 ```
-$ ./dnsresolvd
+$ ERL_LIBS=erlang_modules/deps ./dnsresolvd
 dnsresolvd: There must be one or two args passed: 0 args found
 
 Usage: dnsresolvd <port_number> [-V]
