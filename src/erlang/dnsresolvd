@@ -1,6 +1,6 @@
 #!/usr/bin/env escript
-% src/erlang/dnsresolvd
-% =============================================================================
+%%!-pz erlang_modules/deps/syslog/ebin
+% src/erlang/dnsresolvd =======================================================
 % DNS Resolver Daemon (dnsresolvd). Version 0.1
 % =============================================================================
 % A daemon that performs DNS lookups for the given hostname
@@ -49,6 +49,11 @@ main(Args) ->
         false
     end,
 
+    % Opening the system logger.
+    code:load_file(syslog),
+                   syslog:start(),
+    {ok,    Log} = syslog:open(Daemon_name, [cons, pid], daemon),
+
     % Checking for args presence.
     if (Argc =:= 0) ->
         Ret0 = ?_EXIT_FAILURE,
@@ -62,7 +67,7 @@ main(Args) ->
                                   ++ ?_MSG_USAGE_TEMPLATE_2 ++ ?_NEW_LINE
                                                             ++ ?_NEW_LINE),
 
-        cleanups_fixate(),
+        cleanups_fixate(Log),
 
         halt(Ret0);
        (true     ) ->
@@ -88,7 +93,7 @@ main(Args) ->
                                   ++ ?_MSG_USAGE_TEMPLATE_2 ++ ?_NEW_LINE
                                                             ++ ?_NEW_LINE),
 
-        cleanups_fixate(),
+        cleanups_fixate(Log),
 
         halt(Ret1);
        (true                                                    ) ->
@@ -99,7 +104,7 @@ main(Args) ->
     % TODO: Implement starting up the daemon.
 
     % Making final cleanups.
-    cleanups_fixate(),
+    cleanups_fixate(Log),
 
     halt(Ret_).
 
