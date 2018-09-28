@@ -923,7 +923,18 @@ Compiled src/erlang_modules.erl
 
 Now the daemon might be built.
 
-**TODO:** Describe how to build the daemon.
+```
+$ gmake clean && gmake all
+rm -f -vR lib/ebin
+lib/ebin
+if [ ! -d "lib/ebin" ]; then \
+        mkdir lib/ebin; \
+        erlc19 -o lib/ebin lib/*.erl; \
+fi
+lib/dnsresolvd.erl:30: Warning: variable 'Daemon_name' is unused
+lib/dnsresolvd.erl:30: Warning: variable 'Log' is unused
+lib/dnsresolvd.erl:30: Warning: variable 'Port_number' is unused
+```
 
 ## Running
 
@@ -1167,11 +1178,8 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f
 OpenBSD/amd64:
 
 ```
-$ ERL_LIBS=erlang_modules/deps ./dnsresolvd
-dnsresolvd: There must be one or two args passed: 0 args found
-
-Usage: dnsresolvd <port_number> [-V]
-
+$ ERL_LIBS="erlang_modules/deps:lib" ./dnsresolvd 8765
+--- Log is not nil ---
 ```
 
 ---

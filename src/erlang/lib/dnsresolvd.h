@@ -60,10 +60,11 @@
 % Helper function. Makes final buffer cleanups, closes streams, etc.
 cleanups_fixate(Log) ->
     % Closing the system logger.
-    if (Log =/= nil) ->
+    if (Log =/= []) ->
+        io:put_chars("--- Log is not nil ---" ++ ?_NEW_LINE),
         syslog:close(Log),
         syslog:stop();
-       (true       ) ->
+       (true      ) ->
         false
     end.
 

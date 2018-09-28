@@ -108,7 +108,11 @@ main(Args) ->
     end,
 
     % Starting up the daemon.
-    % TODO: Implement starting up the daemon.
+    dnsresolvd:start([], {
+        Port_number,
+        Daemon_name,
+        Log
+    }),
 
     % Making final cleanups.
     cleanups_fixate(Log),
