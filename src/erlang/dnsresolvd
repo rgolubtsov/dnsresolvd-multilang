@@ -50,9 +50,7 @@ main(Args) ->
     end,
 
     % Opening the system logger.
-    code:load_file(syslog),
-                   syslog:start(),
-    {ok,    Log} = syslog:open(Daemon_name, [cons, pid], daemon),
+    syslog:start(), {ok, Log} = syslog:open(Daemon_name, [cons, pid], daemon),
 
     % Checking for args presence.
     if (Argc =:= 0) ->
