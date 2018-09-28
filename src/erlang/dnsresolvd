@@ -63,6 +63,11 @@ main(Args) ->
         ++ integer_to_list(Argc) ++ ?_ERR_MUST_BE_ONE_TWO_ARGS_2
                                  ++ ?_NEW_LINE ++ ?_NEW_LINE),
 
+        syslog:log(Log, err,
+                     Daemon_name ++ ?_ERR_MUST_BE_ONE_TWO_ARGS_1
+        ++ integer_to_list(Argc) ++ ?_ERR_MUST_BE_ONE_TWO_ARGS_2
+                                 ++ ?_NEW_LINE),
+
         io:put_chars(standard_error, ?_MSG_USAGE_TEMPLATE_1 ++ Daemon_name
                                   ++ ?_MSG_USAGE_TEMPLATE_2 ++ ?_NEW_LINE
                                                             ++ ?_NEW_LINE),
@@ -88,6 +93,10 @@ main(Args) ->
         io:put_chars(standard_error,
                      Daemon_name ++ ?_ERR_PORT_MUST_BE_POSITIVE_INT
                                  ++ ?_NEW_LINE ++ ?_NEW_LINE),
+
+        syslog:log(Log, err,
+                     Daemon_name ++ ?_ERR_PORT_MUST_BE_POSITIVE_INT
+                                 ++ ?_NEW_LINE),
 
         io:put_chars(standard_error, ?_MSG_USAGE_TEMPLATE_1 ++ Daemon_name
                                   ++ ?_MSG_USAGE_TEMPLATE_2 ++ ?_NEW_LINE
