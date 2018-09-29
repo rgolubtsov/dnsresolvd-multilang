@@ -32,6 +32,11 @@
 -define(_ERR_PORT_MUST_BE_POSITIVE_INT, ": <port_number> must be "
                                      ++ "a positive integer value, "
                                      ++ "in the range 1024-49151.").
+-define(_ERR_CANNOT_START_SERVER,       ": FATAL: Cannot start server ").
+-define(_ERR_SRV_UNKNOWN_REASON,        "for an unknown reason. "
+                                     ++ "Exiting...").
+-define(_ERR_SRV_PORT_IS_IN_USE,        "due to the port requested "
+                                     ++ "is in use. Exiting...").
 
 % Print this error message when there are no any args passed.
 -define(_ERR_MUST_BE_ONE_TWO_ARGS_1, ": There must be one or two args "
@@ -47,6 +52,10 @@
 
 %% Constant: The maximum port number allowed.
 -define(_MAX_PORT, 49151).
+
+% Common notification messages.
+-define(_MSG_SERVER_STARTED_1, "Server started on port ").
+-define(_MSG_SERVER_STARTED_2, "=== Hit Ctrl+\\ to terminate it.").
 
 % Daemon name, version, and copyright banners.
 -define(_DMN_NAME,        "DNS Resolver Daemon (dnsresolvd)").

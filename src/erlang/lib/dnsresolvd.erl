@@ -17,6 +17,8 @@
 
 -export([start/2]).
 
+-include("dnsresolvd.h").
+
 %% @doc Starts up the daemon.<br />
 %%      It has to be the application module callback, but used directly
 %%      from the startup script of the daemon.
@@ -29,7 +31,72 @@
 start(_, Args) ->
     {Port_number, Daemon_name, Log} = Args,
 
-%   {ok, _} = application:ensure_all_started(cowboy).
-    ok.
+    {ok, _} = application:ensure_all_started(cowboy),
+
+    Dispatch = cowboy_router:compile([
+        {'_', [
+            {"/", req_handler, []}
+        ]}
+    ]),
+
+    % Starting up the plain HTTP listener on <port_number>.
+    Ret_ = cowboy:start_clear(http_listener, [{
+        port, Port_number
+    }], #{
+        env => #{dispatch => Dispatch}
+    }),
+
+    % Handling errors during start up of the listener.
+    if (element(1, Ret_) =:= error) ->
+        Ret0 = ?_EXIT_FAILURE,
+
+        if (element(2, Ret_) =:= eaddrinuse) ->
+            io:put_chars(standard_error, Daemon_name
+                      ++ ?_ERR_CANNOT_START_SERVER
+                      ++ ?_ERR_SRV_PORT_IS_IN_USE
+                      ++ ?_NEW_LINE ++ ?_NEW_LINE),
+
+            syslog:log(Log, err, Daemon_name
+                      ++ ?_ERR_CANNOT_START_SERVER
+                      ++ ?_ERR_SRV_PORT_IS_IN_USE
+                      ++ ?_NEW_LINE);
+           (true                           ) ->
+            io:put_chars(standard_error, Daemon_name
+                      ++ ?_ERR_CANNOT_START_SERVER
+                      ++ ?_ERR_SRV_UNKNOWN_REASON
+                      ++ ?_NEW_LINE ++ ?_NEW_LINE),
+
+            syslog:log(Log, err, Daemon_name
+                      ++ ?_ERR_CANNOT_START_SERVER
+                      ++ ?_ERR_SRV_UNKNOWN_REASON
+                      ++ ?_NEW_LINE)
+        end,
+
+        cleanups_fixate(Log),
+
+        halt(Ret0);
+       (true                      ) ->
+        false
+    end,
+
+    io:put_chars(?_MSG_SERVER_STARTED_1
+              ++ integer_to_list(Port_number) ++ ?_NEW_LINE
+              ++ ?_MSG_SERVER_STARTED_2       ++ ?_NEW_LINE),
+
+    syslog:log(Log, info,
+                 ?_MSG_SERVER_STARTED_1
+              ++ integer_to_list(Port_number) ++ ?_NEW_LINE
+              ++ ?_MSG_SERVER_STARTED_2),
+
+    % Trapping exit signals, i.e. transforming them into {'EXIT'} message.
+    process_flag(trap_exit, true),
+
+    % Inspecting the daemon's --application-- process message queue
+    % for the incoming {'EXIT'} message until the message received.
+    receive
+        {'EXIT', From, Reason} ->
+            io:put_chars(From   ++ ?_NEW_LINE),
+            io:put_chars(Reason ++ ?_NEW_LINE)
+    end.
 
 % vim:set nu et ts=4 sw=4:
