@@ -18,7 +18,7 @@ SRCS = $(____)/*.erl
 
 # Specify flags and other vars here.
 MKDIR   = mkdir
-EC      = erlc19
+EC      = erlc
 ECFLAGS = -o
 RMFLAGS = -vR
 
