@@ -88,6 +88,9 @@ start(_, Args) ->
               ++ integer_to_list(Port_number) ++ ?_NEW_LINE
               ++ ?_MSG_SERVER_STARTED_2),
 
+    % Starting up the daemon's provided --supervisor-- (optional).
+    dnsresolvs:start_link(),
+
     % Trapping exit signals, i.e. transforming them into {'EXIT'} message.
     process_flag(trap_exit, true),
 
