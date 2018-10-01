@@ -57,6 +57,12 @@
 -define(_MSG_SERVER_STARTED_1, "Server started on port ").
 -define(_MSG_SERVER_STARTED_2, "=== Hit Ctrl+C to terminate it.").
 
+% HTTP request methods and params.
+-define(_MTD_HTTP_GET,  <<"GET">>).
+-define(_MTD_HTTP_POST, <<"POST">>).
+-define(_PRM_FMT_HTML,    "html").
+-define(_PRM_FMT_JSON,    "json").
+
 % Daemon name, version, and copyright banners.
 -define(_DMN_NAME,        "DNS Resolver Daemon (dnsresolvd)").
 -define(_DMN_DESCRIPTION, "Performs DNS lookups for the given "
