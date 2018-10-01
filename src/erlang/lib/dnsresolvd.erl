@@ -97,9 +97,7 @@ start(_, Args) ->
     % Inspecting the daemon's --application-- process message queue
     % for the incoming {'EXIT'} message until the message received.
     receive
-        {'EXIT', From, Reason} ->
-            io:put_chars(From   ++ ?_NEW_LINE),
-            io:put_chars(Reason ++ ?_NEW_LINE)
+        {'EXIT', _, _} -> []
     end.
 
 % vim:set nu et ts=4 sw=4:
