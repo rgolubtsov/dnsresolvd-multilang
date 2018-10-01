@@ -55,7 +55,7 @@
 
 % Common notification messages.
 -define(_MSG_SERVER_STARTED_1, "Server started on port ").
--define(_MSG_SERVER_STARTED_2, "=== Hit Ctrl+\\ to terminate it.").
+-define(_MSG_SERVER_STARTED_2, "=== Hit Ctrl+C to terminate it.").
 
 % Daemon name, version, and copyright banners.
 -define(_DMN_NAME,        "DNS Resolver Daemon (dnsresolvd)").
