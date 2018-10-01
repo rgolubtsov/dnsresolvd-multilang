@@ -15,7 +15,9 @@
 %% @doc The main --application-- module of the daemon.
 -module(dnsresolvd).
 
--export([start/2]).
+-behaviour(application).
+
+-export([start/2, stop/1]).
 
 -include("dnsresolvd.h").
 
@@ -99,5 +101,10 @@ start(_, Args) ->
     receive
         {'EXIT', _, _} -> []
     end.
+
+% Does nothing. Required to satisfy the --application-- behaviour
+%               callback module design only.
+stop(_) ->
+    ok.
 
 % vim:set nu et ts=4 sw=4:
