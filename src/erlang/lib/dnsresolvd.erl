@@ -35,7 +35,7 @@ start(_, Args) ->
 
     Dispatch = cowboy_router:compile([
         {'_', [
-            {"/", req_handler, []}
+            {"/", reqhandler, []}
         ]}
     ]),
 
