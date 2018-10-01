@@ -877,6 +877,13 @@ $ erl19 +V
 Erlang (SMP,ASYNC_THREADS) (BEAM) emulator version 8.3
 ```
 
+Create the following symlinks (required for compilation and execution):
+
+```
+$ sudo ln -sfn /usr/local/bin/erlc19    /usr/local/bin/erlc    && \
+  sudo ln -sfn /usr/local/bin/escript19 /usr/local/bin/escript
+```
+
 The `syslog` and `cowboy` packages have to be built and installed via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will actually do this job.
 
 (Note that the `cowboy` package depends on the others: `cowlib` and `ranch`. They will be built and installed automatically too.)
@@ -896,6 +903,9 @@ $ export       E_LIB_ID=erlang_modules       && \
 {deps, [
     {syslog, {
         git, "git://github.com/Vagabond/erlang-syslog.git", {branch, "master"}
+    }},
+    {cowboy, {
+        git, "git://github.com/ninenines/cowboy.git",       {branch, "master"}
     }}
 ]}.
 % vim:set nu et ts=4 sw=4:' > ./rebar.config && \
@@ -911,10 +921,29 @@ Writing src/erlang_modules.erl
 Pulling syslog from {git,"git://github.com/Vagabond/erlang-syslog.git",
                          {branch,"master"}}
 Cloning into 'syslog'...
+Pulling cowboy from {git,"git://github.com/ninenines/cowboy.git",
+                         {branch,"master"}}
+Cloning into 'cowboy'...
 ==> syslog (get-deps)
+==> cowboy (get-deps)
+Pulling cowlib from {git,"https://github.com/ninenines/cowlib","2.6.0"}
+Cloning into 'cowlib'...
+Pulling ranch from {git,"https://github.com/ninenines/ranch","1.6.2"}
+Cloning into 'ranch'...
+==> cowlib (get-deps)
+==> ranch (get-deps)
 ==> syslog (check-deps)
+==> cowlib (check-deps)
+==> ranch (check-deps)
+==> cowboy (check-deps)
 ==> erlang_modules (check-deps)
 ==> syslog (compile)
+...
+==> cowlib (compile)
+...
+==> ranch (compile)
+...
+==> cowboy (compile)
 ...
 ==> erlang_modules (compile)
 Compiled src/erlang_modules.erl
@@ -929,11 +958,8 @@ rm -f -vR lib/ebin
 lib/ebin
 if [ ! -d "lib/ebin" ]; then \
         mkdir lib/ebin; \
-        erlc19 -o lib/ebin lib/*.erl; \
+        erlc -o lib/ebin lib/*.erl; \
 fi
-lib/dnsresolvd.erl:30: Warning: variable 'Daemon_name' is unused
-lib/dnsresolvd.erl:30: Warning: variable 'Log' is unused
-lib/dnsresolvd.erl:30: Warning: variable 'Port_number' is unused
 ```
 
 ## Running
@@ -1179,7 +1205,8 @@ OpenBSD/amd64:
 
 ```
 $ ERL_LIBS="erlang_modules/deps:lib" ./dnsresolvd 8765
---- Log is not nil ---
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
 ```
 
 ---
