@@ -15,7 +15,9 @@
 %% @doc The main --application-- module of the daemon.
 -module(dnsresolvd).
 
--export([start/2]).
+-behaviour(application).
+
+-export([start/2, stop/1]).
 
 -include("dnsresolvd.h").
 
@@ -35,7 +37,7 @@ start(_, Args) ->
 
     Dispatch = cowboy_router:compile([
         {'_', [
-            {"/", req_handler, []}
+            {"/", reqhandler, []}
         ]}
     ]),
 
@@ -97,9 +99,12 @@ start(_, Args) ->
     % Inspecting the daemon's --application-- process message queue
     % for the incoming {'EXIT'} message until the message received.
     receive
-        {'EXIT', From, Reason} ->
-            io:put_chars(From   ++ ?_NEW_LINE),
-            io:put_chars(Reason ++ ?_NEW_LINE)
+        {'EXIT', _, _} -> []
     end.
+
+% Does nothing. Required to satisfy the --application-- behaviour
+%               callback module design only.
+stop(_) ->
+    ok.
 
 % vim:set nu et ts=4 sw=4:
