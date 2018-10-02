@@ -41,8 +41,6 @@ init(Req, State) ->
         {ok, [                      ],  Req}
                          end,
 
-    io:write(Params), io:nl(),
-
     Hostname_ = [V || {K, V} <- Params, (K =:= <<"h">>)], % <---------+
     %         +----GET----+-----+-----+          ^                    |
     %         |     |     |     |     |          |                    |
@@ -109,9 +107,52 @@ init(Req, State) ->
     % --- Parsing and validating request params - End -------------------------
     % -------------------------------------------------------------------------
 
+    % Performing DNS lookup for the given hostname.
+    Addr_ver = dns_lookup(Hostname),
+
+    Addr = element(1, Addr_ver),
+    Ver  = element(2, Addr_ver),
+
     {ok,
         Req_,
         State % <== The state of the handler doesn't need to be changed.
     }.
+
+%##
+% Performs DNS lookup action for the given hostname,
+% i.e. (in this case) IP address retrieval by hostname.
+%
+% Args:
+%     Hostname: The effective hostname to look up for.
+%
+% Returns:
+%     The tuple containing IP address of the analyzing host/service
+%     and corresponding IP version (family) used to look up in DNS:
+%     "4" for IPv4-only hosts, "6" for IPv6-capable hosts.
+%
+dns_lookup(Hostname) ->
+    Hostent4 = inet:gethostbyname(Hostname, inet ),
+
+    % If the host doesn't have an A record (IPv4),
+    % trying to find its AAAA record (IPv6).
+    Hostent6 = if (element(1, Hostent4) =:= error) ->
+               inet:gethostbyname(Hostname, inet6);
+                  (true                          ) ->
+               false
+               end,
+
+    if (element(1, Hostent4) =:= ok) ->
+        {
+            inet:ntoa(hd(element(6, element(2, Hostent4)))),
+            4
+        };
+       (element(1, Hostent6) =:= ok) ->
+        {
+            inet:ntoa(hd(element(6, element(2, Hostent6)))),
+            6
+        };
+       (true                       ) ->
+        {?_ERR_PREFIX, []}
+    end.
 
 % vim:set nu et ts=4 sw=4:
