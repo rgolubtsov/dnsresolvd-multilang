@@ -30,20 +30,81 @@
 init(Req, State) ->
     Mtd = cowboy_req:method(Req),
 
-    io:put_chars("==> " ++ Mtd), io:nl(),
-
     % -------------------------------------------------------------------------
     % --- Parsing and validating request params - Begin -----------------------
     % -------------------------------------------------------------------------
     {ok, Params, Req_} = if (Mtd =:= ?_MTD_HTTP_GET ) ->
-        {ok, cowboy_req:parse_qs(Req), Req};
+        {ok, cowboy_req:parse_qs(Req),  Req};
                             (Mtd =:= ?_MTD_HTTP_POST) ->
         cowboy_req:read_urlencoded_body(Req);
                             (true                   ) ->
-        {ok, [], false}
+        {ok, [                      ],  Req}
                          end,
 
     io:write(Params), io:nl(),
+
+    Hostname_ = [V || {K, V} <- Params, (K =:= <<"h">>)], % <---------+
+    %         +----GET----+-----+-----+          ^                    |
+    %         |     |     |     |     |          |                    |
+    %         |     |     |     |     |       +--+         +----------+-+
+    %         v     v     v     v     v       |            |          | |
+    % $ curl 'http://localhost:<port_number>/?h=<hostname>&f=<fmt>'   | |
+    % $                                                               | |
+    % $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number> | |
+    %         ^  |            |                                       | |
+    %         |  +------------+---------------------------------------+ |
+    %         |               |                                         |
+    % POST----+               +------------------+                      |
+    %                                            |                      |
+    %                                            v                      |
+    Fmt_      = [V || {K, V} <- Params, (K =:= <<"f">>)], % <-----------+
+
+    Hostname0 = lists:filter(fun(V) -> (V =/= []) end, Hostname_),
+    Hostname0_len = length(Hostname0), Hostname1 = if (Hostname0_len > 0) ->
+        lists:nth(Hostname0_len, Hostname0);
+                                                      (true             ) ->
+        ?_EMPTY_STRING
+                                                   end,
+
+    Fmt0      = lists:filter(fun(V) -> (V =/= []) end, Fmt_     ),
+    Fmt0_len      = length(Fmt0     ), Fmt1      = if (Fmt0_len      > 0) ->
+        lists:nth(Fmt0_len,      Fmt0     );
+                                                      (true             ) ->
+        ?_EMPTY_STRING
+                                                   end,
+
+    Hostname  = if ((       Hostname1  =:= []  )
+                or  (       Hostname1  =:= true)
+                or  (length(Hostname1) =:= 0   )) ->
+        ?_DEF_HOSTNAME;
+                   (true                        ) ->
+        if (Hostname1 =/= true) ->
+            binary_to_list(Hostname1);
+           (true              ) ->
+            ?_DEF_HOSTNAME
+        end
+                end,
+
+    Fmt2      = if ((       Fmt1       =:= []  )
+                or  (       Fmt1       =:= true)
+                or  (length(Fmt1     ) =:= 0   )) ->
+        ?_PRM_FMT_JSON;
+                   (true                        ) ->
+        if (Fmt1      =/= true) ->
+            string:to_lower(binary_to_list(Fmt1));
+           (true              ) ->
+            ?_PRM_FMT_JSON
+        end
+                end,
+
+    Fmt2_     = lists:member(Fmt2, [
+        ?_PRM_FMT_HTML,
+        ?_PRM_FMT_JSON
+    ]),
+
+    Fmt       = if (not Fmt2_) -> ?_PRM_FMT_JSON;
+                   (true     ) -> Fmt2
+                end,
     % -------------------------------------------------------------------------
     % --- Parsing and validating request params - End -------------------------
     % -------------------------------------------------------------------------
