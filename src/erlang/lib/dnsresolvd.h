@@ -72,6 +72,9 @@
 -define(_DMN_COPYRIGHT__, "Copyright (C) 2017-2018").
 -define(_DMN_AUTHOR,      "Radislav Golubtsov <ragolubtsov@my.com>").
 
+%% Constant: The default hostname to look up for.
+-define(_DEF_HOSTNAME, "openbsd.org").
+
 % Helper function. Makes final buffer cleanups, closes streams, etc.
 cleanups_fixate(Log) ->
     % Closing the system logger.
