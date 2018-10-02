@@ -29,6 +29,7 @@
 -define(_DBG_PREF,         "==> ").
 
 % Common error messages.
+-define(_ERR_PREFIX,                    "error").
 -define(_ERR_PORT_MUST_BE_POSITIVE_INT, ": <port_number> must be "
                                      ++ "a positive integer value, "
                                      ++ "in the range 1024-49151.").
