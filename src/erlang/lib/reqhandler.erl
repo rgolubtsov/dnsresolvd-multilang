@@ -113,9 +113,6 @@ init(Req, State) ->
     Addr = element(1, Addr_ver),
     Ver  = element(2, Addr_ver),
 
-    io:put_chars(?_DBG_PREF ++ Addr                 ++ ?_NEW_LINE
-              ++ ?_DBG_PREF ++ integer_to_list(Ver) ++ ?_NEW_LINE),
-
     {ok,
         Req_,
         State % <== The state of the handler doesn't need to be changed.

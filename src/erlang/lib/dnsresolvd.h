@@ -26,7 +26,6 @@
 -define(_NEW_LINE,           "\n").
 -define(_ONE_SPACE_STRING,    " ").
 -define(_PRINT_BANNER_OPT,   "-V").
--define(_DBG_PREF,         "==> ").
 
 % Common error messages.
 -define(_ERR_PREFIX,                    "error").
@@ -80,7 +79,6 @@
 cleanups_fixate(Log) ->
     % Closing the system logger.
     if (Log =/= []) ->
-        io:put_chars("--- Log is not nil ---" ++ ?_NEW_LINE),
         syslog:close(Log),
         syslog:stop();
        (true      ) ->
