@@ -28,6 +28,10 @@
 %% @returns The tuple containing the HTTP response to be rendered
 %%          and a new state of the HTTP handler.
 init(Req, State) ->
+    % Calling this just to suppress compiler warning:
+    % function cleanups_fixate/1 is unused.
+    cleanups_fixate([]),
+
     Mtd = cowboy_req:method(Req),
 
     % -------------------------------------------------------------------------
