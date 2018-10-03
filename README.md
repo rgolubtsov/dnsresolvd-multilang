@@ -19,7 +19,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **Vala ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/vala/`
 * :small_blue_diamond: **Genie ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/genie/`
 * :small_blue_diamond: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
-* :cd: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
+* :small_blue_diamond: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
 
 ## Table of Contents
 
@@ -962,6 +962,49 @@ if [ ! -d "lib/ebin" ]; then \
 fi
 ```
 
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al . lib lib/ebin
+.:
+total 32
+drwxr-xr-x   4 <username>  <usergroup>   512 Oct  3 16:50 .
+drwxr-xr-x  11 <username>  <usergroup>   512 Sep  8 01:25 ..
+-rw-r--r--   1 <username>  <usergroup>   992 Oct  3 16:50 Makefile
+-rwxr-xr-x   1 <username>  <usergroup>  4209 Oct  3 16:50 dnsresolvd
+drwxr-xr-x   6 <username>  <usergroup>   512 Oct  3 16:50 erlang_modules
+drwxr-xr-x   3 <username>  <usergroup>   512 Oct  3 16:50 lib
+
+lib:
+total 60
+drwxr-xr-x  3 <username>  <usergroup>    512 Oct  3 16:50 .
+drwxr-xr-x  4 <username>  <usergroup>    512 Oct  3 16:50 ..
+-rw-r--r--  1 <username>  <usergroup>   3634 Oct  3 16:50 dnsresolvd.erl
+-rw-r--r--  1 <username>  <usergroup>   4546 Oct  3 16:50 dnsresolvd.h
+-rw-r--r--  1 <username>  <usergroup>   1455 Oct  3 16:50 dnsresolvs.erl
+drwxr-xr-x  2 <username>  <usergroup>    512 Oct  3 16:50 ebin
+-rw-r--r--  1 <username>  <usergroup>  10241 Oct  3 16:50 reqhandler.erl
+
+lib/ebin:
+total 24
+drwxr-xr-x  2 <username>  <usergroup>   512 Oct  3 16:50 .
+drwxr-xr-x  3 <username>  <usergroup>   512 Oct  3 16:50 ..
+-rw-r--r--  1 <username>  <usergroup>  1908 Oct  3 16:50 dnsresolvd.beam
+-rw-r--r--  1 <username>  <usergroup>   776 Oct  3 16:50 dnsresolvs.beam
+-rw-r--r--  1 <username>  <usergroup>  3864 Oct  3 16:50 reqhandler.beam
+$
+$ file dnsresolvd lib/* lib/ebin/*
+dnsresolvd:               a escript script text executable
+lib/dnsresolvd.erl:       ASCII English text
+lib/dnsresolvd.h:         ASCII English text
+lib/dnsresolvs.erl:       ASCII English text
+lib/ebin:                 directory
+lib/reqhandler.erl:       ASCII English text
+lib/ebin/dnsresolvd.beam: Erlang BEAM file
+lib/ebin/dnsresolvs.beam: Erlang BEAM file
+lib/ebin/reqhandler.beam: Erlang BEAM file
+```
+
 ## Running
 
 Starting the daemon is quite easy and very similar for all its implementations.
@@ -1207,6 +1250,32 @@ OpenBSD/amd64:
 $ ERL_LIBS="erlang_modules/deps:lib" ./dnsresolvd 8765
 Server started on port 8765
 === Hit Ctrl+C to terminate it.
+```
+
+Example of making GET and POST requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xyz&h=hexdocs.pm'
+{"hostname":"hexdocs.pm","address":"151.101.85.181","version":"IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f=HtmL' http://localhost:8765
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+<meta http-equiv="content-type"    content="text/html; charset=UTF-8"           />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"                            />
+<meta       name="viewport"        content="width=device-width,initial-scale=1" />
+<title>DNS Resolver Daemon (dnsresolvd)</title>
+</head>
+<body>
+<div>IPv6.CYBERNODE.com 2001:470:1:1B9::31 IPv6</div>
+</body>
+</html>
+
+=== 200
+=== text/html; charset=UTF-8
 ```
 
 ---
