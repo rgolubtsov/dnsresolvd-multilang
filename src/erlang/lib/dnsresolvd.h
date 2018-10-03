@@ -22,10 +22,17 @@
 -define(_EXIT_FAILURE,          1). %    Failing exit status.
 -define(_EXIT_SUCCESS,          0). % Successful exit status.
 -define(_EMPTY_STRING,         "").
+-define(_COLON_SPACE_SEP,    ": ").
 -define(_COMMA_SPACE_SEP,    ", ").
 -define(_NEW_LINE,           "\n").
 -define(_ONE_SPACE_STRING,    " ").
 -define(_PRINT_BANNER_OPT,   "-V").
+
+% JSON entities :-).
+-define(_CB1,   "{\"").
+-define(_CB2,   "\"}").
+-define(_DQ1, "\":\"").
+-define(_DQ2, "\",\"").
 
 % Common error messages.
 -define(_ERR_PREFIX,                    "error").
@@ -37,6 +44,7 @@
                                      ++ "Exiting...").
 -define(_ERR_SRV_PORT_IS_IN_USE,        "due to the port requested "
                                      ++ "is in use. Exiting...").
+-define(_ERR_COULD_NOT_LOOKUP,          "could not lookup hostname").
 
 % Print this error message when there are no any args passed.
 -define(_ERR_MUST_BE_ONE_TWO_ARGS_1, ": There must be one or two args "
@@ -62,6 +70,25 @@
 -define(_MTD_HTTP_POST, <<"POST">>).
 -define(_PRM_FMT_HTML,    "html").
 -define(_PRM_FMT_JSON,    "json").
+
+% HTTP response headers and status codes.
+-define(_HDR_CONTENT_TYPE_N,      "content-type").
+-define(_HDR_CONTENT_TYPE_V_HTML, "text/html; charset=UTF-8").
+-define(_HDR_CONTENT_TYPE_V_JSON, "application/json").
+-define(_HDR_CACHE_CONTROL_N,     "cache-control").
+-define(_HDR_CACHE_CONTROL_V,     "no-cache, no-store, "
+                               ++ "must-revalidate").
+-define(_HDR_EXPIRES_N,           "expires").
+-define(_HDR_EXPIRES_V,           "Thu, 01 Dec 1994 16:00:00 GMT").
+-define(_HDR_PRAGMA_N,            "pragma").
+-define(_HDR_PRAGMA_V,            "no-cache").
+-define(_RSC_HTTP_200_OK,         200).
+
+% Response data names.
+-define(_DAT_HOSTNAME_N, "hostname").
+-define(_DAT_ADDRESS_N,  "address").
+-define(_DAT_VERSION_N,  "version").
+-define(_DAT_VERSION_V,  "IPv").
 
 % Daemon name, version, and copyright banners.
 -define(_DMN_NAME,        "DNS Resolver Daemon (dnsresolvd)").
