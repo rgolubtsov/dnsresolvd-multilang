@@ -1005,6 +1005,8 @@ lib/ebin/dnsresolvs.beam: Erlang BEAM file
 lib/ebin/reqhandler.beam: Erlang BEAM file
 ```
 
+**TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server and Arch Linux.
+
 ## Running
 
 Starting the daemon is quite easy and very similar for all its implementations.
@@ -1252,7 +1254,7 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
-Example of making GET and POST requests:
+Example of making **GET** and **POST** requests:
 
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xyz&h=hexdocs.pm'
