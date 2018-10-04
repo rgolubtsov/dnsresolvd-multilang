@@ -968,30 +968,30 @@ Once this is done, check it out... just for fun:))
 $ ls -al . lib lib/ebin
 .:
 total 32
-drwxr-xr-x   4 <username>  <usergroup>   512 Oct  3 16:50 .
+drwxr-xr-x   4 <username>  <usergroup>   512 Oct  4 13:50 .
 drwxr-xr-x  11 <username>  <usergroup>   512 Sep  8 01:25 ..
--rw-r--r--   1 <username>  <usergroup>   992 Oct  3 16:50 Makefile
--rwxr-xr-x   1 <username>  <usergroup>  4209 Oct  3 16:50 dnsresolvd
-drwxr-xr-x   6 <username>  <usergroup>   512 Oct  3 16:50 erlang_modules
-drwxr-xr-x   3 <username>  <usergroup>   512 Oct  3 16:50 lib
+-rw-r--r--   1 <username>  <usergroup>   992 Oct  4 13:50 Makefile
+-rwxr-xr-x   1 <username>  <usergroup>  4209 Oct  4 13:50 dnsresolvd
+drwxr-xr-x   6 <username>  <usergroup>   512 Oct  4 13:50 erlang_modules
+drwxr-xr-x   3 <username>  <usergroup>   512 Oct  4 13:50 lib
 
 lib:
 total 60
-drwxr-xr-x  3 <username>  <usergroup>    512 Oct  3 16:50 .
-drwxr-xr-x  4 <username>  <usergroup>    512 Oct  3 16:50 ..
--rw-r--r--  1 <username>  <usergroup>   3634 Oct  3 16:50 dnsresolvd.erl
--rw-r--r--  1 <username>  <usergroup>   4546 Oct  3 16:50 dnsresolvd.h
--rw-r--r--  1 <username>  <usergroup>   1455 Oct  3 16:50 dnsresolvs.erl
-drwxr-xr-x  2 <username>  <usergroup>    512 Oct  3 16:50 ebin
--rw-r--r--  1 <username>  <usergroup>  10241 Oct  3 16:50 reqhandler.erl
+drwxr-xr-x  3 <username>  <usergroup>    512 Oct  4 13:50 .
+drwxr-xr-x  4 <username>  <usergroup>    512 Oct  4 13:50 ..
+-rw-r--r--  1 <username>  <usergroup>   3634 Oct  4 13:50 dnsresolvd.erl
+-rw-r--r--  1 <username>  <usergroup>   4546 Oct  4 13:50 dnsresolvd.h
+-rw-r--r--  1 <username>  <usergroup>   1455 Oct  4 13:50 dnsresolvs.erl
+drwxr-xr-x  2 <username>  <usergroup>    512 Oct  4 13:50 ebin
+-rw-r--r--  1 <username>  <usergroup>  10241 Oct  4 13:50 reqhandler.erl
 
 lib/ebin:
 total 24
-drwxr-xr-x  2 <username>  <usergroup>   512 Oct  3 16:50 .
-drwxr-xr-x  3 <username>  <usergroup>   512 Oct  3 16:50 ..
--rw-r--r--  1 <username>  <usergroup>  1908 Oct  3 16:50 dnsresolvd.beam
--rw-r--r--  1 <username>  <usergroup>   776 Oct  3 16:50 dnsresolvs.beam
--rw-r--r--  1 <username>  <usergroup>  3864 Oct  3 16:50 reqhandler.beam
+drwxr-xr-x  2 <username>  <usergroup>   512 Oct  4 13:50 .
+drwxr-xr-x  3 <username>  <usergroup>   512 Oct  4 13:50 ..
+-rw-r--r--  1 <username>  <usergroup>  1908 Oct  4 13:50 dnsresolvd.beam
+-rw-r--r--  1 <username>  <usergroup>   776 Oct  4 13:50 dnsresolvs.beam
+-rw-r--r--  1 <username>  <usergroup>  3864 Oct  4 13:50 reqhandler.beam
 $
 $ file dnsresolvd lib/* lib/ebin/*
 dnsresolvd:               a escript script text executable
@@ -1206,7 +1206,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=yaml&h=yaml.org' htt
 
 ### Elixir (Cowboy)
 
-OpenBSD/amd64 | Arch Linux 32:
+OpenBSD/amd64:
 
 ```
 $ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin \
