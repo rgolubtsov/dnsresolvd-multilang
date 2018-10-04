@@ -16,8 +16,8 @@ defmodule AUX do
     @moduledoc "The helper module for the daemon."
 
     # Helper constants.
-    def _EXIT_FAILURE    , do:    1
-    def _EXIT_SUCCESS    , do:    0
+    def _EXIT_FAILURE    , do:    1 #    Failing exit status.
+    def _EXIT_SUCCESS    , do:    0 # Successful exit status.
     def _EMPTY_STRING    , do:   ""
     def _COLON_SPACE_SEP , do: ": "
     def _COMMA_SPACE_SEP , do: ", "
@@ -52,10 +52,10 @@ defmodule AUX do
     def _MSG_USAGE_TEMPLATE_1, do: "Usage: "
     def _MSG_USAGE_TEMPLATE_2, do: " <port_number> [-V]"
 
-    # Constant: The minimum port number allowed.
+    ## Constant: The minimum port number allowed.
     def _MIN_PORT, do: 1024
 
-    # Constant: The maximum port number allowed.
+    ## Constant: The maximum port number allowed.
     def _MAX_PORT, do: 49151
 
     # Common notification messages.
@@ -68,7 +68,7 @@ defmodule AUX do
     def _PRM_FMT_HTML , do: "html"
     def _PRM_FMT_JSON , do: "json"
 
-    # HTTP response headers.
+    # HTTP response headers and status codes.
     def _HDR_CONTENT_TYPE_N     , do: "content-type"
     def _HDR_CONTENT_TYPE_V_HTML, do: "text/html; charset=UTF-8"
     def _HDR_CONTENT_TYPE_V_JSON, do: "application/json"
@@ -96,7 +96,7 @@ defmodule AUX do
     def _DMN_COPYRIGHT__, do: "Copyright (C) 2017-2018"
     def _DMN_AUTHOR     , do: "Radislav Golubtsov <ragolubtsov@my.com>"
 
-    # Constant: The default hostname to look up for.
+    ## Constant: The default hostname to look up for.
     def _DEF_HOSTNAME, do: "openbsd.org"
 
     @doc """

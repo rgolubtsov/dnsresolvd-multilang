@@ -835,24 +835,24 @@ Once this is done, check it out... just for fun:))
 $ ls -al . lib
 .:
 total 40
-drwxr-xr-x   4 <username>  <usergroup>   512 Sep 24 16:20 .
+drwxr-xr-x   4 <username>  <usergroup>   512 Oct  4 12:50 .
 drwxr-xr-x  11 <username>  <usergroup>   512 Sep  8 01:25 ..
--rw-r--r--   1 <username>  <usergroup>   879 Sep 24 16:20 Makefile
--rwxr-xr-x   1 <username>  <usergroup>  4365 Sep 24 16:20 dnsresolvd
--rw-r--r--   1 <username>  <usergroup>  2256 Sep 24 16:20 dnsresolvd.app
-drwxr-xr-x   6 <username>  <usergroup>   512 Sep 24 16:20 erlang_modules
-drwxr-xr-x   2 <username>  <usergroup>   512 Sep 24 16:20 lib
+-rw-r--r--   1 <username>  <usergroup>   879 Oct  4 12:50 Makefile
+-rwxr-xr-x   1 <username>  <usergroup>  4365 Oct  4 12:50 dnsresolvd
+-rw-r--r--   1 <username>  <usergroup>  2256 Oct  4 12:50 dnsresolvd.app
+drwxr-xr-x   6 <username>  <usergroup>   512 Oct  4 12:50 erlang_modules
+drwxr-xr-x   2 <username>  <usergroup>   512 Oct  4 12:50 lib
 
 lib:
 total 108
-drwxr-xr-x  2 <username>  <usergroup>    512 Sep 24 16:20 .
-drwxr-xr-x  4 <username>  <usergroup>    512 Sep 24 16:20 ..
--rw-r--r--  1 <username>  <usergroup>   9364 Sep 24 16:20 Elixir.AUX.beam
--rw-r--r--  1 <username>  <usergroup>   5072 Sep 24 16:20 Elixir.DnsResolvd.beam
--rw-r--r--  1 <username>  <usergroup>   2300 Sep 24 16:20 Elixir.DnsResolvs.beam
--rw-r--r--  1 <username>  <usergroup>   9860 Sep 24 16:20 Elixir.ReqHandler.beam
--rw-r--r--  1 <username>  <usergroup>  13738 Sep 24 16:20 dnsresolvd.ex
--rw-r--r--  1 <username>  <usergroup>   5603 Sep 24 16:20 dnsresolvh.ex
+drwxr-xr-x  2 <username>  <usergroup>    512 Oct  4 12:50 .
+drwxr-xr-x  4 <username>  <usergroup>    512 Oct  4 12:50 ..
+-rw-r--r--  1 <username>  <usergroup>   9364 Oct  4 12:50 Elixir.AUX.beam
+-rw-r--r--  1 <username>  <usergroup>   5072 Oct  4 12:50 Elixir.DnsResolvd.beam
+-rw-r--r--  1 <username>  <usergroup>   2300 Oct  4 12:50 Elixir.DnsResolvs.beam
+-rw-r--r--  1 <username>  <usergroup>   9860 Oct  4 12:50 Elixir.ReqHandler.beam
+-rw-r--r--  1 <username>  <usergroup>  13738 Oct  4 12:50 dnsresolvd.ex
+-rw-r--r--  1 <username>  <usergroup>   5675 Oct  4 12:50 dnsresolvh.ex
 $
 $ file dnsresolvd lib/*
 dnsresolvd:                 a elixir script text executable
