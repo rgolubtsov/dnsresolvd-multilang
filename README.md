@@ -869,6 +869,7 @@ lib/dnsresolvh.ex:          ASCII English text
 ### Erlang (Cowboy)
 
 #### Building under OpenBSD/amd64 6.3
+
 Install the necessary dependencies (`rebar19`, `syslog`, `cowboy`). Note that the `erlang` package will be installed automatically as a dependency to the `rebar19` package:
 ```
 $ sudo pkg_add -vvvvv rebar19
