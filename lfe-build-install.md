@@ -1,4 +1,4 @@
-# Building and installing LFE
+# Building and Installing LFE
 
 ## Table of Contents
 
