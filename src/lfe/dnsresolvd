@@ -1,0 +1,29 @@
+#!/usr/bin/env lfescript
+; src/lfe/dnsresolvd
+; =============================================================================
+; DNS Resolver Daemon (dnsresolvd). Version 0.1
+; =============================================================================
+; A daemon that performs DNS lookups for the given hostname
+; passed in an HTTP request, with the focus on its implementation
+; using various programming languages. (Cowboy-boosted impl.)
+; =============================================================================
+; Copyright (C) 2017-2018 Radislav (Radicchio) Golubtsov
+;
+; (See the LICENSE file at the top of the source tree.)
+;
+
+;; @doc The daemon entry point.
+;;
+;; @param args The list of command-line arguments.
+;;
+;; @returns The exit code indicating the daemon overall execution status.
+(defun main(args)
+    (let ((ret- 0))
+
+    (: io put_chars (++ (integer_to_list ret-) "\n"))
+
+    (halt ret-)
+    )
+)
+
+; vim:set nu et ts=4 sw=4:
