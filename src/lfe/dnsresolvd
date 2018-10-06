@@ -18,7 +18,8 @@
 ;;
 ;; @returns The exit code indicating the daemon overall execution status.
 (defun main(args)
-    (let ((ret- 0))
+    (let ((ret- 0)) ; Successful exit status.
+;   (let ((ret- 1)) ;    Failing exit status.
 
     (: io put_chars (++ (integer_to_list ret-) "\n"))
 
