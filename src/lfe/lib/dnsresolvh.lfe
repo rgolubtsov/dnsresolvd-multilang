@@ -12,8 +12,8 @@
 ; (See the LICENSE file at the top of the source tree.)
 ;
 
-;; @doc The helper header file for the daemon.
-;; @end
+;; @doc The helper module for the daemon.
+(defmodule dnsresolvh
 
 ; Helper constants.
 (defmacro -EXIT-FAILURE()        1) ;    Failing exit status.
@@ -108,5 +108,6 @@
 ;       (true      ) ->
 ;        false
 ;    end.
+)
 
 ; vim:set nu et ts=4 sw=4:
