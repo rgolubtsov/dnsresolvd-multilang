@@ -12,16 +12,20 @@
 ; (See the LICENSE file at the top of the source tree.)
 ;
 
-;; @doc The daemon entry point.
-;;
-;; @param args The list of command-line arguments.
-;;
-;; @returns The exit code indicating the daemon overall execution status.
-(defun main(args)
-    (let ((ret- 0)) ; Successful exit status.
-;   (let ((ret- 1)) ;    Failing exit status.
+#|
+ | @param args The list of command-line arguments.
+ |
+ | @returns The exit code indicating the daemon overall execution status.
+ |#
+(defun main (args)
+    "The daemon entry point."
 
-    (: io put_chars (++ (integer_to_list ret-) "\n"))
+    (let ((ret- (: AUX EXIT-SUCCESS)))
+
+    (: io put_chars (++ (integer_to_list ret-) (: AUX NEW-LINE)))
+
+    ; Making final cleanups.
+    (: AUX cleanups-fixate ())
 
     (halt ret-)
     )
