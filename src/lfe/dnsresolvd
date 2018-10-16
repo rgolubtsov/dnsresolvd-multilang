@@ -22,7 +22,17 @@
 
     (let ((ret- (: AUX EXIT-SUCCESS)))
 
-    (: io put_chars (++ (integer_to_list ret-) (: AUX NEW-LINE)))
+    (let ((argv         args))
+    (let ((argc (length args)))
+
+    (let ((daemon_name (: filename basename (MODULE))))
+
+    (: io put_chars (++
+        (integer_to_list ret-) (: AUX NEW-LINE)
+        argv                   (: AUX NEW-LINE)
+        (integer_to_list argc) (: AUX NEW-LINE)
+        daemon_name            (: AUX NEW-LINE)))
+    )))
 
     ; Making final cleanups.
     (: AUX cleanups-fixate ())
