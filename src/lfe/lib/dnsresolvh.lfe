@@ -12,102 +12,108 @@
 ; (See the LICENSE file at the top of the source tree.)
 ;
 
-;; @doc The helper module for the daemon.
-(defmodule dnsresolvh
+(defmodule AUX
+    "The helper module for the daemon."
+
+    (export-macro EXIT-FAILURE
+                  EXIT-SUCCESS
+                  NEW-LINE)
+
+    (export (cleanups-fixate 1)))
 
 ; Helper constants.
-(defmacro -EXIT-FAILURE()        1) ;    Failing exit status.
-(defmacro -EXIT-SUCCESS()        0) ; Successful exit status.
-;-define(_EMPTY_STRING,         "").
-;-define(_COLON_SPACE_SEP,    ": ").
-;-define(_COMMA_SPACE_SEP,    ", ").
-;-define(_NEW_LINE,           "\n").
-;-define(_ONE_SPACE_STRING,    " ").
-;-define(_PRINT_BANNER_OPT,   "-V").
+(defmacro EXIT-FAILURE     ()    1) ;    Failing exit status.
+(defmacro EXIT-SUCCESS     ()    0) ; Successful exit status.
+(defmacro EMPTY-STRING     ()   "")
+(defmacro COLON-SPACE-SEP  () ": ")
+(defmacro COMMA-SPACE-SEP  () ", ")
+(defmacro NEW-LINE         () "\n")
+(defmacro ONE-SPACE-STRING ()  " ")
+(defmacro PRINT-BANNER-OPT () "-V")
 
 ; JSON entities :-).
-;-define(_CB1,   "{\"").
-;-define(_CB2,   "\"}").
-;-define(_DQ1, "\":\"").
-;-define(_DQ2, "\",\"").
+(defmacro CB1 ()   "{\"")
+(defmacro CB2 ()   "\"}")
+(defmacro DQ1 () "\":\"")
+(defmacro DQ2 () "\",\"")
 
 ; Common error messages.
-;-define(_ERR_PREFIX,                    "error").
-;-define(_ERR_PORT_MUST_BE_POSITIVE_INT, ": <port_number> must be "
-;                                     ++ "a positive integer value, "
-;                                     ++ "in the range 1024-49151.").
-;-define(_ERR_CANNOT_START_SERVER,       ": FATAL: Cannot start server ").
-;-define(_ERR_SRV_UNKNOWN_REASON,        "for an unknown reason. "
-;                                     ++ "Exiting...").
-;-define(_ERR_SRV_PORT_IS_IN_USE,        "due to the port requested "
-;                                     ++ "is in use. Exiting...").
-;-define(_ERR_COULD_NOT_LOOKUP,          "could not lookup hostname").
+(defmacro ERR-PREFIX                    () "error"                        )
+(defmacro ERR-PORT-MUST-BE-POSITIVE-INT () ": <port_number> must be "
+                                        ++ "a positive integer value, "
+                                        ++ "in the range 1024-49151."     )
+(defmacro ERR-CANNOT-START-SERVER       () ": FATAL: Cannot start server ")
+(defmacro ERR-SRV-UNKNOWN-REASON        () "for an unknown reason. "
+                                        ++ "Exiting..."                   )
+(defmacro ERR-SRV-PORT-IS-IN-USE        () "due to the port requested "
+                                        ++ "is in use. Exiting..."        )
+(defmacro ERR-COULD-NOT-LOOKUP          () "could not lookup hostname"    )
 
 ; Print this error message when there are no any args passed.
-;-define(_ERR_MUST_BE_ONE_TWO_ARGS_1, ": There must be one or two args "
-;                                  ++ "passed: ").
-;-define(_ERR_MUST_BE_ONE_TWO_ARGS_2, " args found").
+(defmacro ERR-MUST-BE-ONE-TWO-ARGS-1 () ": There must be one or two args "
+                                     ++ "passed: "   )
+(defmacro ERR-MUST-BE-ONE-TWO-ARGS-2 () " args found")
 
 ; Print this usage info just after any inappropriate input.
-;-define(_MSG_USAGE_TEMPLATE_1, "Usage: ").
-;-define(_MSG_USAGE_TEMPLATE_2, " <port_number> [-V]").
+(defmacro MSG-USAGE-TEMPLATE-1 () "Usage: "            )
+(defmacro MSG-USAGE-TEMPLATE-2 () " <port_number> [-V]")
 
 ;; Constant: The minimum port number allowed.
-;-define(_MIN_PORT, 1024).
+(defmacro MIN-PORT () 1024)
 
 ;; Constant: The maximum port number allowed.
-;-define(_MAX_PORT, 49151).
+(defmacro MAX-PORT () 49151)
 
 ; Common notification messages.
-;-define(_MSG_SERVER_STARTED_1, "Server started on port ").
-;-define(_MSG_SERVER_STARTED_2, "=== Hit Ctrl+C to terminate it.").
+(defmacro MSG-SERVER-STARTED-1 () "Server started on port "        )
+(defmacro MSG-SERVER-STARTED-2 () "=== Hit Ctrl+C to terminate it.")
 
 ; HTTP request methods and params.
-;-define(_MTD_HTTP_GET,  <<"GET">>).
-;-define(_MTD_HTTP_POST, <<"POST">>).
-;-define(_PRM_FMT_HTML,    "html").
-;-define(_PRM_FMT_JSON,    "json").
+(defmacro MTD-HTTP-GET  () <<"GET">> )
+(defmacro MTD-HTTP-POST () <<"POST">>)
+(defmacro PRM-FMT-HTML  ()   "html"  )
+(defmacro PRM-FMT-JSON  ()   "json"  )
 
 ; HTTP response headers and status codes.
-;-define(_HDR_CONTENT_TYPE_N,      "content-type").
-;-define(_HDR_CONTENT_TYPE_V_HTML, "text/html; charset=UTF-8").
-;-define(_HDR_CONTENT_TYPE_V_JSON, "application/json").
-;-define(_HDR_CACHE_CONTROL_N,     "cache-control").
-;-define(_HDR_CACHE_CONTROL_V,     "no-cache, no-store, "
-;                               ++ "must-revalidate").
-;-define(_HDR_EXPIRES_N,           "expires").
-;-define(_HDR_EXPIRES_V,           "Thu, 01 Dec 1994 16:00:00 GMT").
-;-define(_HDR_PRAGMA_N,            "pragma").
-;-define(_HDR_PRAGMA_V,            "no-cache").
-;-define(_RSC_HTTP_200_OK,         200).
+(defmacro HDR-CONTENT-TYPE-N      () "content-type"                 )
+(defmacro HDR-CONTENT-TYPE-V-HTML () "text/html; charset=UTF-8"     )
+(defmacro HDR-CONTENT-TYPE-V-JSON () "application/json"             )
+(defmacro HDR-CACHE-CONTROL-N     () "cache-control"                )
+(defmacro HDR-CACHE-CONTROL-V     () "no-cache, no-store, "
+                                  ++ "must-revalidate"              )
+(defmacro HDR-EXPIRES-N           () "expires"                      )
+(defmacro HDR-EXPIRES-V           () "Thu, 01 Dec 1994 16:00:00 GMT")
+(defmacro HDR-PRAGMA-N            () "pragma"                       )
+(defmacro HDR-PRAGMA-V            () "no-cache"                     )
+(defmacro RSC-HTTP-200-OK         () 200                            )
 
 ; Response data names.
-;-define(_DAT_HOSTNAME_N, "hostname").
-;-define(_DAT_ADDRESS_N,  "address").
-;-define(_DAT_VERSION_N,  "version").
-;-define(_DAT_VERSION_V,  "IPv").
+(defmacro DAT-HOSTNAME-N () "hostname")
+(defmacro DAT-ADDRESS-N  () "address" )
+(defmacro DAT-VERSION-N  () "version" )
+(defmacro DAT-VERSION-V  () "IPv"     )
 
 ; Daemon name, version, and copyright banners.
-;-define(_DMN_NAME,        "DNS Resolver Daemon (dnsresolvd)").
-;-define(_DMN_DESCRIPTION, "Performs DNS lookups for the given "
-;                       ++ "hostname passed in an HTTP request").
-;-define(_DMN_VERSION_S__, "Version").
-;-define(_DMN_VERSION,     "0.1").
-;-define(_DMN_COPYRIGHT__, "Copyright (C) 2017-2018").
-;-define(_DMN_AUTHOR,      "Radislav Golubtsov <ragolubtsov@my.com>").
+(defmacro DMN-NAME        () "DNS Resolver Daemon (dnsresolvd)"       )
+(defmacro DMN-DESCRIPTION () "Performs DNS lookups for the given "
+                          ++ "hostname passed in an HTTP request"     )
+(defmacro DMN-VERSION-S-- () "Version"                                )
+(defmacro DMN-VERSION     () "0.1"                                    )
+(defmacro DMN-COPYRIGHT-- () "Copyright (C) 2017-2018"                )
+(defmacro DMN-AUTHOR      () "Radislav Golubtsov <ragolubtsov@my.com>")
 
 ;; Constant: The default hostname to look up for.
-;-define(_DEF_HOSTNAME, "openbsd.org").
+(defmacro DEF-HOSTNAME () "openbsd.org")
 
-; Helper function. Makes final buffer cleanups, closes streams, etc.
-;cleanups_fixate(Log) ->
-;    ; Closing the system logger.
-;    if (Log =/= []) ->
-;        syslog:close(Log),
-;        syslog:stop();
-;       (true      ) ->
-;        false
-;    end.
+(defun cleanups-fixate (log)
+    "Helper function. Makes final buffer cleanups, closes streams, etc."
+
+    ; Closing the system logger.
+    (if (=/= log ())
+        (: io put_chars (++ "--- log is not nil ---" (NEW-LINE)))
+;        (: syslog close (log))
+;        (: syslog stop ())
+    )
 )
 
 ; vim:set nu et ts=4 sw=4:
