@@ -24,7 +24,7 @@ RMFLAGS = -vR
 
 # Making the target.
 $(BEAM): $(SRCS)
-	if [ ! -d "$(BEAM)" ]; then           \
+	if [ ! -d "$(BEAM)" ]; then               \
 		$(MKDIR) $(BEAM);                 \
 		$(LC) $(LCFLAGS) $(BEAM) $(SRCS); \
 	fi
