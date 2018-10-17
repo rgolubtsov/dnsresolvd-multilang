@@ -22,17 +22,57 @@
 
     (let ((ret- (: AUX EXIT-SUCCESS)))
 
-    (let ((argv         args))
-    (let ((argc (length args)))
+    (let ((argv (list_to_tuple args)))
+    (let ((argc (length        args)))
 
-    (let ((daemon_name (: filename basename (MODULE))))
+    ; --- Error: ./dnsresolvd:XX: function #(FILE 0) undefined ----------------
+    ; (let ((daemon-name (: filename basename (FILE))))
+    ; -------------------------------------------------------------------------
+    (let ((daemon-name (: filename basename (MODULE))))
 
-    (: io put_chars (++
-        (integer_to_list ret-) (: AUX NEW-LINE)
-        argv                   (: AUX NEW-LINE)
-        (integer_to_list argc) (: AUX NEW-LINE)
-        daemon_name            (: AUX NEW-LINE)))
-    )))
+    (let ((port-number-      (if (> argc 0) (element 1 argv)
+                                            0)))
+    (let ((print-banner-opt- (if (> argc 1) (element 2 argv)
+                                            (: AUX EMPTY-STRING))))
+
+    (let ((print-banner-opt (: string to_upper print-banner-opt-)))
+
+    (cond
+        ((=:= print-banner-opt (: AUX PRINT-BANNER-OPT))
+            (: AUX separator-draw (: AUX DMN-DESCRIPTION))
+
+            (: io put_chars (++
+      (: AUX DMN-NAME        ) (: AUX COMMA-SPACE-SEP ) (: AUX DMN-VERSION-S--)
+      (: AUX ONE-SPACE-STRING) (: AUX DMN-VERSION     ) (: AUX NEW-LINE       )
+      (: AUX DMN-DESCRIPTION )                          (: AUX NEW-LINE       )
+      (: AUX DMN-COPYRIGHT-- ) (: AUX ONE-SPACE-STRING) (: AUX DMN-AUTHOR     )
+            (: AUX NEW-LINE)))
+
+            (: AUX separator-draw (: AUX DMN-DESCRIPTION))
+        )
+    ))))
+
+    ; Checking for args presence.
+    (cond
+        ((=:= argc 0)
+            (let ((ret0 (: AUX EXIT-FAILURE)))
+
+            (: io put_chars 'standard_error
+                         (++ daemon-name (: AUX ERR-MUST-BE-ONE-TWO-ARGS-1)
+                  (integer_to_list argc) (: AUX ERR-MUST-BE-ONE-TWO-ARGS-2)
+                                         (: AUX NEW-LINE) (: AUX NEW-LINE)))
+
+            (: io put_chars 'standard_error
+                         (++ (: AUX MSG-USAGE-TEMPLATE-1) daemon-name
+                             (: AUX MSG-USAGE-TEMPLATE-2) (: AUX NEW-LINE)
+                                                          (: AUX NEW-LINE)))
+
+            (: AUX cleanups-fixate ())
+
+            (halt ret0)
+            )
+        )
+    ))))
 
     ; Making final cleanups.
     (: AUX cleanups-fixate ())
