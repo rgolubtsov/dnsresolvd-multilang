@@ -23,6 +23,8 @@
                   ONE-SPACE-STRING
                   PRINT-BANNER-OPT)
 ; -----------------------------------------------------------------------------
+    (export-macro ERR-PORT-MUST-BE-POSITIVE-INT)
+; -----------------------------------------------------------------------------
     (export-macro DMN-NAME
                   DMN-DESCRIPTION
                   DMN-VERSION-S--
@@ -35,6 +37,9 @@
 ; -----------------------------------------------------------------------------
     (export-macro MSG-USAGE-TEMPLATE-1
                   MSG-USAGE-TEMPLATE-2)
+; -----------------------------------------------------------------------------
+    (export-macro MIN-PORT
+                  MAX-PORT)
 ; -----------------------------------------------------------------------------
     (export (cleanups-fixate 1)
             (separator-draw  1))

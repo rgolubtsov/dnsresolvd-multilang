@@ -50,7 +50,7 @@
 
             (: AUX separator-draw (: AUX DMN-DESCRIPTION))
         )
-    ))))
+    )))
 
     ; Checking for args presence.
     (cond
@@ -72,7 +72,35 @@
             (halt ret0)
             )
         )
+    )
+
+    ; Validating the port number and discarding any rubbish it may contain.
+    (let ((port-number (try
+        (list_to_integer port-number-)
+    (catch
+        ((tuple 'error 'badarg -) 0)
     ))))
+
+    ; Checking for port correctness.
+    (cond
+        ((or (< port-number (: AUX MIN-PORT)) (> port-number (: AUX MAX-PORT)))
+            (let ((ret1 (: AUX EXIT-FAILURE)))
+
+            (: io put_chars 'standard_error
+                         (++ daemon-name (: AUX ERR-PORT-MUST-BE-POSITIVE-INT)
+                                         (: AUX NEW-LINE) (: AUX NEW-LINE)))
+
+            (: io put_chars 'standard_error
+                         (++ (: AUX MSG-USAGE-TEMPLATE-1) daemon-name
+                             (: AUX MSG-USAGE-TEMPLATE-2) (: AUX NEW-LINE)
+                                                          (: AUX NEW-LINE)))
+
+            (: AUX cleanups-fixate ())
+
+            (halt ret1)
+            )
+        )
+    ))))))
 
     ; Making final cleanups.
     (: AUX cleanups-fixate ())
