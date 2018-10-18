@@ -34,6 +34,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [Genie (libsoup)](#genie-libsoup)
   * [Elixir (Cowboy)](#elixir-cowboy)
   * [Erlang (Cowboy)](#erlang-cowboy)
+  * [LFE (Cowboy)](#lfe-cowboy)
 * **[Running](#running)**
   * [C (GNU libmicrohttpd)](#c-gnu-libmicrohttpd-1)
   * [JavaScript (Node.js)](#javascript-nodejs-1)
@@ -44,6 +45,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [Genie (libsoup)](#genie-libsoup-1)
   * [Elixir (Cowboy)](#elixir-cowboy-1)
   * [Erlang (Cowboy)](#erlang-cowboy-1)
+  * [LFE (Cowboy)](#lfe-cowboy-1)
 
 ## Building
 
@@ -872,6 +874,7 @@ lib/dnsresolvh.ex:          ASCII English text
 #### Building under OpenBSD/amd64 6.3
 
 Install the necessary dependencies (`rebar19`, `syslog`, `cowboy`). Note that the `erlang` package will be installed automatically as a dependency to the `rebar19` package:
+
 ```
 $ sudo pkg_add -vvvvv rebar19
 $
@@ -1008,6 +1011,88 @@ lib/ebin/reqhandler.beam: Erlang BEAM file
 ```
 
 **TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server and Arch Linux.
+
+### LFE (Cowboy)
+
+#### Building under Arch Linux 32 (kernel 4.18.5-arch1-1.0-ARCH i686)
+
+The `syslog` and `cowboy` packages have to be built and installed via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will actually do this job.
+
+(Note that the `cowboy` package depends on the others: `cowlib` and `ranch`. They will be built and installed automatically too.)
+
+```
+$ cd src/lfe
+```
+
+```
+$ export       E_LIB_ID=erlang_modules       && \
+  mkdir   -p ${E_LIB_ID}                     && \
+  cd         ${E_LIB_ID}                     && \
+  rebar   -f create-lib libid=${E_LIB_ID}    && \
+  echo       '% ==============
+% ./rebar.config
+% ==============
+{deps, [
+    {syslog, {
+        git, "git://github.com/Vagabond/erlang-syslog.git", {branch, "master"}
+    }},
+    {cowboy, {
+        git, "git://github.com/ninenines/cowboy.git",       {branch, "master"}
+    }}
+]}.
+% vim:set nu et ts=4 sw=4:' > ./rebar.config && \
+  unset      E_LIB_ID                        && \
+  rebar      g-d                             && \
+  rebar      c-d                             && \
+  rebar      co                              && \
+  cd         - # <== Just hit Enter here and wait for a while.))
+==> erlang_modules (create-lib)
+Writing src/erlang_modules.app.src
+Writing src/erlang_modules.erl
+==> erlang_modules (get-deps)
+Pulling syslog from {git,"git://github.com/Vagabond/erlang-syslog.git",
+                         {branch,"master"}}
+Cloning into 'syslog'...
+Pulling cowboy from {git,"git://github.com/ninenines/cowboy.git",
+                         {branch,"master"}}
+Cloning into 'cowboy'...
+==> syslog (get-deps)
+==> cowboy (get-deps)
+Pulling cowlib from {git,"https://github.com/ninenines/cowlib","2.6.0"}
+Cloning into 'cowlib'...
+Pulling ranch from {git,"https://github.com/ninenines/ranch","1.6.2"}
+Cloning into 'ranch'...
+==> cowlib (get-deps)
+==> ranch (get-deps)
+==> syslog (check-deps)
+==> cowlib (check-deps)
+==> ranch (check-deps)
+==> cowboy (check-deps)
+==> erlang_modules (check-deps)
+==> syslog (compile)
+...
+==> cowlib (compile)
+...
+==> ranch (compile)
+...
+==> cowboy (compile)
+...
+==> erlang_modules (compile)
+Compiled src/erlang_modules.erl
+/home/<username>/dnsresolvd-multilang/src/lfe
+```
+
+Now the daemon might be built.
+
+```
+$ make clean && make all
+rm -f -vR lib/ebin
+if [ ! -d "lib/ebin" ]; then               \
+        mkdir lib/ebin;                 \
+        lfec -o lib/ebin lib/*.lfe; \
+fi
+lib/dnsresolvh.lfe:none: Warning: a term is constructed, but never used
+```
 
 ## Running
 
@@ -1280,6 +1365,14 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f
 
 === 200
 === text/html; charset=UTF-8
+```
+
+### LFE (Cowboy)
+
+Arch Linux 32:
+
+```
+$ ERL_LIBS="erlang_modules/deps:lib" ./dnsresolvd 8765
 ```
 
 ---

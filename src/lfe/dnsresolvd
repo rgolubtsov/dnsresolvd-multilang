@@ -114,7 +114,14 @@
             (halt ret1)
             )
         )
-    ))
+    )
+
+    ; Starting up the daemon.
+    (: dnsresolvd start () (tuple
+        port-number
+        daemon-name
+        log
+    )))
 
     ; Making final cleanups.
     (: AUX cleanups-fixate log)
