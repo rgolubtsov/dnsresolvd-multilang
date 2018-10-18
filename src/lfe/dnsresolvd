@@ -52,6 +52,11 @@
         )
     )))
 
+    ; Opening the system logger. ------ Calling Erlang ------+----+----+
+                              (: syslog start) ; <-----------+    |    |
+    (let (((tuple 'ok    log) (: syslog open daemon-name ; <------+    |
+           (list  'cons 'pid)   'daemon)))     ; <---------------------+
+
     ; Checking for args presence.
     (cond
         ((=:= argc 0)
@@ -62,12 +67,17 @@
                   (integer_to_list argc) (: AUX ERR-MUST-BE-ONE-TWO-ARGS-2)
                                          (: AUX NEW-LINE) (: AUX NEW-LINE)))
 
+            (: syslog log log 'err ; <------ Calling Erlang ------
+                         (++ daemon-name (: AUX ERR-MUST-BE-ONE-TWO-ARGS-1)
+                  (integer_to_list argc) (: AUX ERR-MUST-BE-ONE-TWO-ARGS-2)
+                                         (: AUX NEW-LINE)))
+
             (: io put_chars 'standard_error
                          (++ (: AUX MSG-USAGE-TEMPLATE-1) daemon-name
                              (: AUX MSG-USAGE-TEMPLATE-2) (: AUX NEW-LINE)
                                                           (: AUX NEW-LINE)))
 
-            (: AUX cleanups-fixate ())
+            (: AUX cleanups-fixate log)
 
             (halt ret0)
             )
@@ -90,20 +100,25 @@
                          (++ daemon-name (: AUX ERR-PORT-MUST-BE-POSITIVE-INT)
                                          (: AUX NEW-LINE) (: AUX NEW-LINE)))
 
+            (: syslog log log 'err ; <------ Calling Erlang ------
+                         (++ daemon-name (: AUX ERR-PORT-MUST-BE-POSITIVE-INT)
+                                         (: AUX NEW-LINE)))
+
             (: io put_chars 'standard_error
                          (++ (: AUX MSG-USAGE-TEMPLATE-1) daemon-name
                              (: AUX MSG-USAGE-TEMPLATE-2) (: AUX NEW-LINE)
                                                           (: AUX NEW-LINE)))
 
-            (: AUX cleanups-fixate ())
+            (: AUX cleanups-fixate log)
 
             (halt ret1)
             )
         )
-    ))))))
+    ))
 
     ; Making final cleanups.
-    (: AUX cleanups-fixate ())
+    (: AUX cleanups-fixate log)
+    )))))
 
     (halt ret-)
     )
