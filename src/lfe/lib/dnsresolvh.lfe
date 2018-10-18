@@ -133,10 +133,12 @@
     "Helper function. Makes final buffer cleanups, closes streams, etc."
 
     ; Closing the system logger.
-    (if (=/= log ())
-        (: io put_chars (++ "--- log is not nil ---" (NEW-LINE)))
-;        (: syslog close (log))
-;        (: syslog stop ())
+    (cond
+        ((=/= log ())
+             ; ------ Calling Erlang ------+----+
+            (: syslog close log) ; <-------+    |
+            (: syslog stop     ) ; <------------+
+        )
     )
 )
 
