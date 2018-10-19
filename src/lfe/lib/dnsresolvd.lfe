@@ -18,7 +18,6 @@
     (behaviour application)
 
     (export (start 2))
-;           (stop  1))
 )
 
 #|
@@ -58,13 +57,6 @@
     (receive
         (() (tuple 'EXIT '_ '_))
     )
-)
-
-(defun stop (_)
-    "Does nothing. Required to satisfy the --application-- behaviour
-                   callback module design only."
-
-    'ok
 )
 
 ; vim:set nu et ts=4 sw=4:
