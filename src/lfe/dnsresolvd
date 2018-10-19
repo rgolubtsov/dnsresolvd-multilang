@@ -92,7 +92,7 @@
     (let ((port-number (try
         (list_to_integer port-number-)
     (catch
-        ((tuple 'error 'badarg -) 0)
+        ((tuple 'error 'badarg _) 0)
     ))))
 
     ; Checking for port correctness.

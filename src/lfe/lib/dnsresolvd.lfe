@@ -21,7 +21,7 @@
 ;           (stop  1))
 )
 
-(defun start (- args)
+(defun start (_ args)
     "Starts up the daemon.
      It has to be the application module callback, but used directly
      from the startup script of the daemon."
@@ -29,7 +29,7 @@
     'ok
 )
 
-(defun stop (-)
+(defun stop (_)
     "Does nothing. Required to satisfy the --application-- behaviour
                    callback module design only."
 

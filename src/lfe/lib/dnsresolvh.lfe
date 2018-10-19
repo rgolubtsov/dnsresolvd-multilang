@@ -147,7 +147,7 @@
 
     (let ((i (length banner-text)))
 
-    (lc  ((<- - (: lists seq 1 i))) (: io put_chars "="))) (: io nl)
+    (lc  ((<- _ (: lists seq 1 i))) (: io put_chars "="))) (: io nl)
 )
 
 ; vim:set nu et ts=4 sw=4:
