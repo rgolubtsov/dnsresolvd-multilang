@@ -27,8 +27,12 @@
 
     ; --- Error: ./dnsresolvd:XX: function #(FILE 0) undefined ----------------
     ; (let ((daemon-name (: filename basename (FILE))))
+    ; --- -no-module- ---------------------------------------------------------
+    ; (let ((daemon-name (: filename basename (MODULE))))
+    ; --- lfescript -----------------------------------------------------------
+    ; (let ((daemon-name (: os getenv "LFE_PROGNAME")))
     ; -------------------------------------------------------------------------
-    (let ((daemon-name (: filename basename (MODULE))))
+    (let ((daemon-name "dnsresolvd"))
 
     (let ((port-number-      (if (> argc 0) (element 1 argv)
                                             0)))
