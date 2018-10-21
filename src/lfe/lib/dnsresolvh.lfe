@@ -41,6 +41,9 @@
     (export-macro MIN-PORT
                   MAX-PORT)
 ; -----------------------------------------------------------------------------
+    (export-macro MSG-SERVER-STARTED-1
+                  MSG-SERVER-STARTED-2)
+; -----------------------------------------------------------------------------
     (export (cleanups-fixate 1)
             (separator-draw  1))
 )
