@@ -1097,7 +1097,7 @@ Compiled src/erlang_modules.erl
 /home/<username>/dnsresolvd-multilang/src/lfe
 ```
 
-Build and install the LFE "package". &ndash; Following a sequence of steps provided [here](https://github.com/rgolubtsov/dnsresolvd-multilang/blob/master/lfe-build-install.md#building-under-openbsdamd64-63) might be considered helpful for this process.
+Build and install the **LFE** "package". &ndash; Following a sequence of steps provided [here](https://github.com/rgolubtsov/dnsresolvd-multilang/blob/master/lfe-build-install.md#building-under-openbsdamd64-63 "Building and installing LFE under OpenBSD/amd64 6.3") might be considered helpful for this process.
 
 ```
 $ lfe
