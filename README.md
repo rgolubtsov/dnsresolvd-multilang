@@ -1408,6 +1408,8 @@ OpenBSD/amd64:
 
 ```
 $ ERL_LIBS="erlang_modules/deps:lib" ./dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
 ```
 
 ---
