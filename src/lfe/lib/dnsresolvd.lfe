@@ -47,7 +47,11 @@
         'port port-number
     )) (map
         'env (map 'dispatch dispatch)
-    )))))))
+    ))))))
+
+;   (: io put_chars (++ (: AUX MSG-SERVER-STARTED-1) (: AUX NEW-LINE)
+;                       (: AUX MSG-SERVER-STARTED-2) (: AUX NEW-LINE)))
+    )
 
     ; Trapping exit signals, i.e. transforming them into {'EXIT'} message.
     (process_flag 'trap_exit 'true)

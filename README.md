@@ -1014,7 +1014,22 @@ lib/ebin/reqhandler.beam: Erlang BEAM file
 
 ### LFE (Cowboy)
 
-#### Building under Arch Linux 32 (kernel 4.18.5-arch1-1.0-ARCH i686)
+#### Building under OpenBSD/amd64 6.3
+
+Install the necessary dependencies (`rebar19`, `syslog`, `cowboy`). Note that the `erlang` package will be installed automatically as a dependency to the `rebar19` package:
+
+```
+$ sudo pkg_add -vvvvv rebar19
+```
+
+Create the following symlink (required for compilation and execution):
+
+```
+$ sudo ln -sfn /usr/local/bin/erl19 /usr/local/bin/erl
+$
+$ erl +V
+Erlang (SMP,ASYNC_THREADS) (BEAM) emulator version 8.3
+```
 
 The `syslog` and `cowboy` packages have to be built and installed via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will actually do this job.
 
@@ -1028,7 +1043,7 @@ $ cd src/lfe
 $ export       E_LIB_ID=erlang_modules       && \
   mkdir   -p ${E_LIB_ID}                     && \
   cd         ${E_LIB_ID}                     && \
-  rebar   -f create-lib libid=${E_LIB_ID}    && \
+  rebar19 -f create-lib libid=${E_LIB_ID}    && \
   echo       '% ==============
 % ./rebar.config
 % ==============
@@ -1042,9 +1057,9 @@ $ export       E_LIB_ID=erlang_modules       && \
 ]}.
 % vim:set nu et ts=4 sw=4:' > ./rebar.config && \
   unset      E_LIB_ID                        && \
-  rebar      g-d                             && \
-  rebar      c-d                             && \
-  rebar      co                              && \
+  rebar19    g-d                             && \
+  rebar19    c-d                             && \
+  rebar19    co                              && \
   cd         - # <== Just hit Enter here and wait for a while.))
 ==> erlang_modules (create-lib)
 Writing src/erlang_modules.app.src
@@ -1082,11 +1097,31 @@ Compiled src/erlang_modules.erl
 /home/<username>/dnsresolvd-multilang/src/lfe
 ```
 
+Build and install the **LFE** "package". &ndash; Following a sequence of steps provided [here](https://github.com/rgolubtsov/dnsresolvd-multilang/blob/master/lfe-build-install.md#building-under-openbsdamd64-63 "Building and installing LFE under OpenBSD/amd64 6.3") might be considered helpful for this process.
+
+```
+$ lfe
+Erlang/OTP 19 [erts-8.3] [source] [64-bit] [smp:2:2] [async-threads:10] [kernel-poll:false]
+
+   ..-~.~_~---..
+  (      \\     )    |   A Lisp-2+ on the Erlang VM
+  |`-.._/_\\_.-':    |   Type (help) for usage info.
+  |         g |_ \   |
+  |        n    | |  |   Docs: http://docs.lfe.io/
+  |       a    / /   |   Source: http://github.com/rvirding/lfe
+   \     l    |_/    |
+    \   r     /      |   LFE v1.3-dev (abort with ^G)
+     `-E___.-'
+
+lfe>
+```
+
 Now the daemon might be built.
 
 ```
-$ make clean && make all
+$ gmake clean && gmake all
 rm -f -vR lib/ebin
+lib/ebin
 if [ ! -d "lib/ebin" ]; then               \
         mkdir lib/ebin;                 \
         lfec -o lib/ebin lib/*.lfe; \
@@ -1369,7 +1404,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f
 
 ### LFE (Cowboy)
 
-Arch Linux 32:
+OpenBSD/amd64:
 
 ```
 $ ERL_LIBS="erlang_modules/deps:lib" ./dnsresolvd 8765
