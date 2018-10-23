@@ -56,10 +56,10 @@
         )
     )))
 
-    ; Opening the system logger. ------ Calling Erlang ------+----+----+
-                              (: syslog start) ; <-----------+    |    |
-    (let (((tuple 'ok    log) (: syslog open daemon-name ; <------+    |
-           (list  'cons 'pid)   'daemon)))     ; <---------------------+
+    ; Opening the system logger.
+                              (: syslog start)
+    (let (((tuple 'ok    log) (: syslog open daemon-name
+           (list  'cons 'pid)   'daemon)))
 
     ; Checking for args presence.
     (cond
@@ -71,7 +71,7 @@
                   (integer_to_list argc) (: AUX ERR-MUST-BE-ONE-TWO-ARGS-2)
                                          (: AUX NEW-LINE) (: AUX NEW-LINE)))
 
-            (: syslog log log 'err ; <------ Calling Erlang ------
+            (: syslog log log 'err
                          (++ daemon-name (: AUX ERR-MUST-BE-ONE-TWO-ARGS-1)
                   (integer_to_list argc) (: AUX ERR-MUST-BE-ONE-TWO-ARGS-2)
                                          (: AUX NEW-LINE)))
@@ -104,7 +104,7 @@
                          (++ daemon-name (: AUX ERR-PORT-MUST-BE-POSITIVE-INT)
                                          (: AUX NEW-LINE) (: AUX NEW-LINE)))
 
-            (: syslog log log 'err ; <------ Calling Erlang ------
+            (: syslog log log 'err
                          (++ daemon-name (: AUX ERR-PORT-MUST-BE-POSITIVE-INT)
                                          (: AUX NEW-LINE)))
 

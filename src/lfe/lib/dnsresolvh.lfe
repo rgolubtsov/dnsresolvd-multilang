@@ -138,9 +138,8 @@
     ; Closing the system logger.
     (cond
         ((=/= log ())
-             ; ------ Calling Erlang ------+----+
-            (: syslog close log) ; <-------+    |
-            (: syslog stop     ) ; <------------+
+            (: syslog close log)
+            (: syslog stop     )
         )
     )
 )
