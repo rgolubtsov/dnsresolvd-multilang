@@ -23,7 +23,10 @@
                   ONE-SPACE-STRING
                   PRINT-BANNER-OPT)
 ; -----------------------------------------------------------------------------
-    (export-macro ERR-PORT-MUST-BE-POSITIVE-INT)
+    (export-macro ERR-PORT-MUST-BE-POSITIVE-INT
+                  ERR-CANNOT-START-SERVER
+                  ERR-SRV-UNKNOWN-REASON
+                  ERR-SRV-PORT-IS-IN-USE)
 ; -----------------------------------------------------------------------------
     (export-macro DMN-NAME
                   DMN-DESCRIPTION
@@ -138,9 +141,8 @@
     ; Closing the system logger.
     (cond
         ((=/= log ())
-             ; ------ Calling Erlang ------+----+
-            (: syslog close log) ; <-------+    |
-            (: syslog stop     ) ; <------------+
+            (: syslog close log)
+            (: syslog stop     )
         )
     )
 )
