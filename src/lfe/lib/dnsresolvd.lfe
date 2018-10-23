@@ -49,8 +49,15 @@
         'env (map 'dispatch dispatch)
     ))))))
 
-;   (: io put_chars (++ (: AUX MSG-SERVER-STARTED-1) (: AUX NEW-LINE)
-;                       (: AUX MSG-SERVER-STARTED-2) (: AUX NEW-LINE)))
+    (: io put_chars (++
+  (macroexpand '(: AUX MSG-SERVER-STARTED-1))
+                (integer_to_list port-number) (macroexpand '(: AUX NEW-LINE))
+  (macroexpand '(: AUX MSG-SERVER-STARTED-2)) (macroexpand '(: AUX NEW-LINE))))
+
+    (: syslog log log 'info (++
+  (macroexpand '(: AUX MSG-SERVER-STARTED-1))
+                (integer_to_list port-number) (macroexpand '(: AUX NEW-LINE))
+  (macroexpand '(: AUX MSG-SERVER-STARTED-2))))
     )
 
     ; Trapping exit signals, i.e. transforming them into {'EXIT'} message.
