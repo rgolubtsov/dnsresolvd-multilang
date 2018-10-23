@@ -98,6 +98,9 @@
   (macroexpand '(: AUX MSG-SERVER-STARTED-2))))
     )
 
+    ; Starting up the daemon's provided --supervisor-- (optional).
+    (: dnsresolvs start_link)
+
     ; Trapping exit signals, i.e. transforming them into {'EXIT'} message.
     (process_flag 'trap_exit 'true)
 
@@ -106,6 +109,38 @@
     (receive
         (() (tuple 'EXIT '_ '_))
     )
+)
+
+(defmodule dnsresolvs
+    "The main --supervisor-- module of the daemon."
+
+    (behaviour supervisor)
+
+    (export (start_link 0)
+            (init       1))
+)
+
+;; @returns The PID of the <code>dnsresolvs</code> supervisor process.
+(defun start_link ()
+    "Supervisor startup helper.
+     Used to directly start up the <code>dnsresolvs</code> supervisor process."
+
+    (: supervisor start_link (MODULE) ())
+)
+
+;; @returns The tuple containing supervisor flags
+;;          and child processes' specifications.
+(defun init (_)
+    "Supervisor <code>init/1</code> callback.
+     Gets called when the <code>dnsresolvs</code> supervisor
+     is about to be started up."
+
+    (let ((child-procs ())) ; <== No child processes do we need.
+
+    (tuple 'ok (tuple
+        (map 'strategy 'one_for_one)
+        child-procs
+    )))
 )
 
 ; vim:set nu et ts=4 sw=4:
