@@ -47,7 +47,45 @@
         'port port-number
     )) (map
         'env (map 'dispatch dispatch)
-    ))))))
+    ))))
+
+    ; Handling errors during start up of the listener.
+    (cond
+        ((=:= (element 1 ret-) 'error)
+            (let ((ret0 (macroexpand '(: AUX EXIT-FAILURE))))
+
+            (cond
+                ((=:= (element 2 ret-) 'eaddrinuse)
+                    (: io put_chars 'standard_error
+                (++ daemon-name (macroexpand '(: AUX ERR-CANNOT-START-SERVER))
+                                (macroexpand '(: AUX ERR-SRV-PORT-IS-IN-USE ))
+                                (macroexpand '(: AUX NEW-LINE))
+                                (macroexpand '(: AUX NEW-LINE))))
+
+                    (: syslog log log 'err
+                (++ daemon-name (macroexpand '(: AUX ERR-CANNOT-START-SERVER))
+                                (macroexpand '(: AUX ERR-SRV-PORT-IS-IN-USE ))
+                                (macroexpand '(: AUX NEW-LINE))))
+                ) ('true
+                    (: io put_chars 'standard_error
+                (++ daemon-name (macroexpand '(: AUX ERR-CANNOT-START-SERVER))
+                                (macroexpand '(: AUX ERR-SRV-UNKNOWN-REASON ))
+                                (macroexpand '(: AUX NEW-LINE))
+                                (macroexpand '(: AUX NEW-LINE))))
+
+                    (: syslog log log 'err
+                (++ daemon-name (macroexpand '(: AUX ERR-CANNOT-START-SERVER))
+                                (macroexpand '(: AUX ERR-SRV-UNKNOWN-REASON ))
+                                (macroexpand '(: AUX NEW-LINE))))
+                )
+            )
+
+            (: AUX cleanups-fixate log)
+
+            (halt ret0)
+            )
+        )
+    )))
 
     (: io put_chars (++
   (macroexpand '(: AUX MSG-SERVER-STARTED-1))
