@@ -47,6 +47,9 @@
     (export-macro MSG-SERVER-STARTED-1
                   MSG-SERVER-STARTED-2)
 ; -----------------------------------------------------------------------------
+    (export-macro MTD-HTTP-GET
+                  MTD-HTTP-POST)
+; -----------------------------------------------------------------------------
     (export (cleanups-fixate 1)
             (separator-draw  1))
 )
@@ -99,10 +102,10 @@
 (defmacro MSG-SERVER-STARTED-2 () "=== Hit Ctrl+C to terminate it.")
 
 ; HTTP request methods and params.
-(defmacro MTD-HTTP-GET  () <<"GET">> )
-(defmacro MTD-HTTP-POST () <<"POST">>)
-(defmacro PRM-FMT-HTML  ()   "html"  )
-(defmacro PRM-FMT-JSON  ()   "json"  )
+(defmacro MTD-HTTP-GET  () #"GET" )
+(defmacro MTD-HTTP-POST () #"POST")
+(defmacro PRM-FMT-HTML  ()  "html")
+(defmacro PRM-FMT-JSON  ()  "json")
 
 ; HTTP response headers and status codes.
 (defmacro HDR-CONTENT-TYPE-N      () "content-type"                 )
