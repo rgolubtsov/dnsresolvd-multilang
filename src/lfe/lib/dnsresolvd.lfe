@@ -220,12 +220,59 @@
 
     (: io put_chars hostname) (: io nl)
     (: io put_chars fmt     ) (: io nl)
-    ))))))))))))))
+
+    ; Performing DNS lookup for the given hostname.
+    (let ((addr-ver (dns-lookup hostname)))
+
+    (let ((addr (element 1 addr-ver)))
+    (let ((ver  (element 2 addr-ver)))
+
+    (: io put_chars                  addr) (: io nl)
+    (: io put_chars (integer_to_list ver)) (: io nl)
+    )))))))))))))))))
 
     (tuple 'ok
         req
         state ; <== The state of the handler doesn't need to be changed.
     )
+)
+
+;##
+; Performs DNS lookup action for the given hostname,
+; i.e. (in this case) IP address retrieval by hostname.
+;
+; Args:
+;     hostname: The effective hostname to look up for.
+;
+; Returns:
+;     The tuple containing IP address of the analyzing host/service
+;     and corresponding IP version (family) used to look up in DNS:
+;     "4" for IPv4-only hosts, "6" for IPv6-capable hosts.
+;
+(defun dns-lookup (hostname)
+    (let ((hostent4 (: inet gethostbyname hostname 'inet )))
+
+    ; If the host doesn't have an A record (IPv4),
+    ; trying to find its AAAA record (IPv6).
+    (let ((hostent6 (if (=:= (element 1 hostent4) 'error)
+                    (: inet gethostbyname hostname 'inet6)
+    )))
+
+    (cond
+        (  (=:= (element 1 hostent4) 'ok)
+            (tuple
+                (: inet ntoa (hd (element 6 (element 2 hostent4))))
+                4
+            )
+        ) ((=:= (element 1 hostent6) 'ok)
+            (tuple
+                (: inet ntoa (hd (element 6 (element 2 hostent6))))
+                6
+            )
+        ) ('true
+            (tuple (macroexpand '(: AUX ERR-PREFIX)) ())
+        )
+    )))
 )
 
 ; -----------------------------------------------------------------------------
