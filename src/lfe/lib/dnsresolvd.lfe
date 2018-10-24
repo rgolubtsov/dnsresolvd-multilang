@@ -111,6 +111,71 @@
     )
 )
 
+; -----------------------------------------------------------------------------
+
+(defmodule reqhandler
+    "The default HTTP request handler."
+
+    (export (init 2))
+)
+
+#|
+ | @param req   The incoming HTTP request object.
+ | @param state The initial state of the HTTP handler.
+ |
+ | @returns The tuple containing the HTTP response to be rendered
+ |          and a new state of the HTTP handler.
+ |#
+(defun init (req state)
+    "The request handler <code>init/2</code> callback.
+     Gets called when a new incoming HTTP request is received."
+
+    (let ((mtd (: cowboy_req method req)))
+
+    ; -------------------------------------------------------------------------
+    ; --- Parsing and validating request params - Begin -----------------------
+    ; -------------------------------------------------------------------------
+    (let (((tuple 'ok params req0) (cond
+        (  (=:= mtd (macroexpand '(: AUX MTD-HTTP-GET )))
+            (tuple 'ok (: cowboy_req parse_qs req) req)
+        ) ((=:= mtd (macroexpand '(: AUX MTD-HTTP-POST)))
+            (: cowboy_req read_urlencoded_body     req)
+        ) ('true
+            (tuple 'ok (                         ) req)
+        )
+    )))
+
+    (let ((hostname- (lc ((<-(tuple k v) params)(=:= k #"h")) v))) ; <---+
+    ;         +----GET----+-----+-----+                  ^               |
+    ;         |     |     |     |     |                  |               |
+    ;         |     |     |     |     |       +----------+ +-------------+-+
+    ;         v     v     v     v     v       |            |             | |
+    ; $ curl 'http://localhost:<port_number>/?h=<hostname>&f=<fmt>'      | |
+    ; $                                                                  | |
+    ; $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>    | |
+    ;         ^  |            |                                          | |
+    ;         |  +------------+------------------------------------------+ |
+    ;         |               |                                            |
+    ; POST----+               +--------------------------+                 |
+    ;                                                    |                 |
+    ;                                                    v                 |
+    (let ((fmt-      (lc ((<-(tuple k v) params)(=:= k #"f")) v))) ; <-----+
+
+    (: io put_chars hostname-) (: io nl)
+    (: io put_chars fmt-     ) (: io nl)
+    ))))
+    ; -------------------------------------------------------------------------
+    ; --- Parsing and validating request params - End -------------------------
+    ; -------------------------------------------------------------------------
+
+    (tuple 'ok
+        req
+        state ; <== The state of the handler doesn't need to be changed.
+    )
+)
+
+; -----------------------------------------------------------------------------
+
 (defmodule dnsresolvs
     "The main --supervisor-- module of the daemon."
 
