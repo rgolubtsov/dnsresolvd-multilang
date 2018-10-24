@@ -161,12 +161,66 @@
     ;                                                    v                 |
     (let ((fmt-      (lc ((<-(tuple k v) params)(=:= k #"f")) v))) ; <-----+
 
-    (: io put_chars hostname-) (: io nl)
-    (: io put_chars fmt-     ) (: io nl)
+    (let ((hostname0 (: lists filter (lambda (v) (=/= v ())) hostname-)))
+    (let ((hostname0-len (length hostname0)))
+    (let ((hostname1 (cond
+        ((> hostname0-len 0)
+            (: lists nth hostname0-len hostname0)
+        ) ('true
+            (macroexpand '(: AUX EMPTY-STRING))
+        )
+    )))
+
+    (let ((fmt0      (: lists filter (lambda (v) (=/= v ())) fmt-     )))
+    (let ((fmt0-len      (length fmt0     )))
+    (let ((fmt1      (cond
+        ((> fmt0-len      0)
+            (: lists nth fmt0-len      fmt0     )
+        ) ('true
+            (macroexpand '(: AUX EMPTY-STRING))
+        )
+    )))
+
+    (let ((hostname  (cond
+        (  (=:= hostname1                                   ())
+            (macroexpand '(: AUX DEF-HOSTNAME))
+        ) ((=:= hostname1                                'true)
+            (macroexpand '(: AUX DEF-HOSTNAME))
+        ) ((=:= hostname1 (macroexpand '(: AUX EMPTY-STRING#)))
+            (macroexpand '(: AUX DEF-HOSTNAME))
+        ) ('true
+            (binary_to_list hostname1)
+        )
+    )))
+
+    (let ((fmt2      (cond
+        (  (=:= fmt1                                        ())
+            (macroexpand '(: AUX PRM-FMT-JSON))
+        ) ((=:= fmt1                                     'true)
+            (macroexpand '(: AUX PRM-FMT-JSON))
+        ) ((=:= fmt1      (macroexpand '(: AUX EMPTY-STRING#)))
+            (macroexpand '(: AUX PRM-FMT-JSON))
+        ) ('true
+            (: string to_lower (binary_to_list fmt1))
+        )
+    )))
+
+    (let ((fmt2-     (: lists member fmt2 (list
+        (macroexpand '(: AUX PRM-FMT-HTML))
+        (macroexpand '(: AUX PRM-FMT-JSON))
     ))))
+
+    (let ((fmt       (cond
+        ((not fmt2-) (macroexpand '(: AUX PRM-FMT-JSON)))
+        ('true fmt2)
+    )))
     ; -------------------------------------------------------------------------
     ; --- Parsing and validating request params - End -------------------------
     ; -------------------------------------------------------------------------
+
+    (: io put_chars hostname) (: io nl)
+    (: io put_chars fmt     ) (: io nl)
+    ))))))))))))))
 
     (tuple 'ok
         req

@@ -18,6 +18,7 @@
     (export-macro EXIT-FAILURE
                   EXIT-SUCCESS
                   EMPTY-STRING
+                  EMPTY-STRING#
                   COMMA-SPACE-SEP
                   NEW-LINE
                   ONE-SPACE-STRING
@@ -48,7 +49,11 @@
                   MSG-SERVER-STARTED-2)
 ; -----------------------------------------------------------------------------
     (export-macro MTD-HTTP-GET
-                  MTD-HTTP-POST)
+                  MTD-HTTP-POST
+                  PRM-FMT-HTML
+                  PRM-FMT-JSON)
+; -----------------------------------------------------------------------------
+    (export-macro DEF-HOSTNAME)
 ; -----------------------------------------------------------------------------
     (export (cleanups-fixate 1)
             (separator-draw  1))
@@ -58,6 +63,7 @@
 (defmacro EXIT-FAILURE     ()    1) ;    Failing exit status.
 (defmacro EXIT-SUCCESS     ()    0) ; Successful exit status.
 (defmacro EMPTY-STRING     ()   "")
+(defmacro EMPTY-STRING#    ()  #"")
 (defmacro COLON-SPACE-SEP  () ": ")
 (defmacro COMMA-SPACE-SEP  () ", ")
 (defmacro NEW-LINE         () "\n")
