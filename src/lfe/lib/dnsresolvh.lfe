@@ -18,6 +18,7 @@
     (export-macro EXIT-FAILURE
                   EXIT-SUCCESS
                   EMPTY-STRING
+                  EMPTY-STRING#
                   COMMA-SPACE-SEP
                   NEW-LINE
                   ONE-SPACE-STRING
@@ -47,6 +48,13 @@
     (export-macro MSG-SERVER-STARTED-1
                   MSG-SERVER-STARTED-2)
 ; -----------------------------------------------------------------------------
+    (export-macro MTD-HTTP-GET
+                  MTD-HTTP-POST
+                  PRM-FMT-HTML
+                  PRM-FMT-JSON)
+; -----------------------------------------------------------------------------
+    (export-macro DEF-HOSTNAME)
+; -----------------------------------------------------------------------------
     (export (cleanups-fixate 1)
             (separator-draw  1))
 )
@@ -55,6 +63,7 @@
 (defmacro EXIT-FAILURE     ()    1) ;    Failing exit status.
 (defmacro EXIT-SUCCESS     ()    0) ; Successful exit status.
 (defmacro EMPTY-STRING     ()   "")
+(defmacro EMPTY-STRING#    ()  #"")
 (defmacro COLON-SPACE-SEP  () ": ")
 (defmacro COMMA-SPACE-SEP  () ", ")
 (defmacro NEW-LINE         () "\n")
@@ -99,10 +108,10 @@
 (defmacro MSG-SERVER-STARTED-2 () "=== Hit Ctrl+C to terminate it.")
 
 ; HTTP request methods and params.
-(defmacro MTD-HTTP-GET  () <<"GET">> )
-(defmacro MTD-HTTP-POST () <<"POST">>)
-(defmacro PRM-FMT-HTML  ()   "html"  )
-(defmacro PRM-FMT-JSON  ()   "json"  )
+(defmacro MTD-HTTP-GET  () #"GET" )
+(defmacro MTD-HTTP-POST () #"POST")
+(defmacro PRM-FMT-HTML  ()  "html")
+(defmacro PRM-FMT-JSON  ()  "json")
 
 ; HTTP response headers and status codes.
 (defmacro HDR-CONTENT-TYPE-N      () "content-type"                 )

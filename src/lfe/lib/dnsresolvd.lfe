@@ -111,6 +111,125 @@
     )
 )
 
+; -----------------------------------------------------------------------------
+
+(defmodule reqhandler
+    "The default HTTP request handler."
+
+    (export (init 2))
+)
+
+#|
+ | @param req   The incoming HTTP request object.
+ | @param state The initial state of the HTTP handler.
+ |
+ | @returns The tuple containing the HTTP response to be rendered
+ |          and a new state of the HTTP handler.
+ |#
+(defun init (req state)
+    "The request handler <code>init/2</code> callback.
+     Gets called when a new incoming HTTP request is received."
+
+    (let ((mtd (: cowboy_req method req)))
+
+    ; -------------------------------------------------------------------------
+    ; --- Parsing and validating request params - Begin -----------------------
+    ; -------------------------------------------------------------------------
+    (let (((tuple 'ok params req0) (cond
+        (  (=:= mtd (macroexpand '(: AUX MTD-HTTP-GET )))
+            (tuple 'ok (: cowboy_req parse_qs req) req)
+        ) ((=:= mtd (macroexpand '(: AUX MTD-HTTP-POST)))
+            (: cowboy_req read_urlencoded_body     req)
+        ) ('true
+            (tuple 'ok (                         ) req)
+        )
+    )))
+
+    (let ((hostname- (lc ((<-(tuple k v) params)(=:= k #"h")) v))) ; <---+
+    ;         +----GET----+-----+-----+                  ^               |
+    ;         |     |     |     |     |                  |               |
+    ;         |     |     |     |     |       +----------+ +-------------+-+
+    ;         v     v     v     v     v       |            |             | |
+    ; $ curl 'http://localhost:<port_number>/?h=<hostname>&f=<fmt>'      | |
+    ; $                                                                  | |
+    ; $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>    | |
+    ;         ^  |            |                                          | |
+    ;         |  +------------+------------------------------------------+ |
+    ;         |               |                                            |
+    ; POST----+               +--------------------------+                 |
+    ;                                                    |                 |
+    ;                                                    v                 |
+    (let ((fmt-      (lc ((<-(tuple k v) params)(=:= k #"f")) v))) ; <-----+
+
+    (let ((hostname0 (: lists filter (lambda (v) (=/= v ())) hostname-)))
+    (let ((hostname0-len (length hostname0)))
+    (let ((hostname1 (cond
+        ((> hostname0-len 0)
+            (: lists nth hostname0-len hostname0)
+        ) ('true
+            (macroexpand '(: AUX EMPTY-STRING))
+        )
+    )))
+
+    (let ((fmt0      (: lists filter (lambda (v) (=/= v ())) fmt-     )))
+    (let ((fmt0-len      (length fmt0     )))
+    (let ((fmt1      (cond
+        ((> fmt0-len      0)
+            (: lists nth fmt0-len      fmt0     )
+        ) ('true
+            (macroexpand '(: AUX EMPTY-STRING))
+        )
+    )))
+
+    (let ((hostname  (cond
+        (  (=:= hostname1                                   ())
+            (macroexpand '(: AUX DEF-HOSTNAME))
+        ) ((=:= hostname1                                'true)
+            (macroexpand '(: AUX DEF-HOSTNAME))
+        ) ((=:= hostname1 (macroexpand '(: AUX EMPTY-STRING#)))
+            (macroexpand '(: AUX DEF-HOSTNAME))
+        ) ('true
+            (binary_to_list hostname1)
+        )
+    )))
+
+    (let ((fmt2      (cond
+        (  (=:= fmt1                                        ())
+            (macroexpand '(: AUX PRM-FMT-JSON))
+        ) ((=:= fmt1                                     'true)
+            (macroexpand '(: AUX PRM-FMT-JSON))
+        ) ((=:= fmt1      (macroexpand '(: AUX EMPTY-STRING#)))
+            (macroexpand '(: AUX PRM-FMT-JSON))
+        ) ('true
+            (: string to_lower (binary_to_list fmt1))
+        )
+    )))
+
+    (let ((fmt2-     (: lists member fmt2 (list
+        (macroexpand '(: AUX PRM-FMT-HTML))
+        (macroexpand '(: AUX PRM-FMT-JSON))
+    ))))
+
+    (let ((fmt       (cond
+        ((not fmt2-) (macroexpand '(: AUX PRM-FMT-JSON)))
+        ('true fmt2)
+    )))
+    ; -------------------------------------------------------------------------
+    ; --- Parsing and validating request params - End -------------------------
+    ; -------------------------------------------------------------------------
+
+    (: io put_chars hostname) (: io nl)
+    (: io put_chars fmt     ) (: io nl)
+    ))))))))))))))
+
+    (tuple 'ok
+        req
+        state ; <== The state of the handler doesn't need to be changed.
+    )
+)
+
+; -----------------------------------------------------------------------------
+
 (defmodule dnsresolvs
     "The main --supervisor-- module of the daemon."
 
