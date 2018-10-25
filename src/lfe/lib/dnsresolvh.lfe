@@ -19,16 +19,23 @@
                   EXIT-SUCCESS
                   EMPTY-STRING
                   EMPTY-STRING#
+                  COLON-SPACE-SEP
                   COMMA-SPACE-SEP
                   NEW-LINE
                   ONE-SPACE-STRING
                   PRINT-BANNER-OPT)
 ; -----------------------------------------------------------------------------
+    (export-macro CB1
+                  CB2
+                  DQ1
+                  DQ2)
+; -----------------------------------------------------------------------------
     (export-macro ERR-PREFIX
                   ERR-PORT-MUST-BE-POSITIVE-INT
                   ERR-CANNOT-START-SERVER
                   ERR-SRV-UNKNOWN-REASON
-                  ERR-SRV-PORT-IS-IN-USE)
+                  ERR-SRV-PORT-IS-IN-USE
+                  ERR-COULD-NOT-LOOKUP)
 ; -----------------------------------------------------------------------------
     (export-macro DMN-NAME
                   DMN-DESCRIPTION
@@ -53,6 +60,15 @@
                   MTD-HTTP-POST
                   PRM-FMT-HTML
                   PRM-FMT-JSON)
+; -----------------------------------------------------------------------------
+    (export-macro HDR-CONTENT-TYPE-N
+                  HDR-CONTENT-TYPE-V-HTML
+                  RSC-HTTP-200-OK)
+; -----------------------------------------------------------------------------
+    (export-macro DAT-HOSTNAME-N
+                  DAT-ADDRESS-N
+                  DAT-VERSION-N
+                  DAT-VERSION-V)
 ; -----------------------------------------------------------------------------
     (export-macro DEF-HOSTNAME)
 ; -----------------------------------------------------------------------------

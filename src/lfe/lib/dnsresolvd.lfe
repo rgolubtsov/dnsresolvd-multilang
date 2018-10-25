@@ -218,23 +218,82 @@
     ; --- Parsing and validating request params - End -------------------------
     ; -------------------------------------------------------------------------
 
-    (: io put_chars hostname) (: io nl)
-    (: io put_chars fmt     ) (: io nl)
-
     ; Performing DNS lookup for the given hostname.
     (let ((addr-ver (dns-lookup hostname)))
 
     (let ((addr (element 1 addr-ver)))
     (let ((ver  (element 2 addr-ver)))
 
-    (: io put_chars                  addr) (: io nl)
-    (: io put_chars (integer_to_list ver)) (: io nl)
-    )))))))))))))))))
+    (let ((resp-buffer- (cond
+        (  (=:= fmt (macroexpand '(: AUX PRM-FMT-HTML)))
+            (++ "<!DOCTYPE html>"                                                         (macroexpand '(: AUX NEW-LINE))
+"<html lang=\"en-US\" dir=\"ltr\">"                                                       (macroexpand '(: AUX NEW-LINE))
+"<head>"                                                                                  (macroexpand '(: AUX NEW-LINE))
+"<meta http-equiv=\"" (macroexpand '(: AUX HDR-CONTENT-TYPE-N     ))   "\"    content=\""
+                      (macroexpand '(: AUX HDR-CONTENT-TYPE-V-HTML))   "\"           />"  (macroexpand '(: AUX NEW-LINE))
+"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  (macroexpand '(: AUX NEW-LINE))
+"<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  (macroexpand '(: AUX NEW-LINE))
+"<title>"             (macroexpand '(: AUX DMN-NAME               )) "</title>"           (macroexpand '(: AUX NEW-LINE))
+"</head>"                                                                                 (macroexpand '(: AUX NEW-LINE))
+"<body>"                                                                                  (macroexpand '(: AUX NEW-LINE))
+"<div>"      hostname (macroexpand '(: AUX ONE-SPACE-STRING       )))
+        ) ((=:= fmt (macroexpand '(: AUX PRM-FMT-JSON)))
+            (++ (macroexpand '(: AUX CB1                          ))
+                (macroexpand '(: AUX DAT-HOSTNAME-N               ))
+                (macroexpand '(: AUX DQ1                          ))
+                                 hostname
+                (macroexpand '(: AUX DQ2                          )))
+        )
+    )))
+
+    ; If lookup error occurred.
+    (let ((resp-buffer0 (cond
+        ((=:= addr (macroexpand '(: AUX ERR-PREFIX))) (cond
+            (  (=:= fmt (macroexpand '(: AUX PRM-FMT-HTML)))
+                (++ resp-buffer- (macroexpand '(: AUX ERR-PREFIX          ))
+                                 (macroexpand '(: AUX COLON-SPACE-SEP     ))
+                                 (macroexpand '(: AUX ERR-COULD-NOT-LOOKUP)))
+            ) ((=:= fmt (macroexpand '(: AUX PRM-FMT-JSON)))
+                (++ resp-buffer- (macroexpand '(: AUX ERR-PREFIX          ))
+                                 (macroexpand '(: AUX DQ1                 ))
+                                 (macroexpand '(: AUX ERR-COULD-NOT-LOOKUP)))
+            )
+        )) ('true (cond
+            (  (=:= fmt (macroexpand '(: AUX PRM-FMT-HTML)))
+                (++ resp-buffer-                  addr
+                                 (macroexpand '(: AUX ONE-SPACE-STRING    ))
+                                 (macroexpand '(: AUX DAT-VERSION-V       ))
+                                 (integer_to_list ver                      ))
+            ) ((=:= fmt (macroexpand '(: AUX PRM-FMT-JSON)))
+                (++ resp-buffer- (macroexpand '(: AUX DAT-ADDRESS-N       ))
+                                 (macroexpand '(: AUX DQ1                 ))
+                                                  addr
+                                 (macroexpand '(: AUX DQ2                 ))
+                                 (macroexpand '(: AUX DAT-VERSION-N       ))
+                                 (macroexpand '(: AUX DQ1                 ))
+                                 (macroexpand '(: AUX DAT-VERSION-V       ))
+                                 (integer_to_list ver                      ))
+            )
+        ))
+    )))
+
+    (let ((resp-buffer (cond
+        (  (=:= fmt (macroexpand '(: AUX PRM-FMT-HTML)))
+            (++ resp-buffer0 "</div>"  (macroexpand '(: AUX NEW-LINE))
+                             "</body>" (macroexpand '(: AUX NEW-LINE))
+                             "</html>" (macroexpand '(: AUX NEW-LINE)))
+        ) ((=:= fmt (macroexpand '(: AUX PRM-FMT-JSON)))
+            (++ resp-buffer0           (macroexpand '(: AUX CB2     )))
+        )
+    )))
+
+    (let((req2(: cowboy_req set_resp_body resp-buffer                   req0)))
+    (let((req-(: cowboy_req reply(macroexpand '(: AUX RSC-HTTP-200-OK)) req2)))
 
     (tuple 'ok
-        req
+        req-
         state ; <== The state of the handler doesn't need to be changed.
-    )
+    )))))))))))))))))))))))
 )
 
 ;##
