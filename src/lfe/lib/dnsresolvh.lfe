@@ -19,16 +19,23 @@
                   EXIT-SUCCESS
                   EMPTY-STRING
                   EMPTY-STRING#
+                  COLON-SPACE-SEP
                   COMMA-SPACE-SEP
                   NEW-LINE
                   ONE-SPACE-STRING
                   PRINT-BANNER-OPT)
 ; -----------------------------------------------------------------------------
+    (export-macro CB1
+                  CB2
+                  DQ1
+                  DQ2)
+; -----------------------------------------------------------------------------
     (export-macro ERR-PREFIX
                   ERR-PORT-MUST-BE-POSITIVE-INT
                   ERR-CANNOT-START-SERVER
                   ERR-SRV-UNKNOWN-REASON
-                  ERR-SRV-PORT-IS-IN-USE)
+                  ERR-SRV-PORT-IS-IN-USE
+                  ERR-COULD-NOT-LOOKUP)
 ; -----------------------------------------------------------------------------
     (export-macro DMN-NAME
                   DMN-DESCRIPTION
@@ -54,10 +61,27 @@
                   PRM-FMT-HTML
                   PRM-FMT-JSON)
 ; -----------------------------------------------------------------------------
+    (export-macro HDR-CONTENT-TYPE-N
+                  HDR-CONTENT-TYPE-V-HTML
+                  HDR-CONTENT-TYPE-V-JSON
+                  HDR-CACHE-CONTROL-N
+                  HDR-CACHE-CONTROL-V
+                  HDR-EXPIRES-N
+                  HDR-EXPIRES-V
+                  HDR-PRAGMA-N
+                  HDR-PRAGMA-V
+                  RSC-HTTP-200-OK)
+; -----------------------------------------------------------------------------
+    (export-macro DAT-HOSTNAME-N
+                  DAT-ADDRESS-N
+                  DAT-VERSION-N
+                  DAT-VERSION-V)
+; -----------------------------------------------------------------------------
     (export-macro DEF-HOSTNAME)
 ; -----------------------------------------------------------------------------
-    (export (cleanups-fixate 1)
-            (separator-draw  1))
+    (export (add-response-headers 2)
+            (cleanups-fixate      1)
+            (separator-draw       1))
 )
 
 ; Helper constants.
@@ -144,6 +168,35 @@
 
 ;; Constant: The default hostname to look up for.
 (defmacro DEF-HOSTNAME () "openbsd.org")
+
+#|
+ | @param fmt The response format selector.
+ | @param req The consolidated HTTP request/response object.
+ |
+ | @returns The new consolidated HTTP request/response object.
+ |#
+(defun add-response-headers (fmt req)
+    "Adds headers to the response."
+
+    (let ((HDR-CONTENT-TYPE-V (cond
+        (  (=:= fmt (macroexpand '(: AUX PRM-FMT-HTML)))
+            (macroexpand '(: AUX HDR-CONTENT-TYPE-V-HTML))
+        ) ((=:= fmt (macroexpand '(: AUX PRM-FMT-JSON)))
+            (macroexpand '(: AUX HDR-CONTENT-TYPE-V-JSON))
+        )
+    )))
+
+    (: cowboy_req set_resp_headers (map      ;))
+    ( macroexpand '(: AUX HDR-CONTENT-TYPE-N  ))                             #|
+    ( macroexpand '(: |#  HDR-CONTENT-TYPE-V ;))
+    ( macroexpand '(: AUX HDR-CACHE-CONTROL-N ))
+    ( macroexpand '(: AUX HDR-CACHE-CONTROL-V ))
+    ( macroexpand '(: AUX HDR-EXPIRES-N       ))
+    ( macroexpand '(: AUX HDR-EXPIRES-V       ))
+    ( macroexpand '(: AUX HDR-PRAGMA-N        ))
+    ( macroexpand '(: AUX HDR-PRAGMA-V        ))                             #|
+    ( macroexpand '(: |#) req                 ))
+)
 
 (defun cleanups-fixate (log)
     "Helper function. Makes final buffer cleanups, closes streams, etc."

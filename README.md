@@ -1129,6 +1129,49 @@ fi
 lib/dnsresolvh.lfe:none: Warning: a term is constructed, but never used
 ```
 
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al . lib lib/ebin
+.:
+total 32
+drwxr-xr-x   4 <username>  <usergroup>   512 Oct 25 18:20 .
+drwxr-xr-x  12 <username>  <usergroup>   512 Oct  5 13:20 ..
+-rw-r--r--   1 <username>  <usergroup>  1019 Oct 25 18:20 Makefile
+-rwxr-xr-x   1 <username>  <usergroup>  4915 Oct 25 18:20 dnsresolvd
+drwxr-xr-x   6 <username>  <usergroup>   512 Oct 25 18:20 erlang_modules
+drwxr-xr-x   3 <username>  <usergroup>   512 Oct 25 18:20 lib
+
+lib:
+total 64
+drwxr-xr-x  3 <username>  <usergroup>    512 Oct 25 18:20 .
+drwxr-xr-x  4 <username>  <usergroup>    512 Oct 25 18:20 ..
+-rw-r--r--  1 <username>  <usergroup>  15395 Oct 25 18:20 dnsresolvd.lfe
+-rw-r--r--  1 <username>  <usergroup>   8969 Oct 25 18:20 dnsresolvh.lfe
+drwxr-xr-x  2 <username>  <usergroup>    512 Oct 25 18:20 ebin
+
+lib/ebin:
+total 44
+drwxr-xr-x  2 <username>  <usergroup>   512 Oct 25 18:20 .
+drwxr-xr-x  3 <username>  <usergroup>   512 Oct 25 18:20 ..
+-rw-r--r--  1 <username>  <usergroup>  6000 Oct 25 18:20 AUX.beam
+-rw-r--r--  1 <username>  <usergroup>  2356 Oct 25 18:20 dnsresolvd.beam
+-rw-r--r--  1 <username>  <usergroup>  1052 Oct 25 18:20 dnsresolvs.beam
+-rw-r--r--  1 <username>  <usergroup>  4640 Oct 25 18:20 reqhandler.beam
+$
+$ file dnsresolvd lib/* lib/ebin/*
+dnsresolvd:               a lfescript script text executable
+lib/dnsresolvd.lfe:       ASCII English text
+lib/dnsresolvh.lfe:       ASCII English text
+lib/ebin:                 directory
+lib/ebin/AUX.beam:        Erlang BEAM file
+lib/ebin/dnsresolvd.beam: Erlang BEAM file
+lib/ebin/dnsresolvs.beam: Erlang BEAM file
+lib/ebin/reqhandler.beam: Erlang BEAM file
+```
+
+**TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server and Arch Linux.
+
 ## Running
 
 Starting the daemon is quite easy and very similar for all its implementations.
@@ -1410,6 +1453,32 @@ OpenBSD/amd64:
 $ ERL_LIBS="erlang_modules/deps:lib" ./dnsresolvd 8765
 Server started on port 8765
 === Hit Ctrl+C to terminate it.
+```
+
+Example of making **GET** and **POST** requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xyz&h=hexdocs.pm'
+{"hostname":"hexdocs.pm","address":"151.101.85.181","version":"IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f=HtmL' http://localhost:8765
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+<meta http-equiv="content-type"    content="text/html; charset=UTF-8"           />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"                            />
+<meta       name="viewport"        content="width=device-width,initial-scale=1" />
+<title>DNS Resolver Daemon (dnsresolvd)</title>
+</head>
+<body>
+<div>IPv6.CYBERNODE.com 2001:470:1:1B9::31 IPv6</div>
+</body>
+</html>
+
+=== 200
+=== text/html; charset=UTF-8
 ```
 
 ---
