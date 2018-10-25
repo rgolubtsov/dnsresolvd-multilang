@@ -20,7 +20,8 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **Genie ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/genie/`
 * :small_blue_diamond: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
 * :small_blue_diamond: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
-* :cd: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
+* :small_blue_diamond: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
+* :small_orange_diamond: :cd: :point_left: :question: :smiley:
 
 ## Table of Contents
 
