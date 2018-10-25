@@ -287,15 +287,23 @@
         )
     )))
 
-    (let((req2(: cowboy_req set_resp_body resp-buffer                   req0)))
+    ; Adding headers to the response.
+    (let ((req1 (: AUX add-response-headers fmt req0)))
+
+    (let((req2(: cowboy_req set_resp_body resp-buffer                   req1)))
     (let((req-(: cowboy_req reply(macroexpand '(: AUX RSC-HTTP-200-OK)) req2)))
 
     (tuple 'ok
         req-
-        state ; <== The state of the handler doesn't need to be changed.
-    )))))))))))))))))))))))
-)
-
+        state ; <== The state of THE HANDLER doesn't need to be changed.
+                               )             )
+                               )  ) )   ) )  )
+                              ) )           ) )
+                             )                 )
+                             )                 )
+                              )               )
+                                )     )     )
+                                   ) ) ) )
 ;##
 ; Performs DNS lookup action for the given hostname,
 ; i.e. (in this case) IP address retrieval by hostname.
