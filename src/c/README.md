@@ -1,13 +1,16 @@
 # DNS Resolver Daemon written in C
-<br />(using the GNU libmicrohttpd library)
 
-**A daemon that performs DNS lookups for the given hostname passed in an HTTP request**
+**A daemon that performs DNS lookups for the given hostname passed in an HTTP request
+<br />(using the [GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd") library)**
 
 ---
 
 ## Table of Contents
 
 * **[Building](#building)**
+  * [Building under OpenBSD/amd64 6.3](#building-under-openbsdamd64-63)
+  * [Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16044-lts-x86-64)
+  * [Building under Arch Linux (kernel 4.15.10-1-ARCH x86-64)](#building-under-arch-linux-kernel-41510-1-arch-x86-64)
 * **[Running](#running)**
 
 ## Building
@@ -166,7 +169,3 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=openports.se&f=xml' 
 === 200
 === application/json
 ```
-
----
-
-:cd:
