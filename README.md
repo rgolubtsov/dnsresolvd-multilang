@@ -28,7 +28,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * **[Building](#building)**
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c#building)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#building)
-  * [Lua (Luvit)](#lua-luvit)
+  * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#building)
   * [Perl 5 (Mojolicious)](#perl-5-mojolicious)
   * [Python 3 (Twisted)](#python-3-twisted)
   * [Vala (libsoup)](#vala-libsoup)
@@ -39,7 +39,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * **[Running](#running)**
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c#running)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#running)
-  * [Lua (Luvit)](#lua-luvit-1)
+  * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#running)
   * [Perl 5 (Mojolicious)](#perl-5-mojolicious-1)
   * [Python 3 (Twisted)](#python-3-twisted-1)
   * [Vala (libsoup)](#vala-libsoup-1)
@@ -51,65 +51,6 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 ## Building
 
 Every daemon implementation has its own build rules, so let's describe them sequentially.
-
-### Lua (Luvit)
-
-#### Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)
-
-Install the necessary dependencies (`luvi`, `lit`, `luvit`, `luarocks5.1`, `luaposix`). Note that some of these packages are not in the Arch Linux official repositories. Hence they have to be installed from the AUR repository. The AUR helper `yaourt` might be used for that:
-
-```
-$ yaourt -S luvi-bin
-$ yaourt -S luvit
-```
-
-The `lit` package will be built and installed as a dependency to the `luvit` package. And after that it will no be longer required. So it is safe to remove it from the system:
-
-```
-$ sudo pacman -Rsc lit
-```
-
-The `luaposix` package can be installed from the AUR repository, but for now AUR suggests its outdated version, so a better way is to install it via **LuaRocks**:
-
-```
-$ sudo pacman -S luarocks5.1
-$
-$ sudo luarocks-5.1 install luaposix
-```
-
-Since **Luvit** searches modules based on &quot;local&quot; tree (`/usr/local/share/`, `/usr/local/lib/`), it needs to create the following symlinks:
-
-```
-$ sudo mkdir    /usr/local/share/lua /usr/local/lib/lua       && \
-  sudo ln -sfnv /usr/share/lua/5.1   /usr/local/share/lua/5.1 && \
-  sudo ln -sfnv /usr/lib/lua/5.1     /usr/local/lib/lua/5.1
-'/usr/local/share/lua/5.1' -> '/usr/share/lua/5.1'
-'/usr/local/lib/lua/5.1' -> '/usr/lib/lua/5.1'
-$
-$ luvit -v
-luvit version: 2.14.1
-luvi version: v2.7.6
-rex version: 8.37 2015-04-28
-libuv version: 1.9.1
-ssl version: OpenSSL 1.0.2h  3 May 2016, lua-openssl 0.5.1
-```
-
-Once this is done, check it out... just for fun:))
-
-```
-$ cd src/lua
-$ ls -al
-total 32
-drwxr-xr-x 2 <username> <usergroup>  4096 Aug  9 20:20 .
-drwxr-xr-x 9 <username> <usergroup>  4096 Aug  8 19:10 ..
--rwxr-xr-x 1 <username> <usergroup> 13746 Aug  9 20:20 dnsresolvd.lua
--rw-r--r-- 1 <username> <usergroup>  4290 Aug  9 20:20 dnsresolvh.lua
-$
-$ file dnsresolvd.lua
-dnsresolvd.lua: a /usr/bin/env luvit script, ASCII text executable
-```
-
-**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD and Ubuntu Server.
 
 ### Perl 5 (Mojolicious)
 
@@ -904,31 +845,6 @@ lib/ebin/reqhandler.beam: Erlang BEAM file
 ## Running
 
 Starting the daemon is quite easy and very similar for all its implementations.
-
-### Lua (Luvit)
-
-Arch Linux:
-
-```
-$ cd src/lua
-$ ./dnsresolvd.lua 8765
-Server started on port 8765
-=== Hit Ctrl+C to terminate it.
-```
-
-Example of making **GET** and **POST** requests:
-
-```
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=ipv6.testvitesse.videotron.ca&f=xml'
-{"address":"2607:fa48:2:30ff:0:0:0:a","hostname":"ipv6.testvitesse.videotron.ca","version":"IPv6"}
-=== 200
-=== application/json
-$
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'f=xml&h=testvitesse.videotron.ca' http://localhost:8765
-{"address":"135.19.0.17","hostname":"testvitesse.videotron.ca","version":"IPv4"}
-=== 200
-=== application/json
-```
 
 ### Perl 5 (Mojolicious)
 
