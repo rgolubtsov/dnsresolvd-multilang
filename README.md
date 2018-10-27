@@ -29,7 +29,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c#building)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#building)
   * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#building)
-  * [Perl 5 (Mojolicious)](#perl-5-mojolicious)
+  * [Perl 5 (Mojolicious)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/perl#building)
   * [Python 3 (Twisted)](#python-3-twisted)
   * [Vala (libsoup)](#vala-libsoup)
   * [Genie (libsoup)](#genie-libsoup)
@@ -40,7 +40,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c#running)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#running)
   * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#running)
-  * [Perl 5 (Mojolicious)](#perl-5-mojolicious-1)
+  * [Perl 5 (Mojolicious)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/perl#running)
   * [Python 3 (Twisted)](#python-3-twisted-1)
   * [Vala (libsoup)](#vala-libsoup-1)
   * [Genie (libsoup)](#genie-libsoup-1)
@@ -51,58 +51,6 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 ## Building
 
 Every daemon implementation has its own build rules, so let's describe them sequentially.
-
-### Perl 5 (Mojolicious)
-
-#### Building under OpenBSD/amd64 6.3
-
-Install the necessary dependencies (`cpanminus`, `Mojolicious`, `Net::DNS`):
-
-```
-$ sudo pkg_add -vvvvv p5-Mojolicious p5-Net-DNS
-$
-$ mojo version
-CORE
-  Perl        (v5.24.3, openbsd)
-  Mojolicious (7.70, Doughnut)
-
-OPTIONAL
-  EV 4.0+                 (4.22)
-  IO::Socket::Socks 0.64+ (n/a)
-  IO::Socket::SSL 1.94+   (2.056)
-  Net::DNS::Native 0.15+  (n/a)
-  Role::Tiny 2.000001+    (n/a)
-
-You might want to update your Mojolicious to 7.89!
-```
-
-#### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
-
-Install the necessary dependencies (`cpanminus`, `Mojolicious`, `Net::DNS::Native`):
-
-```
-$ sudo apt-get update               && \
-  sudo apt-get install cpanminus -y && \
-  sudo cpanm App::cpanminus
-$
-$ sudo cpanm Mojolicious Net::DNS::Native
-$
-$ mojo version
-CORE
-  Perl        (v5.22.1, linux)
-  Mojolicious (7.59, Doughnut)
-
-OPTIONAL
-  EV 4.0+                 (n/a)
-  IO::Socket::Socks 0.64+ (n/a)
-  IO::Socket::SSL 1.94+   (n/a)
-  Net::DNS::Native 0.15+  (0.15)
-  Role::Tiny 2.000001+    (2.000001)
-
-This version is up to date, have fun!
-```
-
-**TODO:** Describe the daemon's dependencies' build/install process under Arch Linux.
 
 ### Python 3 (Twisted)
 
@@ -845,34 +793,6 @@ lib/ebin/reqhandler.beam: Erlang BEAM file
 ## Running
 
 Starting the daemon is quite easy and very similar for all its implementations.
-
-### Perl 5 (Mojolicious)
-
-OpenBSD/amd64 | Arch Linux:
-
-```
-$ ./src/perl/dnsresolvd 8765
-Server started on port 8765
-=== Hit Ctrl+C to terminate it.
-[Tue Aug  7 15:00:00 2018] [info] Listening at "http://*:8765"
-Server available at http://127.0.0.1:8765
-```
-
-Example of making **GET** and **POST** requests:
-
-```
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xml&h=testvitesse.videotron.ca'
-{"address":"135.19.0.17","hostname":"testvitesse.videotron.ca","version":"IPv4"}
-
-=== 200
-=== application/json
-$
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.testvitesse.videotron.ca&f=xml' http://localhost:8765
-{"address":"129.128.5.194","hostname":"openbsd.org","version":"IPv4"}
-
-=== 200
-=== application/json
-```
 
 ### Python 3 (Twisted)
 
