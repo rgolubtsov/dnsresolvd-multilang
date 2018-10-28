@@ -16,8 +16,8 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 * :small_blue_diamond: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
 * :small_blue_diamond: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
 * :small_blue_diamond: **Python 3 ([Twisted](http://twistedmatrix.com "Twisted"))**: `src/python/`
-* :small_blue_diamond: **Vala ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/vala/`
-* :small_blue_diamond: **Genie ([libsoup](https://valadoc.org/libsoup-2.4/index.html "libsoup"))**: `src/genie/`
+* :small_blue_diamond: **Vala ([GNOME libsoup](https://valadoc.org/libsoup-2.4/index.html "GNOME libsoup"))**: `src/vala/`
+* :small_blue_diamond: **Genie ([GNOME libsoup](https://valadoc.org/libsoup-2.4/index.html "GNOME libsoup"))**: `src/genie/`
 * :small_blue_diamond: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
 * :small_blue_diamond: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
 * :small_blue_diamond: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
@@ -30,9 +30,9 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#building)
   * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#building)
   * [Perl 5 (Mojolicious)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/perl#building)
-  * [Python 3 (Twisted)](#python-3-twisted)
-  * [Vala (libsoup)](#vala-libsoup)
-  * [Genie (libsoup)](#genie-libsoup)
+  * [Python 3 (Twisted)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/python#building)
+  * [Vala (GNOME libsoup)](#vala-gnome-libsoup)
+  * [Genie (GNOME libsoup)](#genie-gnome-libsoup)
   * [Elixir (Cowboy)](#elixir-cowboy)
   * [Erlang (Cowboy)](#erlang-cowboy)
   * [LFE (Cowboy)](#lfe-cowboy)
@@ -41,9 +41,9 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#running)
   * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#running)
   * [Perl 5 (Mojolicious)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/perl#running)
-  * [Python 3 (Twisted)](#python-3-twisted-1)
-  * [Vala (libsoup)](#vala-libsoup-1)
-  * [Genie (libsoup)](#genie-libsoup-1)
+  * [Python 3 (Twisted)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/python#running)
+  * [Vala (GNOME libsoup)](#vala-gnome-libsoup-1)
+  * [Genie (GNOME libsoup)](#genie-gnome-libsoup-1)
   * [Elixir (Cowboy)](#elixir-cowboy-1)
   * [Erlang (Cowboy)](#erlang-cowboy-1)
   * [LFE (Cowboy)](#lfe-cowboy-1)
@@ -52,34 +52,7 @@ The following implementations are on the bench (:small_blue_diamond: &ndash; com
 
 Every daemon implementation has its own build rules, so let's describe them sequentially.
 
-### Python 3 (Twisted)
-
-#### Building under OpenBSD/amd64 6.3
-
-Install the necessary dependencies (`py3-pip`, `twisted`, `py3-dnspython`):
-
-```
-$ sudo pkg_add -vvvvv py3-pip py3-dnspython
-$
-$ sudo ln -sfn /usr/local/bin/pip3.6 /usr/local/bin/pip
-```
-
-```
-$ sudo pip install twisted
-```
-
-#### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
-
-Install the necessary dependencies (`python3-twisted`, `python3-dnspython`):
-
-```
-$ sudo apt-get update                                       && \
-  sudo apt-get install python3-twisted python3-dnspython -y
-```
-
-**TODO:** Describe the daemon's dependencies' build/install process under Arch Linux.
-
-### Vala (libsoup)
+### Vala (GNOME libsoup)
 
 #### Building under OpenBSD/amd64 6.3
 
@@ -296,11 +269,11 @@ $ ldd dnsresolvd
         libgcc_s.so.1 => /usr/lib/libgcc_s.so.1 (0x00007fbd1cdd8000)
 ```
 
-### Genie (libsoup)
+### Genie (GNOME libsoup)
 
 #### Building under OpenBSD/amd64 6.3
 
-All the necessary build-time and run-time dependencies are exactly the same to what is being used for Vala build process &ndash; [see here](https://github.com/rgolubtsov/dnsresolvd-multilang#vala-libsoup "Vala (libsoup) build instructions").
+All the necessary build-time and run-time dependencies are exactly the same to what is being used for Vala build process &ndash; [see here](https://github.com/rgolubtsov/dnsresolvd-multilang#vala-gnome-libsoup "Vala (GNOME libsoup) build instructions").
 
 The daemon's build process is straightforward, moreover it is identical to that used with Vala.
 
@@ -794,31 +767,7 @@ lib/ebin/reqhandler.beam: Erlang BEAM file
 
 Starting the daemon is quite easy and very similar for all its implementations.
 
-### Python 3 (Twisted)
-
-OpenBSD/amd64:
-
-```
-$ ./src/python/dnsresolvd 8765
-Server started on port 8765
-=== Hit Ctrl+C to terminate it.
-```
-
-Example of making **GET** and **POST** requests:
-
-```
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=google.com&f=xml'
-{"hostname": "google.com", "address": "216.58.207.78", "version": "IPv4"}
-=== 200
-=== application/json
-$
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.google.com&f=xml' http://localhost:8765
-{"hostname": "ipv6.google.com", "address": "2a00:1450:4001:825::200e", "version": "IPv6"}
-=== 200
-=== application/json
-```
-
-### Vala (libsoup)
+### Vala (GNOME libsoup)
 
 OpenBSD/amd64 | Arch Linux:
 
@@ -842,7 +791,7 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=elementary.io&f=json
 === application/json
 ```
 
-### Genie (libsoup)
+### Genie (GNOME libsoup)
 
 OpenBSD/amd64 | Arch Linux:
 
