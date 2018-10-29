@@ -1,7 +1,7 @@
 # DNS Resolver Daemon written in JavaScript
 
 **A daemon that performs DNS lookups for the given hostname passed in an HTTP request
-<br />(using the [Node.js](https://nodejs.org "Node.js") runtime environment)**
+<br />(using the [Node.js](https://nodejs.org "Node.js") event-driven runtime environment)**
 
 ---
 

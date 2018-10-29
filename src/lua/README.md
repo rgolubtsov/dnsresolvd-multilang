@@ -1,7 +1,7 @@
 # DNS Resolver Daemon written in Lua
 
 **A daemon that performs DNS lookups for the given hostname passed in an HTTP request
-<br />(using the [Luvit](https://luvit.io "Luvit") runtime environment)**
+<br />(using the [Luvit](https://luvit.io "Luvit") event-driven runtime environment)**
 
 ---
 
