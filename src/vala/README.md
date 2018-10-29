@@ -1,7 +1,7 @@
 # DNS Resolver Daemon written in Vala
 
 **A daemon that performs DNS lookups for the given hostname passed in an HTTP request
-<br />(using the [GNOME libsoup](https://valadoc.org/libsoup-2.4/index.html "GNOME libsoup") library)**
+<br />(using the [GNOME libsoup](https://valadoc.org/libsoup-2.4/index.html "GNOME libsoup") HTTP client/server library)**
 
 ---
 

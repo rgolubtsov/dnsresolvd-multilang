@@ -1,7 +1,7 @@
 # DNS Resolver Daemon written in C
 
 **A daemon that performs DNS lookups for the given hostname passed in an HTTP request
-<br />(using the [GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd") library)**
+<br />(using the [GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd") HTTP server library)**
 
 ---
 

@@ -1,7 +1,7 @@
 # DNS Resolver Daemon written in Elixir
 
 **A daemon that performs DNS lookups for the given hostname passed in an HTTP request
-<br />(using the [Cowboy](https://ninenines.eu "Cowboy") HTTP server for Erlang/OTP)**
+<br />(using the [Cowboy](https://ninenines.eu "Cowboy") HTTP server library for Erlang/OTP)**
 
 ---
 
