@@ -121,9 +121,9 @@ class AUX {
     }
 
     // Helper method. Makes final buffer cleanups, closes streams, etc.
-    public void cleanups_fixate(MainLoop loop = (MainLoop) null) {
+    public void cleanups_fixate(MainLoop loop) {
         // Stopping the daemon.
-        if (loop != null) {
+        if ((loop != null) && (loop.is_running())) {
             loop.quit();
         }
 

@@ -101,7 +101,7 @@ init//(string[] args)
         stderr.printf(AUX.MSG_USAGE_TEMPLATE
                     + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name)
 
-        aux.cleanups_fixate()
+        aux.cleanups_fixate(new MainLoop())
 
         Posix.exit(ret)
 
@@ -119,7 +119,7 @@ init//(string[] args)
         stderr.printf(AUX.MSG_USAGE_TEMPLATE
                     + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name)
 
-        aux.cleanups_fixate()
+        aux.cleanups_fixate(new MainLoop())
 
         Posix.exit(ret)
 
@@ -141,7 +141,7 @@ init//(string[] args)
                     + AUX.ERR_SRV_UNKNOWN_REASON
                     + AUX.NEW_LINE + AUX.NEW_LINE, daemon_name)
 
-        aux.cleanups_fixate()
+        aux.cleanups_fixate(new MainLoop())
 
         Posix.exit(ret)
 

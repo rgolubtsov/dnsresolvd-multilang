@@ -119,9 +119,9 @@ class AUX
         return HDR_CONTENT_TYPE_V
 
     // Helper method. Makes final buffer cleanups, closes streams, etc.
-    def cleanups_fixate(loop : MainLoop = (MainLoop) null) : void
+    def cleanups_fixate(loop : MainLoop) : void
         // Stopping the daemon.
-        if (loop != null)
+        if ((loop != null) && (loop.is_running()))
             loop.quit();
 
         // Closing the system logger.
