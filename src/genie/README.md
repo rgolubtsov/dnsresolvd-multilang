@@ -30,10 +30,10 @@ valac --target-glib=2.40 --cc=egcc -X -s -X -O3 -X -mtune=generic -X -pipe -X -f
 /home/<username>/dnsresolvd-multilang/src/genie/dnsresolvd.vala.c:709:16: warning: assignment discards 'const' qualifier from pointer target type
         _tmp29_ = _tmp28_->data;
                 ^
-/usr/local/lib/libsoup-2.4.so.10.0: warning: strcpy() is almost always misused, please use strlcpy()
 /usr/local/lib/libglib-2.0.so.4200.6: warning: stpcpy() is dangerous; do not use it
-/usr/local/lib/libxml2.so.16.1: warning: strcat() is almost always misused, please use strlcat()
 /usr/local/lib/libglib-2.0.so.4200.6: warning: vsprintf() is often misused, please use vsnprintf()
+/usr/local/lib/libsoup-2.4.so.10.0: warning: strcpy() is almost always misused, please use strlcpy()
+/usr/local/lib/libxml2.so.16.1: warning: strcat() is almost always misused, please use strlcat()
 /usr/local/lib/libxml2.so.16.1: warning: sprintf() is often misused, please use snprintf()
 ```
 
@@ -41,13 +41,14 @@ Once this is done, check it out... just for fun:))
 
 ```
 $ ls -al
-total 112
-drwxr-xr-x  2 <username>  <usergroup>    512 Aug  2 17:30 .
-drwxr-xr-x  9 <username>  <usergroup>    512 Jul 26 12:45 ..
--rw-r--r--  1 <username>  <usergroup>   1734 Aug  2 17:30 Makefile
--rwxr-xr-x  1 <username>  <usergroup>  26288 Aug  2 17:30 dnsresolvd
--rw-r--r--  1 <username>  <usergroup>  14747 Aug  2 17:30 dnsresolvd.gs
--rw-r--r--  1 <username>  <usergroup>   6401 Aug  2 17:30 dnsresolvh.vala
+total 124
+drwxr-xr-x   2 <username>  <usergroup>    512 Nov 23 18:00 .
+drwxr-xr-x  12 <username>  <usergroup>    512 Oct  5 13:20 ..
+-rw-r--r--   1 <username>  <usergroup>   1734 Nov 23 18:00 Makefile
+-rw-r--r--   1 <username>  <usergroup>   5752 Nov 23 18:00 README.md
+-rwxr-xr-x   1 <username>  <usergroup>  26304 Nov 23 18:00 dnsresolvd
+-rw-r--r--   1 <username>  <usergroup>  14817 Nov 23 18:00 dnsresolvd.gs
+-rw-r--r--   1 <username>  <usergroup>   6408 Nov 23 18:00 dnsresolvh.vala
 $
 $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1
@@ -55,25 +56,25 @@ $
 $ ldd dnsresolvd
 dnsresolvd:
         Start            End              Type  Open Ref GrpRef Name
-        0000064489600000 0000064489807000 exe   2    0   0      dnsresolvd
-        0000064743f1c000 000006474420b000 rlib  0    1   0      /usr/local/lib/libsoup-2.4.so.10.0
-        000006471d823000 000006471dbba000 rlib  0    2   0      /usr/local/lib/libxml2.so.16.1
-        00000646f3f50000 00000646f4177000 rlib  0    1   0      /usr/local/lib/libjson-glib-1.0.so.6.0
-        0000064696dea000 0000064697191000 rlib  0    3   0      /usr/local/lib/libgio-2.0.so.4200.6
-        0000064759350000 0000064759554000 rlib  0    3   0      /usr/local/lib/libgmodule-2.0.so.4200.6
-        000006476987a000 0000064769ac9000 rlib  0    4   0      /usr/local/lib/libgobject-2.0.so.4200.6
-        0000064729d15000 000006472a034000 rlib  0    6   0      /usr/local/lib/libglib-2.0.so.4200.6
-        000006475d65b000 000006475d866000 rlib  0    6   0      /usr/local/lib/libintl.so.6.0
-        000006469d595000 000006469d7da000 rlib  0    6   0      /usr/local/lib/libpcre.so.3.0
-        0000064784f80000 0000064785189000 rlib  0    9   0      /usr/lib/libpthread.so.25.1
-        00000646ae92a000 00000646aec0a000 rlib  0    1   0      /usr/lib/libc.so.92.3
-        00000647570ac000 00000647573a9000 rlib  0    7   0      /usr/local/lib/libiconv.so.6.0
-        0000064689aca000 0000064689cd2000 rlib  0    3   0      /usr/local/lib/libffi.so.1.2
-        0000064690515000 000006469072c000 rlib  0    4   0      /usr/lib/libz.so.5.0
-        0000064774344000 000006477456b000 rlib  0    2   0      /usr/local/lib/liblzma.so.2.1
-        000006471ccc6000 000006471ceee000 rlib  0    3   0      /usr/lib/libm.so.10.1
-        0000064783428000 00000647837a4000 rlib  0    1   0      /usr/local/lib/libsqlite3.so.37.2
-        0000064692300000 0000064692300000 ld.so 0    1   0      /usr/libexec/ld.so
+        00001b4849200000 00001b4849407000 exe   2    0   0      dnsresolvd
+        00001b4a5c4e8000 00001b4a5c7d7000 rlib  0    1   0      /usr/local/lib/libsoup-2.4.so.10.0
+        00001b4a684d5000 00001b4a6886c000 rlib  0    2   0      /usr/local/lib/libxml2.so.16.1
+        00001b4ac5e92000 00001b4ac60b9000 rlib  0    1   0      /usr/local/lib/libjson-glib-1.0.so.6.0
+        00001b4ad214d000 00001b4ad24f4000 rlib  0    3   0      /usr/local/lib/libgio-2.0.so.4200.6
+        00001b4a8a99a000 00001b4a8ab9e000 rlib  0    3   0      /usr/local/lib/libgmodule-2.0.so.4200.6
+        00001b4b2b177000 00001b4b2b3c6000 rlib  0    4   0      /usr/local/lib/libgobject-2.0.so.4200.6
+        00001b4ad4e63000 00001b4ad5182000 rlib  0    6   0      /usr/local/lib/libglib-2.0.so.4200.6
+        00001b4a84d35000 00001b4a84f40000 rlib  0    6   0      /usr/local/lib/libintl.so.6.0
+        00001b4ae0c23000 00001b4ae0e68000 rlib  0    6   0      /usr/local/lib/libpcre.so.3.0
+        00001b4b28b63000 00001b4b28d6c000 rlib  0    9   0      /usr/lib/libpthread.so.25.1
+        00001b4b0bd11000 00001b4b0bff1000 rlib  0    1   0      /usr/lib/libc.so.92.3
+        00001b4b0f178000 00001b4b0f475000 rlib  0    7   0      /usr/local/lib/libiconv.so.6.0
+        00001b4a5399c000 00001b4a53ba4000 rlib  0    3   0      /usr/local/lib/libffi.so.1.2
+        00001b4a76c0a000 00001b4a76e21000 rlib  0    4   0      /usr/lib/libz.so.5.0
+        00001b4b2d1e5000 00001b4b2d40c000 rlib  0    2   0      /usr/local/lib/liblzma.so.2.1
+        00001b4ab5edd000 00001b4ab6105000 rlib  0    3   0      /usr/lib/libm.so.10.1
+        00001b4b3d1cd000 00001b4b3d549000 rlib  0    1   0      /usr/local/lib/libsqlite3.so.37.2
+        00001b4a70a00000 00001b4a70a00000 ld.so 0    1   0      /usr/libexec/ld.so
 ```
 
 The Genie daemon's build processes under Ubuntu Server and Arch Linux are exactly the same to those ones which are being used for [Vala](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/vala#building "Vala (GNOME libsoup) build instructions") on those operating systems.
