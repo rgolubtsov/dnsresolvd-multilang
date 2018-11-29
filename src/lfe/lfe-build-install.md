@@ -110,6 +110,10 @@ install -m644 doc/man/*.7 /home/<username>/man/man7/
 ### Building under Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)
 
 ```
+$ sudo apt-get install erlang-parsetools # <== Important !
+```
+
+```
 $ mkdir lfe
 $ cd lfe/
 $ git clone https://github.com/rvirding/lfe.git
@@ -166,23 +170,44 @@ erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_
 erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_eval.erl
 erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io.erl
 erlc -o src src/lfe_scan.xrl
-Compiler function leex:compile/3 failed:
-{undef,[{leex,compile,
-              ["/sda2/home/<username>/lfe/lfe/src/lfe_scan",
-               "/sda2/home/<username>/lfe/lfe/src/lfe_scan",
-               {options,[],"/sda2/home/<username>/lfe/lfe/src",undefined,
-                        [],1,false,999,[],[],
-                        "/sda2/home/<username>/lfe/lfe"}],
-              []},
-        {erl_compile,compile_file,4,[{file,"erl_compile.erl"},{line,304}]},
-        {erl_compile,compile3,3,[{file,"erl_compile.erl"},{line,285}]},
-        {erl_compile,'-compiler_runner/1-fun-1-',1,
-                     [{file,"erl_compile.erl"},{line,92}]}]}
-Makefile:81: recipe for target 'src/lfe_scan.erl' failed
-make[1]: *** [src/lfe_scan.erl] Error 1
+erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_scan.erl
+cc -o bin/lfeexec c_src/lfeexec.c
+cp src/lfe.app.src ebin/lfe.app
+bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/cl.lfe
+bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/clj.lfe
+rm src/lfe_scan.erl
 make[1]: Leaving directory '/sda2/home/<username>/lfe/lfe'
-Makefile:94: recipe for target 'compile' failed
-make: *** [compile] Error 2
+rm -Rf /home/<username>//lib/lfe/ebin
+install -m755 -d /home/<username>//lib/lfe/ebin
+install -m644 \
+        ebin/lfe.app \
+        ebin/lfe_shell.beam ebin/lfe_io_pretty.beam ebin/lfe_macro.beam ebin/lfe_io_write.beam ebin/lfe_lint.beam ebin/lfe_doc.beam ebin/lfe_io_format.beam ebin/lfe_comp.beam ebin/lfe_ms.beam ebin/lfe.beam ebin/lfe_gen.beam ebin/lfe_abstract_code.beam ebin/lfe_internal.beam ebin/lfe_pmod.beam ebin/lfe_macro_include.beam ebin/lfe_codegen.beam ebin/lfescript.beam ebin/lfe_parse.beam ebin/lfe_macro_record.beam ebin/lfe_edlin_expand.beam ebin/lfe_bits.beam ebin/lfe_lib.beam ebin/lfe_macro_export.beam ebin/lfe_env.beam ebin/lfe_qlc.beam ebin/lfe_trans.beam ebin/lfe_types.beam ebin/lfe_init.beam ebin/lfe_eval.beam ebin/lfe_io.beam ebin/lfe_scan.beam \
+        ebin/cl.beam ebin/clj.beam \
+        /home/<username>//lib/lfe/ebin
+install -m755 -d /home/<username>//lib/lfe/bin
+install -m755 \
+        bin/lfe \
+        bin/lfec \
+        bin/lfedoc \
+        bin/lfescript \
+        /home/<username>//lib/lfe/bin
+install -m755 -d /home/<username>//bin
+ln -sf /home/<username>//lib/lfe/bin/* /home/<username>//bin/
+Updating man page database ...
+/usr/bin/mandb /home/<username>/man
+Processing manual pages under /home/<username>/man...
+Updating index cache for path `/home/<username>/man/man7'. Wait...done.
+Checking for stray cats under /home/<username>/man...
+Processing manual pages under /home/<username>/man/cat1...
+Processing manual pages under /home/<username>/man/cat7...
+Processing manual pages under /home/<username>/man/cat3...
+3 man subdirectories contained newer manual pages.
+0 manual pages were added.
+0 stray cats were added.
+0 old database entries were purged.
+install -m644 doc/man/*.1 /home/<username>/man/man1/
+install -m644 doc/man/*.3 /home/<username>/man/man3/
+install -m644 doc/man/*.7 /home/<username>/man/man7/
 ```
 
 ### Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)
