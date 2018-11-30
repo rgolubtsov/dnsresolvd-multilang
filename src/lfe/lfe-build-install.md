@@ -389,7 +389,72 @@ lfescript: Missing filename
 ### Running on Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)
 
 ```
-$
+$ lfe
+Erlang/OTP 20 [erts-9.2] [source] [64-bit] [smp:2:2] [ds:2:2:10] [async-threads:10] [kernel-poll:false]
+
+   ..-~.~_~---..
+  (      \\     )    |   A Lisp-2+ on the Erlang VM
+  |`-.._/_\\_.-':    |   Type (help) for usage info.
+  |         g |_ \   |
+  |        n    | |  |   Docs: http://docs.lfe.io/
+  |       a    / /   |   Source: http://github.com/rvirding/lfe
+   \     l    |_/    |
+    \   r     /      |   LFE v1.3-dev (abort with ^G)
+     `-E___.-'
+
+lfe>
+```
+
+```
+$ lfec
+Usage: lfec [options] file ...
+
+Options:
+-h             Print usage and exit
+-I name        Name of include directory
+-o name        Name of output directory
+-pa path       Add path to the front of LFE's code path
+-pz path       Add path to the end of LFE's code path
+-v             Verbose compiler output
+-Werror        Make all warnings into errors
+-Wnumber       Set warning level (ignored)
+-D             Equivalent to +debug-print
+-L             Equivalent to +to-lint
+-E             Equivalent to +to-exp
+-S             Equivalent to +to-asm
+--             No more options, only file names follow
++term          Term will be added to options
+
+Terms include:
+
++binary, +no-docs, +to-exp, +to-lint, +to-core0, +to-core, +to-kernel, +to-asm
++{outdir, Dir}, +report, +return, +debug-print
+```
+
+```
+$ lfedoc
+Usage: lfedoc [options] file
+
+Options:
+-h             Print usage and exit
+-I name        Name of include directory
+-pa path       Add path to the front of LFE's code path
+-pz path       Add path to the end of LFE's code path
+-v             Verbose compiler output
+-Werror        Make all warnings into errors
+-Wnumber       Set warning level (ignored)
+-D             Equivalent to +debug-print
+--             No more options, only file names follow
++term          Term will be added to options
+
+Terms include:
+
++binary, +no-docs, +{outdir, Dir}, +report, +return, +debug-print
+```
+
+```
+$ lfescript
+lfescript: Missing filename
 ```
 
 ### Running on Arch Linux (kernel 4.16.13-2-ARCH x86-64)
