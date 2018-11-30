@@ -16,8 +16,6 @@
 ### Building under OpenBSD/amd64 6.3
 
 ```
-$ mkdir lfe
-$ cd lfe/
 $ git clone https://github.com/rvirding/lfe.git
 Cloning into 'lfe'...
 ...
@@ -42,7 +40,7 @@ which: mandb: Command not found.
 escript get_comp_opts.escript
 which: mandb: Command not found.
 gmake  erlc-lfec
-gmake[1]: Entering directory '/home/<username>/lfe/lfe'
+gmake[1]: Entering directory '/home/<username>/lfe'
 which: mandb: Command not found.
 erlc -I include -o ebin -DERLANG_VERSION=\"19.3\" -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe.erl
 erlc -I include -o ebin -DERLANG_VERSION=\"19.3\" -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_eval.erl
@@ -85,7 +83,7 @@ cp src/lfe.app.src ebin/lfe.app
 bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/clj.lfe
 bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/cl.lfe
 rm src/lfe_scan.erl
-gmake[1]: Leaving directory '/home/<username>/lfe/lfe'
+gmake[1]: Leaving directory '/home/<username>/lfe'
 rm -Rf /home/<username>//lib/lfe/ebin
 install -m755 -d /home/<username>//lib/lfe/ebin
 install -m644 \
@@ -114,8 +112,6 @@ $ sudo apt-get install erlang-parsetools # <== Important !
 ```
 
 ```
-$ mkdir lfe
-$ cd lfe/
 $ git clone https://github.com/rvirding/lfe.git
 Cloning into 'lfe'...
 ...
@@ -133,7 +129,7 @@ rm -rf ebin/*.beam erl_crash.dump comp_opts.mk
 $ make install PREFIX=/home/<username>/ MANINSTDIR=/home/<username>/man
 escript get_comp_opts.escript
 make  erlc-lfec
-make[1]: Entering directory '/sda2/home/<username>/lfe/lfe'
+make[1]: Entering directory '/sda2/home/<username>/lfe'
 erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_shell.erl
 erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io_pretty.erl
 src/lfe_io_pretty.erl:23: Warning: export_all flag enabled - all functions will be exported
@@ -176,7 +172,7 @@ cp src/lfe.app.src ebin/lfe.app
 bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/cl.lfe
 bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/clj.lfe
 rm src/lfe_scan.erl
-make[1]: Leaving directory '/sda2/home/<username>/lfe/lfe'
+make[1]: Leaving directory '/sda2/home/<username>/lfe'
 rm -Rf /home/<username>//lib/lfe/ebin
 install -m755 -d /home/<username>//lib/lfe/ebin
 install -m644 \
@@ -213,8 +209,6 @@ install -m644 doc/man/*.7 /home/<username>/man/man7/
 ### Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)
 
 ```
-$ mkdir lfe
-$ cd lfe/
 $ git clone https://github.com/rvirding/lfe.git
 Cloning into 'lfe'...
 ...
@@ -233,7 +227,7 @@ rm -rf ebin/*.beam erl_crash.dump comp_opts.mk
 $ make install PREFIX=/home/<username>/ MANINSTDIR=/home/<username>/man
 escript get_comp_opts.escript
 make  erlc-lfec
-make[1]: Entering directory '/home/<username>/lfe/lfe'
+make[1]: Entering directory '/home/<username>/lfe'
 erlc -I include -o ebin -DERLANG_VERSION=\"21.0.9\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_shell.erl
 src/lfe_shell.erl:366: Warning: erlang:get_stacktrace/0: deprecated; use the new try/catch syntax for retrieving the stack backtrace
 erlc -I include -o ebin -DERLANG_VERSION=\"21.0.9\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io_pretty.erl
@@ -285,7 +279,7 @@ cp src/lfe.app.src ebin/lfe.app
 bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/cl.lfe
 bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/clj.lfe
 rm src/lfe_scan.erl
-make[1]: Leaving directory '/home/<username>/lfe/lfe'
+make[1]: Leaving directory '/home/<username>/lfe'
 rm -Rf /home/<username>//lib/lfe/ebin
 install -m755 -d /home/<username>//lib/lfe/ebin
 install -m644 \
@@ -470,4 +464,5 @@ lfescript: Missing filename
 ```
 
 ---
+
 :cd:
