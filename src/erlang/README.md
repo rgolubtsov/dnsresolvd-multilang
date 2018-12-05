@@ -9,11 +9,12 @@
 
 * **[Building](#building)**
   * [Building under OpenBSD/amd64 6.3](#building-under-openbsdamd64-63)
+  * [Building under Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)](#building-under-ubuntu-server-ubuntu-18041-x86-64)
 * **[Running](#running)**
 
 ## Building
 
-This daemon implementation is known to be built and run successfully on OpenBSD, ~~Ubuntu Server, and Arch Linux~~ operating systems. So let's describe each build process sequentially.
+This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, ~~and Arch Linux~~ operating systems. So let's describe each build process sequentially.
 
 ### Building under OpenBSD/amd64 6.3
 
@@ -154,13 +155,146 @@ lib/ebin/dnsresolvs.beam: Erlang BEAM file
 lib/ebin/reqhandler.beam: Erlang BEAM file
 ```
 
-**TODO:** Describe the daemon's dependencies' build/install process under Ubuntu Server and Arch Linux.
+### Building under Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)
+
+Install the necessary dependencies (`rebar`, `syslog`, `cowboy`). Note that the `erlang-base` package and other required `erlang-`related packages will be installed automatically as dependencies to the `rebar` package:
+
+```
+$ sudo apt-get update           && \
+  sudo apt-get install rebar -y
+$
+$ erl +V
+Erlang (SMP,ASYNC_THREADS) (BEAM) emulator version 9.2
+```
+
+The `syslog` and `cowboy` packages have to be built and installed via **rebar**. For that it needs to create a &quot;mock&quot; project and install all the necessary dependencies. The following compound one-liner script will actually do this job.
+
+(Note that the `cowboy` package depends on the others: `cowlib` and `ranch`. They will be built and installed automatically too.)
+
+```
+$ cd src/erlang
+```
+
+```
+$ export       E_LIB_ID=erlang_modules       && \
+  mkdir   -p ${E_LIB_ID}                     && \
+  cd         ${E_LIB_ID}                     && \
+  rebar   -f create-lib libid=${E_LIB_ID}    && \
+  echo       '% ==============
+% ./rebar.config
+% ==============
+{deps, [
+    {syslog, {
+        git, "git://github.com/Vagabond/erlang-syslog.git", {branch, "master"}
+    }},
+    {cowboy, {
+        git, "git://github.com/ninenines/cowboy.git",       {branch, "master"}
+    }}
+]}.
+% vim:set nu et ts=4 sw=4:' > ./rebar.config && \
+  unset      E_LIB_ID                        && \
+  rebar      g-d                             && \
+  rebar      c-d                             && \
+  rebar      co                              && \
+  cd         - # <== Just hit Enter here and wait for a while.))
+==> erlang_modules (create-lib)
+Writing src/erlang_modules.app.src
+Writing src/erlang_modules.erl
+==> erlang_modules (get-deps)
+Pulling syslog from {git,"git://github.com/Vagabond/erlang-syslog.git",
+                         {branch,"master"}}
+Cloning into 'syslog'...
+Pulling cowboy from {git,"git://github.com/ninenines/cowboy.git",
+                         {branch,"master"}}
+Cloning into 'cowboy'...
+==> syslog (get-deps)
+==> cowboy (get-deps)
+Pulling cowlib from {git,"https://github.com/ninenines/cowlib","2.7.0"}
+Cloning into 'cowlib'...
+Pulling ranch from {git,"https://github.com/ninenines/ranch","1.7.1"}
+Cloning into 'ranch'...
+==> cowlib (get-deps)
+==> ranch (get-deps)
+==> syslog (check-deps)
+==> cowlib (check-deps)
+==> ranch (check-deps)
+==> cowboy (check-deps)
+==> erlang_modules (check-deps)
+==> syslog (compile)
+...
+==> cowlib (compile)
+...
+==> ranch (compile)
+...
+==> cowboy (compile)
+...
+==> erlang_modules (compile)
+Compiled src/erlang_modules.erl
+/home/<username>/dnsresolvd-multilang/src/erlang
+```
+
+Now the daemon might be built.
+
+```
+$ make clean && make all
+rm -f -vR lib/ebin
+if [ ! -d "lib/ebin" ]; then \
+        mkdir lib/ebin; \
+        erlc -o lib/ebin lib/*.erl; \
+fi
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al . lib lib/ebin
+.:
+total 40
+drwxrwxr-x  4 <username> <usergroup>  4096 Dec  6 00:50 .
+drwxrwxr-x 12 <username> <usergroup>  4096 Nov 28 17:35 ..
+-rwxrwxr-x  1 <username> <usergroup>  4209 Dec  6 00:50 dnsresolvd
+drwxrwxr-x  6 <username> <usergroup>  4096 Dec  6 00:50 erlang_modules
+drwxrwxr-x  3 <username> <usergroup>  4096 Dec  6 00:50 lib
+-rw-rw-r--  1 <username> <usergroup>   992 Dec  6 00:50 Makefile
+-rw-rw-r--  1 <username> <usergroup> 11251 Dec  6 00:50 README.md
+
+lib:
+total 40
+drwxrwxr-x 3 <username> <usergroup>  4096 Dec  6 00:50 .
+drwxrwxr-x 4 <username> <usergroup>  4096 Dec  6 00:50 ..
+-rw-rw-r-- 1 <username> <usergroup>  3634 Dec  6 00:50 dnsresolvd.erl
+-rw-rw-r-- 1 <username> <usergroup>  4546 Dec  6 00:50 dnsresolvd.h
+-rw-rw-r-- 1 <username> <usergroup>  1455 Dec  6 00:50 dnsresolvs.erl
+drwxrwxr-x 2 <username> <usergroup>  4096 Dec  6 00:50 ebin
+-rw-rw-r-- 1 <username> <usergroup> 10241 Dec  6 00:50 reqhandler.erl
+
+lib/ebin:
+total 20
+drwxrwxr-x 2 <username> <usergroup> 4096 Dec  6 00:50 .
+drwxrwxr-x 3 <username> <usergroup> 4096 Dec  6 00:50 ..
+-rw-rw-r-- 1 <username> <usergroup> 1860 Dec  6 00:50 dnsresolvd.beam
+-rw-rw-r-- 1 <username> <usergroup>  748 Dec  6 00:50 dnsresolvs.beam
+-rw-rw-r-- 1 <username> <usergroup> 3824 Dec  6 00:50 reqhandler.beam
+$
+$ file dnsresolvd lib/* lib/ebin/*
+dnsresolvd:               a /usr/bin/env escript script, ASCII text executable
+lib/dnsresolvd.erl:       ASCII text
+lib/dnsresolvd.h:         ASCII text
+lib/dnsresolvs.erl:       ASCII text
+lib/ebin:                 directory
+lib/reqhandler.erl:       ASCII text
+lib/ebin/dnsresolvd.beam: Erlang BEAM file
+lib/ebin/dnsresolvs.beam: Erlang BEAM file
+lib/ebin/reqhandler.beam: Erlang BEAM file
+```
+
+**TODO:** Describe the daemon's dependencies' build/install process under Arch Linux.
 
 ## Running
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-OpenBSD/amd64:
+OpenBSD/amd64 | Ubuntu Server LTS x86-64:
 
 ```
 $ ERL_LIBS="erlang_modules/deps:lib" ./dnsresolvd 8765
