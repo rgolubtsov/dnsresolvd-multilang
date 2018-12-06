@@ -9,7 +9,7 @@
 
 * **[Building](#building)**
   * [Building under OpenBSD/amd64 6.3](#building-under-openbsdamd64-63)
-  * [Building under Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)](#building-under-ubuntu-server-ubuntu-18041-x86-64)
+  * [Building under Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)](#building-under-ubuntu-server-ubuntu-18041-lts-x86-64)
 * **[Running](#running)**
 
 ## Building
@@ -256,7 +256,7 @@ drwxrwxr-x 12 <username> <usergroup>  4096 Nov 28 17:35 ..
 drwxrwxr-x  6 <username> <usergroup>  4096 Dec  6 00:50 erlang_modules
 drwxrwxr-x  3 <username> <usergroup>  4096 Dec  6 00:50 lib
 -rw-rw-r--  1 <username> <usergroup>   992 Dec  6 00:50 Makefile
--rw-rw-r--  1 <username> <usergroup> 11251 Dec  6 00:50 README.md
+-rw-rw-r--  1 <username> <usergroup> 11255 Dec  6 00:50 README.md
 
 lib:
 total 40
