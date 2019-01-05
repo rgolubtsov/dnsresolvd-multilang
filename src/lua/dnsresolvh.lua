@@ -7,7 +7,7 @@
  * passed in an HTTP request, with the focus on its implementation
  * using various programming languages. (Luvit-boosted impl.)
  * ============================================================================
- * Copyright (C) 2017-2018 Radislav (Radicchio) Golubtsov
+ * Copyright (C) 2017-2019 Radislav (Radicchio) Golubtsov
  *
  * (See the LICENSE file at the top of the source tree.)
 --]]
@@ -99,7 +99,7 @@ local _h = {}
                        .. "passed in an HTTP request"
     _h._DMN_VERSION_S__ = "Version"
     _h._DMN_VERSION     = "0.1"
-    _h._DMN_COPYRIGHT__ = "Copyright (C) 2017-2018"
+    _h._DMN_COPYRIGHT__ = "Copyright (C) 2017-2019"
     _h._DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>"
 
     -- Constant: The default hostname to look up for.
