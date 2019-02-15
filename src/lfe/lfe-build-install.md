@@ -4,11 +4,11 @@
 
 * **[Building](#building)**
   * [Building under OpenBSD/amd64 6.3](#building-under-openbsdamd64-63)
-  * [Building under Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)](#building-under-ubuntu-server-ubuntu-18041-lts-x86-64)
+  * [Building under Ubuntu Server (Ubuntu 16.04.5 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16045-lts-x86-64)
   * [Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)](#building-under-arch-linux-kernel-41613-2-arch-x86-64)
 * **[Running](#running)**
   * [Running on OpenBSD/amd64 6.3](#running-on-openbsdamd64-63)
-  * [Running on Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)](#running-on-ubuntu-server-ubuntu-18041-lts-x86-64)
+  * [Running on Ubuntu Server (Ubuntu 16.04.5 LTS x86-64)](#running-on-ubuntu-server-ubuntu-16045-lts-x86-64)
   * [Running on Arch Linux (kernel 4.16.13-2-ARCH x86-64)](#running-on-arch-linux-kernel-41613-2-arch-x86-64)
 
 ## Building
@@ -105,7 +105,7 @@ install -m644 doc/man/*.3 /home/<username>/man/man3/
 install -m644 doc/man/*.7 /home/<username>/man/man7/
 ```
 
-### Building under Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)
+### Building under Ubuntu Server (Ubuntu 16.04.5 LTS x86-64)
 
 ```
 $ sudo apt-get install erlang-parsetools # <== Important !
@@ -120,6 +120,7 @@ Cloning into 'lfe'...
 ```
 $ cd lfe/
 $ make clean && make clean
+escript get_comp_opts.escript
 rm -rf ebin/*.beam erl_crash.dump comp_opts.mk
 escript get_comp_opts.escript
 rm -rf ebin/*.beam erl_crash.dump comp_opts.mk
@@ -129,55 +130,51 @@ rm -rf ebin/*.beam erl_crash.dump comp_opts.mk
 $ make install PREFIX=/home/<username>/ MANINSTDIR=/home/<username>/man
 escript get_comp_opts.escript
 make  erlc-lfec
-make[1]: Entering directory '/sda2/home/<username>/lfe'
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_shell.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io_pretty.erl
-src/lfe_io_pretty.erl:23: Warning: export_all flag enabled - all functions will be exported
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_macro.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io_write.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_lint.erl
+make[1]: Entering directory '/home/<username>/lfe'
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_shell.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_codegen.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io_pretty.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_macro.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io_write.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_lint.erl
 src/lfe_lint.erl:1501: Warning: function add_errors/3 is unused
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_doc.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io_format.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_comp.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_ms.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_gen.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_abstract_code.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_internal.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_pmod.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_macro_include.erl
-src/lfe_macro_include.erl:306: Warning: variable 'Line' is unused
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_codegen.erl
-src/lfe_codegen.erl:33: Warning: export_all flag enabled - all functions will be exported
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfescript.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_parse.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_macro_record.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_edlin_expand.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_bits.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_lib.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_macro_export.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_env.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_qlc.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_trans.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_types.erl
-src/lfe_types.erl:37: Warning: export_all flag enabled - all functions will be exported
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_init.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_eval.erl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_ms.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io_format.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_comp.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_env.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_abstract_code.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_internal.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_pmod.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_macro_include.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_edlin_expand.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_macro_record.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfescript.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_parse.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_doc.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_bits.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_lib.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_macro_export.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_gen.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_qlc.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_trans.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_types.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_init.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_eval.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_io.erl
 erlc -o src src/lfe_scan.xrl
-erlc -I include -o ebin -DERLANG_VERSION=\"20.2.2\" -DNEW_BOOL_GUARD=true -DNEW_RAND=true -DNEW_REC_CORE=true -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_scan.erl
+erlc -I include -o ebin -DERLANG_VERSION=\"18.3\" -DHAS_FULL_KEYS=true -DHAS_MAPS=true -W1 +debug_info src/lfe_scan.erl
 cc -o bin/lfeexec c_src/lfeexec.c
 cp src/lfe.app.src ebin/lfe.app
 bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/cl.lfe
 bin/lfe bin/lfec -I include -o ebin -pa ../lfe +debug-info src/clj.lfe
 rm src/lfe_scan.erl
-make[1]: Leaving directory '/sda2/home/<username>/lfe'
+make[1]: Leaving directory '/home/<username>/lfe'
 rm -Rf /home/<username>//lib/lfe/ebin
 install -m755 -d /home/<username>//lib/lfe/ebin
 install -m644 \
         ebin/lfe.app \
-        ebin/lfe_shell.beam ebin/lfe_io_pretty.beam ebin/lfe_macro.beam ebin/lfe_io_write.beam ebin/lfe_lint.beam ebin/lfe_doc.beam ebin/lfe_io_format.beam ebin/lfe_comp.beam ebin/lfe_ms.beam ebin/lfe.beam ebin/lfe_gen.beam ebin/lfe_abstract_code.beam ebin/lfe_internal.beam ebin/lfe_pmod.beam ebin/lfe_macro_include.beam ebin/lfe_codegen.beam ebin/lfescript.beam ebin/lfe_parse.beam ebin/lfe_macro_record.beam ebin/lfe_edlin_expand.beam ebin/lfe_bits.beam ebin/lfe_lib.beam ebin/lfe_macro_export.beam ebin/lfe_env.beam ebin/lfe_qlc.beam ebin/lfe_trans.beam ebin/lfe_types.beam ebin/lfe_init.beam ebin/lfe_eval.beam ebin/lfe_io.beam ebin/lfe_scan.beam \
+        ebin/lfe_shell.beam ebin/lfe_codegen.beam ebin/lfe_io_pretty.beam ebin/lfe_macro.beam ebin/lfe_io_write.beam ebin/lfe_lint.beam ebin/lfe_ms.beam ebin/lfe_io_format.beam ebin/lfe_comp.beam ebin/lfe.beam ebin/lfe_env.beam ebin/lfe_abstract_code.beam ebin/lfe_internal.beam ebin/lfe_pmod.beam ebin/lfe_macro_include.beam ebin/lfe_edlin_expand.beam ebin/lfe_macro_record.beam ebin/lfescript.beam ebin/lfe_parse.beam ebin/lfe_doc.beam ebin/lfe_bits.beam ebin/lfe_lib.beam ebin/lfe_macro_export.beam ebin/lfe_gen.beam ebin/lfe_qlc.beam ebin/lfe_trans.beam ebin/lfe_types.beam ebin/lfe_init.beam ebin/lfe_eval.beam ebin/lfe_io.beam ebin/lfe_scan.beam \
         ebin/cl.beam ebin/clj.beam \
         /home/<username>//lib/lfe/ebin
 install -m755 -d /home/<username>//lib/lfe/bin
@@ -192,11 +189,11 @@ ln -sf /home/<username>//lib/lfe/bin/* /home/<username>//bin/
 Updating man page database ...
 /usr/bin/mandb /home/<username>/man
 Processing manual pages under /home/<username>/man...
-Updating index cache for path `/home/<username>/man/man7'. Wait...done.
+Updating index cache for path `/home/<username>/man/man1'. Wait...done.
 Checking for stray cats under /home/<username>/man...
-Processing manual pages under /home/<username>/man/cat1...
-Processing manual pages under /home/<username>/man/cat7...
 Processing manual pages under /home/<username>/man/cat3...
+Processing manual pages under /home/<username>/man/cat7...
+Processing manual pages under /home/<username>/man/cat1...
 3 man subdirectories contained newer manual pages.
 0 manual pages were added.
 0 stray cats were added.
@@ -386,11 +383,11 @@ $ lfescript
 lfescript: Missing filename
 ```
 
-### Running on Ubuntu Server (Ubuntu 18.04.1 LTS x86-64)
+### Running on Ubuntu Server (Ubuntu 16.04.5 LTS x86-64)
 
 ```
 $ lfe
-Erlang/OTP 20 [erts-9.2] [source] [64-bit] [smp:2:2] [ds:2:2:10] [async-threads:10] [kernel-poll:false]
+Erlang/OTP 18 [erts-7.3] [source] [64-bit] [smp:2:2] [async-threads:10] [kernel-poll:false]
 
    ..-~.~_~---..
   (      \\     )    |   A Lisp-2+ on the Erlang VM
