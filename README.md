@@ -3,12 +3,6 @@
 **A daemon that performs DNS lookups for the given hostname passed in an HTTP request,
 <br />with the focus on its implementation using various programming languages**
 
----
-
-**TODO:** Describe what this daemon is for, and emphasize its necessity to be tailored as a multilingual project.
-
----
-
 The following implementations are on the workbench (:small_blue_diamond: &ndash; complete, :small_orange_diamond: &ndash; planned/postponed, :cd: &ndash; in progress):
 
 * :small_blue_diamond: **C ([GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd"))**: `src/c/`
@@ -49,4 +43,4 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 
 ---
 
-:cd:
+**TODO:** Provide a brief description of the project and other related sections (overview, design, etc.) just like in [this readme doc](https://github.com/rgolubtsov/virtblkiosim/blob/master/README.md "VIRTual BLocK IO SIMulating (virtblkiosim)") or whatsoever. :cd:
