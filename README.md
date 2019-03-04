@@ -15,6 +15,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 * :small_blue_diamond: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
 * :small_blue_diamond: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
 * :small_blue_diamond: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
+* :small_orange_diamond: **Clojure ([HTTP Kit](http://http-kit.org "HTTP Kit"))**: `src/clojure/`
 
 ## Table of Contents
 
