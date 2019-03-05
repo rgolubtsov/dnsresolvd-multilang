@@ -12,28 +12,30 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-____ = lib
-BEAM = $(____)/ebin
-SRCS = $(____)/*.clj
+LIB = lib
+SRC = src
+NS  = dnsresolvd
 
 # Specify flags and other vars here.
 MKDIR   = mkdir
 CL      = clojure
-CLFLAGS = -o
+CLFLAGS = -e
 RMFLAGS = -vR
 
 # Making the target.
-$(BEAM): $(SRCS)
-	if [ ! -d "$(BEAM)" ]; then               \
-		$(MKDIR) $(BEAM);                 \
-		$(CL) $(CLFLAGS) $(BEAM) $(SRCS); \
+$(LIB): $(SRC)/*
+	if [ ! -d "$(LIB)" ]; then                                   \
+		$(MKDIR) $(LIB);                                     \
+		$(CL) $(CLFLAGS) '(binding [*compile-path* "$(LIB)"] \
+                                  (println  *compile-path*)          \
+                                  (compile (symbol "$(NS)")))';      \
 	fi
 
 .PHONY: all clean
 
-all: $(BEAM)
+all: $(LIB)
 
 clean:
-	$(RM) $(RMFLAGS) $(BEAM)
+	$(RM) $(RMFLAGS) $(LIB)
 
 # vim:set nu ts=4 sw=4:
