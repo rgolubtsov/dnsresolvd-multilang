@@ -14,7 +14,8 @@
 
 LIB = lib
 SRC = src
-NS  = dnsresolvd
+NSS = dnsresolvh \
+      dnsresolvd
 
 # Specify flags and other vars here.
 MKDIR   = mkdir
@@ -24,11 +25,13 @@ RMFLAGS = -vR
 
 # Making the target.
 $(LIB): $(SRC)/*
-	if [ ! -d "$(LIB)" ]; then                                   \
-		$(MKDIR) $(LIB);                                     \
-		$(CL) $(CLFLAGS) '(binding [*compile-path* "$(LIB)"] \
-                                  (println  *compile-path*)          \
-                                  (compile (symbol "$(NS)")))';      \
+	if [ ! -d "$(LIB)" ]; then                                             \
+		$(MKDIR) $(LIB);                                               \
+		for ns in $(NSS); do                                           \
+			$(CL) $(CLFLAGS) "(binding [*compile-path* \"$(LIB)\"] \
+                                          (println  *compile-path*)            \
+                                          (compile (symbol \"$$ns\")))";       \
+		done                                                           \
 	fi
 
 .PHONY: all clean
