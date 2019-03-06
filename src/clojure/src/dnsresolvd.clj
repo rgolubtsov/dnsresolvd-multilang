@@ -14,4 +14,13 @@
 
 (ns dnsresolvd)
 
+(defn startup
+    "Starts up the daemon."
+    [args]
+
+    (println args)
+
+;   TODO: Implement the daemon startup function.
+)
+
 ; vim:set nu et ts=4 sw=4:
