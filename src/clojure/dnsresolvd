@@ -12,14 +12,47 @@
 ; (See the LICENSE file at the top of the source tree.)
 ;
 
+(ns dnsresolvd
+    (:require [dnsresolvh :as AUX])
+)
+
 (defn main
     "The daemon entry point."
     [args]
 
-    (println args)
+    (let [ret- (AUX/EXIT-SUCCESS)]
+
+    (println ret-)
+
+    (let [argv        args ]
+    (let [argc (count args)]
+
+    (println argv)
+    (println argc)
+    )))
 
 ;   TODO: Implement the daemon entry point function.
 )
+
+(println *compile-path*)
+
+; --- Adding a custom classpath entry (dir) -----------------------------------
+; Var names stand for:
+; acl ==> sun.misc.Launcher$AppClassLoader
+; fld ==> java.lang.reflect.Field
+; ucp ==> sun.misc.URLClassPath
+
+(defmacro LIB-URL [] "file:./lib/")
+
+(let [acl (ClassLoader/getSystemClassLoader)                   ] (println (seq (.getURLs acl)))
+(let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (println                fld  )
+          (.setAccessible fld true) ; <== Important: suppressing Java language access checking.
+(let [ucp (.get    fld acl)                                    ] (println                ucp  )
+          (.addURL ucp (java.net.URL. (LIB-URL)))                (println (seq (.getURLs acl)))
+)))
+; -----------------------------------------------------------------------------
+
+(println *compile-path*)
 
 (main *command-line-args*)
 
