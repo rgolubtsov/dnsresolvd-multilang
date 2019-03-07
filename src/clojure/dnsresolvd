@@ -14,45 +14,108 @@
 
 (ns dnsresolvd
     (:require [dnsresolvh :as AUX])
+    (:require  dnsresolvd         )
 )
 
 (defn main
     "The daemon entry point."
-    [args]
+    [argv]
 
     (let [ret- (AUX/EXIT-SUCCESS)]
 
-    (println ret-)
+    (let [argc (count argv)]
 
-    (let [argv        args ]
-    (let [argc (count args)]
+    (let [daemon-name (str *ns*)]
 
-    (println argv)
-    (println argc)
-    )))
+    (let [port-number-      (if (> argc 0) (nth argv 0)
+                                           0)]
+    (let [print-banner-opt- (if (> argc 1) (nth argv 1)
+                                           (AUX/EMPTY-STRING))]
 
-;   TODO: Implement the daemon entry point function.
+    (let [print-banner-opt (clojure.string/upper-case print-banner-opt-)]
+
+    (cond
+        (= print-banner-opt (AUX/PRINT-BANNER-OPT))
+            (println (str
+            (AUX/DMN-NAME        ) (AUX/COMMA-SPACE-SEP ) (AUX/DMN-VERSION-S--)
+            (AUX/ONE-SPACE-STRING) (AUX/DMN-VERSION     ) (AUX/NEW-LINE       )
+            (AUX/DMN-DESCRIPTION )                        (AUX/NEW-LINE       )
+            (AUX/DMN-COPYRIGHT-- ) (AUX/ONE-SPACE-STRING) (AUX/DMN-AUTHOR     )
+            ))
+    )
+
+    ; Opening the system logger.
+    (let [log (AUX/EMPTY-STRING)] ; <== Dummy val... for a while.
+    ; TODO: Implement opening the system logger.
+
+    ; Checking for args presence.
+    (cond
+        (= argc 0)
+            (let [ret0 (AUX/EXIT-FAILURE)]
+
+            (binding [*out* *err*]
+            (println (str daemon-name (AUX/ERR-MUST-BE-ONE-TWO-ARGS-1)
+                                 argc (AUX/ERR-MUST-BE-ONE-TWO-ARGS-2)
+                                      (AUX/NEW-LINE)))
+
+            (println (str (AUX/MSG-USAGE-TEMPLATE-1) daemon-name
+                          (AUX/MSG-USAGE-TEMPLATE-2) (AUX/NEW-LINE)))
+            )
+
+            (System/exit ret0)
+            )
+    )
+
+    ; Validating the port number and discarding any rubbish it may contain.
+    (let [port-number (Long. (re-find #"\d+" port-number-))]
+
+    ; Checking for port correctness.
+    (cond
+        (or (< port-number (AUX/MIN-PORT)) (> port-number (AUX/MAX-PORT)))
+            (let [ret1 (AUX/EXIT-FAILURE)]
+
+            (binding [*out* *err*]
+            (println (str daemon-name (AUX/ERR-PORT-MUST-BE-POSITIVE-INT)
+                                      (AUX/NEW-LINE)))
+
+            (println (str (AUX/MSG-USAGE-TEMPLATE-1) daemon-name
+                          (AUX/MSG-USAGE-TEMPLATE-2) (AUX/NEW-LINE)))
+            )
+
+            (System/exit ret1)
+            )
+    )
+
+    ; Starting up the daemon.
+    (startup (list
+        port-number
+        daemon-name
+        log
+    )))))))))
+
+    (System/exit ret-)
+    )
 )
 
-(println *compile-path*)
+;(println *compile-path*)
 
 ; --- Adding a custom classpath entry (dir) -----------------------------------
 ; Var names stand for:
 ; acl ==> sun.misc.Launcher$AppClassLoader
 ; fld ==> java.lang.reflect.Field
 ; ucp ==> sun.misc.URLClassPath
-
-(defmacro LIB-URL [] "file:./lib/")
-
-(let [acl (ClassLoader/getSystemClassLoader)                   ] (println (seq (.getURLs acl)))
-(let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (println                fld  )
-          (.setAccessible fld true) ; <== Important: suppressing Java language access checking.
-(let [ucp (.get    fld acl)                                    ] (println                ucp  )
-          (.addURL ucp (java.net.URL. (LIB-URL)))                (println (seq (.getURLs acl)))
-)))
+;
+;(defmacro LIB-URL [] "file:./lib/")
+;
+;(let [acl (ClassLoader/getSystemClassLoader)                   ] (println (seq (.getURLs acl)))
+;(let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (println                fld  )
+;          (.setAccessible fld true) ; <== Important: suppressing Java language access checking.
+;(let [ucp (.get    fld acl)                                    ] (println                ucp  )
+;          (.addURL ucp (java.net.URL. (LIB-URL)))                (println (seq (.getURLs acl)))
+;)))
 ; -----------------------------------------------------------------------------
 
-(println *compile-path*)
+;(println *compile-path*)
 
 (main *command-line-args*)
 
