@@ -53,6 +53,21 @@
 (defmacro DMN-COPYRIGHT-- [] "Copyright (C) 2017-2019"                )
 (defmacro DMN-AUTHOR      [] "Radislav Golubtsov <ragolubtsov@my.com>")
 
-; TODO: Implement further helper stuff.
+(defn cleanups-fixate
+    "Helper function. Makes final buffer cleanups, closes streams, etc."
+    [log]
+
+    ; Closing the system logger.
+    ; TODO: Implement closing the system logger.
+)
+
+(defn separator-draw
+    "Helper function. Draws a horizontal separator banner."
+    [banner-text]
+
+    (let [i (count banner-text)]
+
+    (print (apply str (for [_ (range 0 i)] "=")))) (newline)
+)
 
 ; vim:set nu et ts=4 sw=4:
