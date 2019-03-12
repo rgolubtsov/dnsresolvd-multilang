@@ -67,7 +67,7 @@
 
     (let [i (count banner-text)]
 
-    (print (apply str (for [_ (range 0 i)] "=")))) (newline)
+    (print (apply str (for [_ (range i)] "=")))) (newline)
 )
 
 ; vim:set nu et ts=4 sw=4:
