@@ -12,9 +12,38 @@
 ; (See the LICENSE file at the top of the source tree.)
 ;
 
+; --- (add-classpath-)-related constants.
+(defmacro DEP-PREF [] (str
+    "file:" (System/getProperty "user.home") "/.m2/repository/"
+))
+(defmacro DEP-URL0 [] (str
+    (DEP-PREF) "org/clojure/tools.logging/0.4.1/tools.logging-0.4.1.jar"
+))
+(defmacro DEP-URL- [] "file:./lib/")
+
+(defn add-classpath-
+    "Helper function. Adds a custom classpath entry (dir/jar)."
+    []
+
+    ; --- Var names stand for: ----------------+
+    ; acl ==> sun.misc.Launcher$AppClassLoader |
+    ; fld ==> java.lang.reflect.Field          |
+    ; ucp ==> sun.misc.URLClassPath            |
+    ; -----------------------------------------+
+
+    (let [acl (ClassLoader/getSystemClassLoader)                   ];(println (seq (.getURLs acl)))
+    (let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)];(println                fld  )
+              (.setAccessible fld true) ; <== Important: suppressing Java language access checking.
+    (let [ucp (.get    fld acl)                                    ];(println                ucp  )
+              (.addURL ucp (java.net.URL. (DEP-URL0)))              ;(println (seq (.getURLs acl)))
+;             (.addURL ucp (java.net.URL. (DEP-URL-)))               (println (seq (.getURLs acl)))
+    )))
+) (add-classpath-)
+
 (ns dnsresolvd
-    (:require [dnsresolvh :as AUX])
-    (:require  dnsresolvd         )
+    (:require [clojure.tools.logging :as LOG])
+    (:require [dnsresolvh            :as AUX])
+    (:require  dnsresolvd                    )
 )
 
 (defn main
@@ -60,12 +89,16 @@
             (let [ret0 (AUX/EXIT-FAILURE)]
 
             (binding [*out* *err*]
-            (println (str daemon-name (AUX/ERR-MUST-BE-ONE-TWO-ARGS-1)
-                                 argc (AUX/ERR-MUST-BE-ONE-TWO-ARGS-2)
-                                      (AUX/NEW-LINE)))
+            (println   (str daemon-name (AUX/ERR-MUST-BE-ONE-TWO-ARGS-1)
+                                   argc (AUX/ERR-MUST-BE-ONE-TWO-ARGS-2)
+                                        (AUX/NEW-LINE)))
 
-            (println (str (AUX/MSG-USAGE-TEMPLATE-1) daemon-name
-                          (AUX/MSG-USAGE-TEMPLATE-2) (AUX/NEW-LINE)))
+            (LOG/error (str daemon-name (AUX/ERR-MUST-BE-ONE-TWO-ARGS-1)
+                                   argc (AUX/ERR-MUST-BE-ONE-TWO-ARGS-2)
+                                        (AUX/NEW-LINE)))
+
+            (println   (str (AUX/MSG-USAGE-TEMPLATE-1) daemon-name
+                            (AUX/MSG-USAGE-TEMPLATE-2) (AUX/NEW-LINE)))
             )
 
             (AUX/cleanups-fixate log)
@@ -87,11 +120,14 @@
             (let [ret1 (AUX/EXIT-FAILURE)]
 
             (binding [*out* *err*]
-            (println (str daemon-name (AUX/ERR-PORT-MUST-BE-POSITIVE-INT)
-                                      (AUX/NEW-LINE)))
+            (println   (str daemon-name (AUX/ERR-PORT-MUST-BE-POSITIVE-INT)
+                                        (AUX/NEW-LINE)))
 
-            (println (str (AUX/MSG-USAGE-TEMPLATE-1) daemon-name
-                          (AUX/MSG-USAGE-TEMPLATE-2) (AUX/NEW-LINE)))
+            (LOG/error (str daemon-name (AUX/ERR-PORT-MUST-BE-POSITIVE-INT)
+                                        (AUX/NEW-LINE)))
+
+            (println   (str (AUX/MSG-USAGE-TEMPLATE-1) daemon-name
+                            (AUX/MSG-USAGE-TEMPLATE-2) (AUX/NEW-LINE)))
             )
 
             (AUX/cleanups-fixate log)
@@ -114,26 +150,6 @@
     (System/exit ret-)
     )
 )
-
-;(println *compile-path*)
-
-; --- Adding a custom classpath entry (dir) -----------------------------------
-; Var names stand for:
-; acl ==> sun.misc.Launcher$AppClassLoader
-; fld ==> java.lang.reflect.Field
-; ucp ==> sun.misc.URLClassPath
-;
-;(defmacro LIB-URL [] "file:./lib/")
-;
-;(let [acl (ClassLoader/getSystemClassLoader)                   ] (println (seq (.getURLs acl)))
-;(let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (println                fld  )
-;          (.setAccessible fld true) ; <== Important: suppressing Java language access checking.
-;(let [ucp (.get    fld acl)                                    ] (println                ucp  )
-;          (.addURL ucp (java.net.URL. (LIB-URL)))                (println (seq (.getURLs acl)))
-;)))
-; -----------------------------------------------------------------------------
-
-;(println *compile-path*)
 
 (main *command-line-args*)
 
