@@ -44,6 +44,10 @@
 ;; Constant: The maximum port number allowed.
 (defmacro MAX-PORT [] 49151)
 
+; Common notification messages.
+(defmacro MSG-SERVER-STARTED-1 [] "Server started on port "        )
+(defmacro MSG-SERVER-STARTED-2 [] "=== Hit Ctrl+C to terminate it.")
+
 ; Daemon name, version, and copyright banners.
 (defmacro DMN-NAME        [] "DNS Resolver Daemon (dnsresolvd)"       )
 (defmacro DMN-DESCRIPTION [](str "Performs DNS lookups for the given "
@@ -58,7 +62,8 @@
     [log]
 
     ; Closing the system logger.
-    ; TODO: Implement closing the system logger.
+    ; --- Calling <syslog.h> closelog(); ---
+    (.shutdown log)
 )
 
 (defn separator-draw

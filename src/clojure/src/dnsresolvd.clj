@@ -18,9 +18,20 @@
     "Starts up the daemon."
     [args]
 
-    (println args)
+    (let [port-number (first             args  )]
+    (let [daemon-name (first       (rest args ))]
+    (let [log         (first (rest (rest args)))]
 
-;   TODO: Implement the daemon startup function.
+    (println   (str (AUX/MSG-SERVER-STARTED-1) port-number (AUX/NEW-LINE)
+                    (AUX/MSG-SERVER-STARTED-2)))
+
+    (.info log (str (AUX/MSG-SERVER-STARTED-1) port-number (AUX/NEW-LINE)
+                    (AUX/MSG-SERVER-STARTED-2)))
+
+    (println daemon-name)
+
+;   TODO: Implement the rest of the daemon startup function.
+    )))
 )
 
 ; vim:set nu et ts=4 sw=4:
