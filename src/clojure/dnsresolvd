@@ -89,10 +89,8 @@
     ; --- Calling <syslog.h> openlog(NULL, LOG_CONS | LOG_PID, LOG_DAEMON); ---
     (let [log (UnixSyslog.      )]
     (let [cfg (UnixSyslogConfig.)]
-    (.setIdent    cfg  nil)
-    (.setOption   cfg (bit-or SyslogIF/OPTION_LOG_CONS
-                              SyslogIF/OPTION_LOG_PID))
-    (.setFacility cfg         SyslogIF/FACILITY_DAEMON)
+    (.setIdent    cfg nil)
+    (.setFacility cfg SyslogIF/FACILITY_DAEMON)
     (.initialize  log SyslogIF/UNIX_SYSLOG cfg))
 
     ; Checking for args presence.
