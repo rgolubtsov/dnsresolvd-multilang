@@ -17,9 +17,9 @@
 (defn startup
     "Starts up the daemon." [args]
 
-    (let [port-number (first             args  )]
-    (let [daemon-name (first       (rest args ))]
-    (let [log         (first (rest (rest args)))]
+    (let [port-number (nth args 0)]
+    (let [daemon-name (nth args 1)]
+    (let [log         (nth args 2)]
 
     (println   (str (AUX/MSG-SERVER-STARTED-1) port-number (AUX/NEW-LINE)
                     (AUX/MSG-SERVER-STARTED-2)))
