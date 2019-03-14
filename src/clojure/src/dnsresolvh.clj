@@ -15,14 +15,15 @@
 (ns dnsresolvh)
 
 ; Helper constants.
-(defmacro EXIT-FAILURE     []    1) ;    Failing exit status.
-(defmacro EXIT-SUCCESS     []    0) ; Successful exit status.
-(defmacro EMPTY-STRING     []   "")
-(defmacro COLON-SPACE-SEP  [] ": ")
-(defmacro COMMA-SPACE-SEP  [] ", ")
-(defmacro NEW-LINE         [] "\n")
-(defmacro ONE-SPACE-STRING []  " ")
-(defmacro PRINT-BANNER-OPT [] "-V")
+(defmacro EXIT-FAILURE     []      1) ;    Failing exit status.
+(defmacro EXIT-SUCCESS     []      0) ; Successful exit status.
+(defmacro EMPTY-STRING     []     "")
+(defmacro COLON-SPACE-SEP  []   ": ")
+(defmacro COMMA-SPACE-SEP  []   ", ")
+(defmacro NEW-LINE         []   "\n")
+(defmacro ONE-SPACE-STRING []    " ")
+(defmacro PRINT-BANNER-OPT []   "-V")
+(defmacro DIGITS           [] #"\d+")
 
 ; Common error messages.
 (defmacro ERR-PORT-MUST-BE-POSITIVE-INT [](str ": <port_number> must be "
@@ -58,8 +59,7 @@
 (defmacro DMN-AUTHOR      [] "Radislav Golubtsov <ragolubtsov@my.com>")
 
 (defn cleanups-fixate
-    "Helper function. Makes final buffer cleanups, closes streams, etc."
-    [log]
+    "Helper function. Makes final buffer cleanups, closes streams, etc." [log]
 
     ; Closing the system logger.
     ; --- Calling <syslog.h> closelog(); ---
@@ -67,8 +67,7 @@
 )
 
 (defn separator-draw
-    "Helper function. Draws a horizontal separator banner."
-    [banner-text]
+    "Helper function. Draws a horizontal separator banner." [banner-text]
 
     (let [i (count banner-text)]
 
