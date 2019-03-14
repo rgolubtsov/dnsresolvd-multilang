@@ -15,8 +15,7 @@
 (ns dnsresolvd)
 
 (defn startup
-    "Starts up the daemon."
-    [args]
+    "Starts up the daemon." [args]
 
     (let [port-number (first             args  )]
     (let [daemon-name (first       (rest args ))]
