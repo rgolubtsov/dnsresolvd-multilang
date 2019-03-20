@@ -29,6 +29,11 @@
 (defmacro ERR-PORT-MUST-BE-POSITIVE-INT [](str ": <port_number> must be "
                                                "a positive integer value, "
                                                "in the range 1024-49151."))
+(defmacro ERR-CANNOT-START-SERVER       [] ": FATAL: Cannot start server ")
+(defmacro ERR-SRV-UNKNOWN-REASON        [](str "for an unknown reason. "
+                                               "Exiting..."              ))
+(defmacro ERR-SRV-PORT-IS-IN-USE        [](str "due to the port requested "
+                                               "is in use. Exiting..."   ))
 
 ; Print this error message when there are no any args passed.
 (defmacro ERR-MUST-BE-ONE-TWO-ARGS-1 [](str ": There must be one or two args "
