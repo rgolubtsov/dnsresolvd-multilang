@@ -42,7 +42,7 @@
         ))
     ))))
 
-    ; Starting up the plain HTTP listener on <port_number>.
+    ; Starting up the plain HTTP listener on <port-number>.
     (let ((ret- (: cowboy start_clear 'http-listener (list (tuple
         'port port-number
     )) (map
@@ -150,9 +150,9 @@
     ;         |     |     |     |     |                  |               |
     ;         |     |     |     |     |       +----------+ +-------------+-+
     ;         v     v     v     v     v       |            |             | |
-    ; $ curl 'http://localhost:<port_number>/?h=<hostname>&f=<fmt>'      | |
+    ; $ curl 'http://localhost:<port-number>/?h=<hostname>&f=<fmt>'      | |
     ; $                                                                  | |
-    ; $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>    | |
+    ; $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port-number>    | |
     ;         ^  |            |                                          | |
     ;         |  +------------+------------------------------------------+ |
     ;         |               |                                            |
