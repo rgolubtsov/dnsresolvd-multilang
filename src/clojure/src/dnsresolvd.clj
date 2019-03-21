@@ -13,6 +13,8 @@
 ;
 
 (ns dnsresolvd
+    "The main module of the daemon."
+
     (:require
         [dnsresolvh         :as             AUX]
         [org.httpkit.server :refer [run-server]]
@@ -20,13 +22,29 @@
 )
 
 (defn reqhandler
-    "The default HTTP request handler." [req]
+    "The request handler callback.
+    Gets called when a new incoming HTTP request is received.
 
-    (println req)
+    Args:
+        req: The incoming HTTP request object.
+
+    Returns:
+        TODO: TBD.
+    " [req]
+
+    (println req) ; TODO: Implement the request handler callback.
 )
 
 (defn startup
-    "Starts up the daemon." [args]
+    "Starts up the daemon.
+
+    Args:
+        args: A list containing the server port number to listen on
+              as the first element.
+
+    Returns:
+        The exit code indicating the daemon overall execution status.
+    " [args]
 
     (let [port-number (nth args 0)]
     (let [daemon-name (nth args 1)]
