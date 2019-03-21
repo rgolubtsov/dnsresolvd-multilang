@@ -12,7 +12,9 @@
 ; (See the LICENSE file at the top of the source tree.)
 ;
 
-(ns dnsresolvh)
+(ns dnsresolvh
+    "The helper module for the daemon."
+)
 
 ; Helper constants.
 (defmacro EXIT-FAILURE     []      1) ;    Failing exit status.
