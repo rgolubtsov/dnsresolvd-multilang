@@ -22,8 +22,6 @@
     (DEP-PREF) "net/java/dev/jna/jna/5.2.0/jna-5.2.0.jar"))
 (defmacro DEP-URL2 [] (str
     (DEP-PREF) "http-kit/http-kit/2.3.0/http-kit-2.3.0.jar"))
-(defmacro DEP-URL- [] (str
-    (DEP-PROT) "./lib/"))
 
 (defn add-classpath-
     "Helper function. Adds a custom classpath entry (dir/jar)." []
@@ -41,11 +39,12 @@
               (.addURL ucp (java.net.URL. (DEP-URL0)))              ;(println (seq (.getURLs acl)))
               (.addURL ucp (java.net.URL. (DEP-URL1)))              ;(println (seq (.getURLs acl)))
               (.addURL ucp (java.net.URL. (DEP-URL2)))              ;(println (seq (.getURLs acl)))
-;             (.addURL ucp (java.net.URL. (DEP-URL-)))               (println (seq (.getURLs acl)))
     )))
 ) (add-classpath-)
 
 (ns dnsresolvd
+    "The startup script of the daemon."
+
     (:require [dnsresolvh :as AUX] dnsresolvd)
 
     (:import [org.graylog2.syslog4j.impl.unix UnixSyslog      ])
@@ -54,7 +53,14 @@
 )
 
 (defn main
-    "The daemon entry point." [argv]
+    "The daemon entry point.
+
+    Args:
+        argv: The list of command-line arguments.
+
+    Returns:
+        The exit code indicating the daemon overall execution status.
+    " [argv]
 
     (let [ret- (AUX/EXIT-SUCCESS)]
 
@@ -159,8 +165,6 @@
 
     (System/exit ret-)
     )
-)
-
-(main *command-line-args*)
+) (main *command-line-args*)
 
 ; vim:set nu et ts=4 sw=4:
