@@ -32,7 +32,61 @@
         TODO: TBD.
     " [req]
 
-    (println req) ; TODO: Implement the request handler callback.
+    (let [mtd (get req :request-method)]
+
+    ; -------------------------------------------------------------------------
+    ; --- Parsing and validating request params - Begin -----------------------
+    ; -------------------------------------------------------------------------
+    (let [params- (cond
+        (= mtd :get )
+            (let [params0 (get req :query-string)]
+            (if (nil? params0) (AUX/EMPTY-STRING)        params0))
+        (= mtd :post)
+            (let [params0 (get req :body        )]
+            (if (nil? params0) (AUX/EMPTY-STRING) (slurp params0)))
+        :else
+            (AUX/EMPTY-STRING)
+    )]
+
+    (let [params (clojure.walk/keywordize-keys
+        (try
+            (apply hash-map (clojure.string/split params- (AUX/PARAMS-SEPS)))
+        (catch
+            IllegalArgumentException e {
+                :h (AUX/DEF-HOSTNAME)
+                :f (AUX/PRM-FMT-JSON)
+            }
+        ))
+    )]
+
+    (let [hostname
+        (let [hostname0 (get params :h)]
+        (if (nil? hostname0) (AUX/DEF-HOSTNAME)
+                             hostname0                       ))]
+
+    (let [fmt-
+        (let [fmt0      (get params :f)]
+        (if (nil? fmt0     ) (AUX/PRM-FMT-JSON)
+                             (clojure.string/lower-case fmt0)))]
+
+    (let [fmt
+        (if (not (some #{fmt-} (list
+            (AUX/PRM-FMT-HTML)
+            (AUX/PRM-FMT-JSON)
+        ))) (AUX/PRM-FMT-JSON) fmt-)]
+    ; -------------------------------------------------------------------------
+    ; --- Parsing and validating request params - End -------------------------
+    ; -------------------------------------------------------------------------
+
+    ; Returning HTTP status code, response headers, and a body of the response.
+    {
+        :status  (AUX/RSC-HTTP-200-OK)
+        :headers (AUX/add-response-headers fmt)
+        :body    nil
+    }
+    ))))))
+
+    ; TODO: Implement the rest of the request handler callback.
 )
 
 (defn startup

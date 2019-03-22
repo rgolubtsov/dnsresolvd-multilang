@@ -26,6 +26,7 @@
 (defmacro ONE-SPACE-STRING []    " ")
 (defmacro PRINT-BANNER-OPT []   "-V")
 (defmacro DIGITS           [] #"\d+")
+(defmacro PARAMS-SEPS      [] #"=|&")
 
 ; Common error messages.
 (defmacro ERR-PORT-MUST-BE-POSITIVE-INT [](str ": <port_number> must be "
@@ -56,6 +57,23 @@
 (defmacro MSG-SERVER-STARTED-1 [] "Server started on port "        )
 (defmacro MSG-SERVER-STARTED-2 [] "=== Hit Ctrl+C to terminate it.")
 
+; HTTP request params.
+(defmacro PRM-FMT-HTML [] "html")
+(defmacro PRM-FMT-JSON [] "json")
+
+; HTTP response headers and status codes.
+(defmacro HDR-CONTENT-TYPE-N      [] "content-type"                 )
+(defmacro HDR-CONTENT-TYPE-V-HTML [] "text/html; charset=UTF-8"     )
+(defmacro HDR-CONTENT-TYPE-V-JSON [] "application/json"             )
+(defmacro HDR-CACHE-CONTROL-N     [] "cache-control"                )
+(defmacro HDR-CACHE-CONTROL-V     [](str "no-cache, no-store, "
+                                         "must-revalidate"         ))
+(defmacro HDR-EXPIRES-N           [] "expires"                      )
+(defmacro HDR-EXPIRES-V           [] "Thu, 01 Dec 1994 16:00:00 GMT")
+(defmacro HDR-PRAGMA-N            [] "pragma"                       )
+(defmacro HDR-PRAGMA-V            [] "no-cache"                     )
+(defmacro RSC-HTTP-200-OK         [] 200                            )
+
 ; Daemon name, version, and copyright banners.
 (defmacro DMN-NAME        [] "DNS Resolver Daemon (dnsresolvd)"       )
 (defmacro DMN-DESCRIPTION [](str "Performs DNS lookups for the given "
@@ -64,6 +82,34 @@
 (defmacro DMN-VERSION     [] "0.1"                                    )
 (defmacro DMN-COPYRIGHT-- [] "Copyright (C) 2017-2019"                )
 (defmacro DMN-AUTHOR      [] "Radislav Golubtsov <ragolubtsov@my.com>")
+
+;; Constant: The default hostname to look up for.
+(defmacro DEF-HOSTNAME [] "openbsd.org")
+
+(defn add-response-headers
+    "Adds headers to the response.
+
+    Args:
+        fmt: The response format selector.
+
+    Returns:
+        The map containing effective response headers.
+    " [fmt]
+
+    (let [HDR-CONTENT-TYPE-V (cond
+        (= fmt (PRM-FMT-HTML))
+            (HDR-CONTENT-TYPE-V-HTML)
+        (= fmt (PRM-FMT-JSON))
+            (HDR-CONTENT-TYPE-V-JSON)
+    )]
+
+    {
+        (HDR-CONTENT-TYPE-N )  HDR-CONTENT-TYPE-V;)
+        (HDR-CACHE-CONTROL-N) (HDR-CACHE-CONTROL-V)
+        (HDR-EXPIRES-N      ) (HDR-EXPIRES-V      )
+        (HDR-PRAGMA-N       ) (HDR-PRAGMA-V       )
+    })
+)
 
 (defn cleanups-fixate
     "Helper function. Makes final buffer cleanups, closes streams, etc." [log]
