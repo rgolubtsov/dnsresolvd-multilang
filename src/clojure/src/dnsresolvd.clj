@@ -117,16 +117,77 @@
     (let [addr (nth addr-ver 0)]
     (let [ver  (nth addr-ver 1)]
 
+    (let [resp-buffer- (cond
+        (= fmt (AUX/PRM-FMT-HTML))
+            (str "<!DOCTYPE html>"                                                        (AUX/NEW-LINE)
+"<html lang=\"en-US\" dir=\"ltr\">"                                                       (AUX/NEW-LINE)
+"<head>"                                                                                  (AUX/NEW-LINE)
+"<meta http-equiv=\"" (AUX/HDR-CONTENT-TYPE-N     )                    "\"    content=\""
+                      (AUX/HDR-CONTENT-TYPE-V-HTML)                    "\"           />"  (AUX/NEW-LINE)
+"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  (AUX/NEW-LINE)
+"<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  (AUX/NEW-LINE)
+"<title>"             (AUX/DMN-NAME               ) "</title>"                            (AUX/NEW-LINE)
+"</head>"                                                                                 (AUX/NEW-LINE)
+"<body>"                                                                                  (AUX/NEW-LINE)
+"<div>"      hostname (AUX/ONE-SPACE-STRING       ))
+        (= fmt (AUX/PRM-FMT-JSON))
+            (str (AUX/CB1                         )
+                 (AUX/DAT-HOSTNAME-N              )
+                 (AUX/DQ1                         )
+                 hostname
+                 (AUX/DQ2                         ))
+    )]
+
+    ; If lookup error occurred.
+    (let [resp-buffer0 (cond
+        (= addr (AUX/ERR-PREFIX)) (cond
+            (= fmt (AUX/PRM-FMT-HTML))
+                (str resp-buffer- (AUX/ERR-PREFIX          )
+                                  (AUX/COLON-SPACE-SEP     )
+                                  (AUX/ERR-COULD-NOT-LOOKUP))
+            (= fmt (AUX/PRM-FMT-JSON))
+                (str resp-buffer- (AUX/ERR-PREFIX          )
+                                  (AUX/DQ1                 )
+                                  (AUX/ERR-COULD-NOT-LOOKUP))
+        ) :else (cond
+            (= fmt (AUX/PRM-FMT-HTML))
+                (str resp-buffer- addr
+                                  (AUX/ONE-SPACE-STRING    )
+                                  (AUX/DAT-VERSION-V       )
+                                  ver)
+            (= fmt (AUX/PRM-FMT-JSON))
+                (str resp-buffer- (AUX/DAT-ADDRESS-N       )
+                                  (AUX/DQ1                 )
+                                  addr
+                                  (AUX/DQ2                 )
+                                  (AUX/DAT-VERSION-N       )
+                                  (AUX/DQ1                 )
+                                  (AUX/DAT-VERSION-V       )
+                                  ver)
+        )
+    )]
+
+    (let [resp-buffer (cond
+        (= fmt (AUX/PRM-FMT-HTML))
+            (str resp-buffer0 "</div>"  (AUX/NEW-LINE)
+                              "</body>" (AUX/NEW-LINE)
+                              "</html>" (AUX/NEW-LINE))
+        (= fmt (AUX/PRM-FMT-JSON))
+            (str resp-buffer0           (AUX/CB2     ))
+    )]
+
     ; Returning HTTP status code, response headers, and a body of the response.
     {
         :status  (AUX/RSC-HTTP-200-OK)
         :headers (AUX/add-response-headers fmt)
-        :body    (str addr (AUX/ONE-SPACE-STRING) ver)
-    }
-    )))))))))
-
-    ; TODO: Implement the rest of the request handler callback.
-)
+        :body    resp-buffer
+    }            )
+                 )
+                 )
+              )  )  )
+               ) ) )
+                )))
+                 )
 
 (defn startup
     "Starts up the daemon.
