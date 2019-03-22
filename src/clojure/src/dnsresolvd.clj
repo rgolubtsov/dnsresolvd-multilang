@@ -93,12 +93,23 @@
     )]
 
     (let [hostname
-        (let [hostname0 (get params :h)]
-        (if (nil? hostname0) (AUX/DEF-HOSTNAME)
-                             hostname0                       ))]
-
-    (let [fmt-
-        (let [fmt0      (get params :f)]
+        (let [hostname0 (get params :h)] ; <------+----------------------+
+        (if (nil? hostname0) (AUX/DEF-HOSTNAME) ; |                      |
+                             hostname0))]       ; |                      |
+    ;         +----GET----+-----+-----+           |                      |
+    ;         |     |     |     |     |           |                      |
+    ;         |     |     |     |     |       +---+        +-------------+-+
+    ;         v     v     v     v     v       |            |             | |
+    ; $ curl 'http://localhost:<port-number>/?h=<hostname>&f=<fmt>'      | |
+    ; $                                                                  | |
+    ; $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port-number>    | |
+    ;         ^  |            |                                          | |
+    ;         |  +------------+------------------------------------------+ |
+    ;         |               |                                            |
+    ; POST----+               +------+                                     |
+    ;                                |                                     |
+    (let [fmt- ;                     v                                     |
+        (let [fmt0      (get params :f)] ; <-------------------------------+
         (if (nil? fmt0     ) (AUX/PRM-FMT-JSON)
                              (clojure.string/lower-case fmt0)))]
 
