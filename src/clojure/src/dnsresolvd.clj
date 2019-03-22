@@ -48,8 +48,6 @@
             (AUX/EMPTY-STRING)
     )]
 
-    (println params-)
-
     (let [params (clojure.walk/keywordize-keys
         (try
             (apply hash-map (clojure.string/split params- (AUX/PARAMS-SEPS)))
@@ -60,8 +58,6 @@
             }
         ))
     )]
-
-    (println params)
 
     (let [hostname
         (let [hostname0 (get params :h)]
@@ -78,9 +74,6 @@
             (AUX/PRM-FMT-HTML)
             (AUX/PRM-FMT-JSON)
         ))) (AUX/PRM-FMT-JSON) fmt-)]
-
-    (println hostname)
-    (println fmt     )
     ; -------------------------------------------------------------------------
     ; --- Parsing and validating request params - End -------------------------
     ; -------------------------------------------------------------------------
