@@ -29,6 +29,7 @@
 (defmacro PARAMS-SEPS      [] #"=|&")
 
 ; Common error messages.
+(defmacro ERR-PREFIX                    [] "error"                        )
 (defmacro ERR-PORT-MUST-BE-POSITIVE-INT [](str ": <port_number> must be "
                                                "a positive integer value, "
                                                "in the range 1024-49151."))

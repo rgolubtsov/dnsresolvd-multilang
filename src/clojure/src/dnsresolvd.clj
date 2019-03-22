@@ -19,6 +19,39 @@
         [dnsresolvh         :as             AUX]
         [org.httpkit.server :refer [run-server]]
     )
+
+    (:import [java.net InetAddress ])
+    (:import [java.net Inet4Address])
+    (:import [java.net Inet6Address])
+)
+
+;##
+; Performs DNS lookup action for the given hostname,
+; i.e. (in this case) IP address retrieval by hostname.
+;
+; Args:
+;     hostname: The effective hostname to look up for.
+;
+; Returns:
+;     The list containing IP address of the analyzing host/service
+;     and corresponding IP version (family) used to look up in DNS:
+;     "4" for IPv4-only hosts, "6" for IPv6-capable hosts.
+;
+(defn dns-lookup [hostname]
+    ; Trying to get an A record (IPv4) for the host or its AAAA record (IPv6).
+    (try
+        (let [hostent (InetAddress/getByName hostname)]
+
+        (list
+            (.getHostAddress hostent)
+            (cond
+                (instance? Inet4Address hostent) 4
+                (instance? Inet6Address hostent) 6
+            )
+        ))
+    (catch
+        java.net.UnknownHostException e (list (AUX/ERR-PREFIX) nil)
+    ))
 )
 
 (defn reqhandler
@@ -78,13 +111,19 @@
     ; --- Parsing and validating request params - End -------------------------
     ; -------------------------------------------------------------------------
 
+    ; Performing DNS lookup for the given hostname.
+    (let [addr-ver (dns-lookup hostname)]
+
+    (let [addr (nth addr-ver 0)]
+    (let [ver  (nth addr-ver 1)]
+
     ; Returning HTTP status code, response headers, and a body of the response.
     {
         :status  (AUX/RSC-HTTP-200-OK)
         :headers (AUX/add-response-headers fmt)
-        :body    nil
+        :body    (str addr (AUX/ONE-SPACE-STRING) ver)
     }
-    ))))))
+    )))))))))
 
     ; TODO: Implement the rest of the request handler callback.
 )
