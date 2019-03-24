@@ -16,8 +16,12 @@
     "The main module of the daemon."
 
     (:require
-        [dnsresolvh         :as             AUX]
-        [org.httpkit.server :refer [run-server]]
+        [dnsresolvh         :as AUX]
+        [org.httpkit.server :refer [
+            run-server
+            with-channel
+            send!
+        ]]
     )
 
     (:import [java.net InetAddress ])
@@ -188,11 +192,13 @@
     )]
 
     ; Returning HTTP status code, response headers, and a body of the response.
-    {
+    (with-channel req channel (send! channel { ; <== Async mode !
         :status  (AUX/RSC-HTTP-200-OK)
         :headers (AUX/add-response-headers fmt)
         :body    resp-buffer
     }            )
+                 )
+                 )
                  )
                  )
               )  )  )
