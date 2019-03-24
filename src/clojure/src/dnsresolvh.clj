@@ -28,6 +28,12 @@
 (defmacro DIGITS           [] #"\d+")
 (defmacro PARAMS-SEPS      [] #"=|&")
 
+; JSON entities :-).
+(defmacro CB1 []   "{\"")
+(defmacro CB2 []   "\"}")
+(defmacro DQ1 [] "\":\"")
+(defmacro DQ2 [] "\",\"")
+
 ; Common error messages.
 (defmacro ERR-PREFIX                    [] "error"                        )
 (defmacro ERR-PORT-MUST-BE-POSITIVE-INT [](str ": <port_number> must be "
@@ -38,6 +44,7 @@
                                                "Exiting..."              ))
 (defmacro ERR-SRV-PORT-IS-IN-USE        [](str "due to the port requested "
                                                "is in use. Exiting..."   ))
+(defmacro ERR-COULD-NOT-LOOKUP          [] "could not lookup hostname"    )
 
 ; Print this error message when there are no any args passed.
 (defmacro ERR-MUST-BE-ONE-TWO-ARGS-1 [](str ": There must be one or two args "
@@ -74,6 +81,12 @@
 (defmacro HDR-PRAGMA-N            [] "pragma"                       )
 (defmacro HDR-PRAGMA-V            [] "no-cache"                     )
 (defmacro RSC-HTTP-200-OK         [] 200                            )
+
+; Response data names.
+(defmacro DAT-HOSTNAME-N [] "hostname")
+(defmacro DAT-ADDRESS-N  [] "address" )
+(defmacro DAT-VERSION-N  [] "version" )
+(defmacro DAT-VERSION-V  [] "IPv"     )
 
 ; Daemon name, version, and copyright banners.
 (defmacro DMN-NAME        [] "DNS Resolver Daemon (dnsresolvd)"       )

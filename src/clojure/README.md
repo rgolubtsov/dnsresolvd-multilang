@@ -120,7 +120,7 @@ $ file dnsresolvd src/* lib/*
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-Arch Linux / Arch Linux 32:
+Arch Linux:
 
 ```
 $ ./dnsresolvd 8765
@@ -131,33 +131,25 @@ Server started on port 8765
 Example of making **GET** and **POST** requests:
 
 ```
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" http://localhost:8765
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?f=xyz&h=hexdocs.pm'
+{"hostname":"hexdocs.pm","address":"151.101.86.217","version":"IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=IPv6.CYBERNODE.com&f=HtmL' http://localhost:8765
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+<meta http-equiv="content-type"    content="text/html; charset=UTF-8"           />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"                            />
+<meta       name="viewport"        content="width=device-width,initial-scale=1" />
+<title>DNS Resolver Daemon (dnsresolvd)</title>
+</head>
+<body>
+<div>IPv6.CYBERNODE.com 2001:470:1:1b9:0:0:0:31 IPv6</div>
+</body>
+</html>
 
-=== 404
-===
+=== 200
+=== text/html; charset=UTF-8
 ```
-
-```
-{
-    :remote-addr        0:0:0:0:0:0:0:1,
-    :headers {
-        accept          */*,
-        host            localhost:8765,
-        user-agent      curl/7.64.0
-    },
-    :async-channel      #object[org.httpkit.server.AsyncChannel 0x7e968d40 /0:0:0:0:0:0:0:1:8765<->/0:0:0:0:0:0:0:1:37636],
-    :server-port        8765,
-    :content-length     0,
-    :websocket?         false,
-    :content-type       nil,
-    :character-encoding utf8,
-    :uri                /,
-    :server-name        localhost,
-    :query-string       nil,
-    :body               nil,
-    :scheme             :http,
-    :request-method     :get
-}
-```
-
-**TODO:** :point_up:
