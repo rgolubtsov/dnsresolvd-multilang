@@ -15,7 +15,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 * :small_blue_diamond: **Elixir ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/elixir/`
 * :small_blue_diamond: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
 * :small_blue_diamond: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
-* :cd: **Clojure ([HTTP Kit](http://http-kit.org "HTTP Kit"))**: `src/clojure/`
+* :small_blue_diamond: **Clojure ([HTTP Kit](http://http-kit.org "HTTP Kit"))**: `src/clojure/`
 
 ## Table of Contents
 
@@ -30,6 +30,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [Elixir (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/elixir#building)
   * [Erlang (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/erlang#building)
   * [LFE (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lfe#building)
+  * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#building)
 * **Running**
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c#running)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#running)
@@ -41,6 +42,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [Elixir (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/elixir#running)
   * [Erlang (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/erlang#running)
   * [LFE (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lfe#running)
+  * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#running)
 
 ---
 
