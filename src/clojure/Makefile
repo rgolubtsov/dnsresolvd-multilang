@@ -14,25 +14,39 @@
 
 LIB = lib
 SRC = src
-#NSS = dnsresolvh \
-#      dnsresolvd
+NSS = dnsresolvh \
+      dnsresolvd
 
 # Specify flags and other vars here.
+MV      = mv
+MVFLAGS = -v
 MKDIR   = mkdir
+ECHO    = echo
 CL      = clojure
 CLFLAGS = -e
 RMFLAGS = -vR
 
 # Making the target.
-$(LIB): $(SRC)/*
-	if [ ! -d "$(LIB)" ]; then                                             \
-		$(MKDIR) $(LIB);                                               \
-#		for ns in $(NSS); do                                           \
-#			$(CL) $(CLFLAGS) "(binding [*compile-path* \"$(LIB)\"] \
-#                                         (println  *compile-path*)            \
-#                                         (compile (symbol \"$$ns\")))";       \
-#		done                                                           \
-	fi
+$(LIB): $(SRC)s/*
+	$(MV) $(MVFLAGS) $(SRC)s $(SRC);                                                                      \
+	if [ ! -d "$(LIB)" ]; then                                                                            \
+		$(MKDIR) $(LIB);                                                                              \
+		$(ECHO) "------------ Start  ahead-of-time compilation for modules in $(SRC)/ -------------"; \
+		for ns in $(NSS); do                                                                          \
+			$(CL) $(CLFLAGS) "(defmacro DEP-URL [] (str                                           \
+                                         \"file:\" (System/getProperty \"user.home\") \"/.m2/repository/\"    \
+                                         \"http-kit/http-kit/2.3.0/http-kit-2.3.0.jar\"))                     \
+                (let [acl (ClassLoader/getSystemClassLoader)                   ]                              \
+                (let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (.setAccessible fld true)    \
+                (let [ucp (.get    fld acl)                                    ]                              \
+                          (.addURL ucp (java.net.URL. (DEP-URL)))                                             \
+                )))                                                                                           \
+                                          (binding [*compile-path* \"$(LIB)\"]                                \
+                                          (compile (symbol \"$$ns\")))";                                      \
+		done;                                                                                         \
+		$(ECHO) "------------ Finish ahead-of-time compilation for modules in $(SRC)/ -------------"; \
+	fi;                                                                                                   \
+	$(MV) $(MVFLAGS) $(SRC) $(SRC)s
 
 .PHONY: all clean
 

@@ -91,27 +91,153 @@ Now the daemon might be built.
 $ cd src/clojure
 $ make clean && make all
 rm -f -vR lib
-removed directory 'lib'
-if [ ! -d "lib" ]; then                                             \
-        mkdir lib;                                               \
-#               for ns in ; do                                           \
-#                       clojure -e "(binding [*compile-path* \"lib\"] \
-#                                         (println  *compile-path*)            \
-#                                         (compile (symbol \"$ns\")))";       \
-#               done                                                           \
-fi
+mv -v srcs src;                                                                      \
+if [ ! -d "lib" ]; then                                                                            \
+        mkdir lib;                                                                              \
+        echo "------------ Start  ahead-of-time compilation for modules in src/ -------------"; \
+        for ns in dnsresolvh dnsresolvd; do                                                                          \
+                clojure -e "(defmacro DEP-URL [] (str                                           \
+                                         \"file:\" (System/getProperty \"user.home\") \"/.m2/repository/\"    \
+                                         \"http-kit/http-kit/2.3.0/http-kit-2.3.0.jar\"))                     \
+                (let [acl (ClassLoader/getSystemClassLoader)                   ]                              \
+                (let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (.setAccessible fld true)    \
+                (let [ucp (.get    fld acl)                                    ]                              \
+                          (.addURL ucp (java.net.URL. (DEP-URL)))                                             \
+                )))                                                                                           \
+                                          (binding [*compile-path* \"lib\"]                                \
+                                          (compile (symbol \"$ns\")))";                                      \
+        done;                                                                                         \
+        echo "------------ Finish ahead-of-time compilation for modules in src/ -------------"; \
+fi;                                                                                                   \
+mv -v src srcs
+renamed 'srcs' -> 'src'
+------------ Start  ahead-of-time compilation for modules in src/ -------------
+#'user/DEP-URL
+dnsresolvh
+#'user/DEP-URL
+dnsresolvd
+------------ Finish ahead-of-time compilation for modules in src/ -------------
+renamed 'src' -> 'srcs'
 ```
-
-**TODO:** Update the build process described above when ahead-of-time (AOT) compilation will be in effect. :point_up::point_down:
 
 Once this is done, check it out... just for fun:))
 
 ```
-$ ls -al . src lib
-...
+$ ls -al . srcs lib
+.:
+total 44
+drwxr-xr-x  4 <username> <usergroup>  4096 Mar 25 17:50 .
+drwxr-xr-x 13 <username> <usergroup>  4096 Mar  5 13:05 ..
+-rwxr-xr-x  1 <username> <usergroup>  6052 Mar 25 17:50 dnsresolvd
+drwxr-xr-x  3 <username> <usergroup>  4096 Mar 25 17:50 lib
+-rw-r--r--  1 <username> <usergroup>  2884 Mar 25 17:50 Makefile
+-rw-r--r--  1 <username> <usergroup> 16284 Mar 25 17:50 README.md
+drwxr-xr-x  2 <username> <usergroup>  4096 Mar 25 17:50 srcs
+
+lib:
+total 332
+drwxr-xr-x 3 <username> <usergroup>  4096 Mar 25 17:50  .
+drwxr-xr-x 4 <username> <usergroup>  4096 Mar 25 17:50  ..
+-rw-r--r-- 1 <username> <usergroup>  1723 Mar 25 17:50 'dnsresolvd$dns_lookup.class'
+-rw-r--r-- 1 <username> <usergroup>  1719 Mar 25 17:50 'dnsresolvd$fn__379.class'
+-rw-r--r-- 1 <username> <usergroup>  2523 Mar 25 17:50 'dnsresolvd$loading__6706__auto____145.class'
+-rw-r--r-- 1 <username> <usergroup>  1681 Mar 25 17:50 'dnsresolvd$reqhandler$fn__382.class'
+-rw-r--r-- 1 <username> <usergroup>  8639 Mar 25 17:50 'dnsresolvd$reqhandler.class'
+-rw-r--r-- 1 <username> <usergroup>  1683 Mar 25 17:50 'dnsresolvd$startup$fn__386.class'
+-rw-r--r-- 1 <username> <usergroup>  1669 Mar 25 17:50 'dnsresolvd$startup$fn__388.class'
+-rw-r--r-- 1 <username> <usergroup>  3364 Mar 25 17:50 'dnsresolvd$startup.class'
+-rw-r--r-- 1 <username> <usergroup>  3978 Mar 25 17:50  dnsresolvd__init.class
+-rw-r--r-- 1 <username> <usergroup>  1294 Mar 25 17:50 'dnsresolvh$add_response_headers.class'
+-rw-r--r-- 1 <username> <usergroup>   669 Mar 25 17:50 'dnsresolvh$CB1.class'
+-rw-r--r-- 1 <username> <usergroup>   669 Mar 25 17:50 'dnsresolvh$CB2.class'
+-rw-r--r-- 1 <username> <usergroup>   766 Mar 25 17:50 'dnsresolvh$cleanups_fixate.class'
+-rw-r--r-- 1 <username> <usergroup>   681 Mar 25 17:50 'dnsresolvh$COLON_SPACE_SEP.class'
+-rw-r--r-- 1 <username> <usergroup>   681 Mar 25 17:50 'dnsresolvh$COMMA_SPACE_SEP.class'
+-rw-r--r-- 1 <username> <usergroup>   684 Mar 25 17:50 'dnsresolvh$DAT_ADDRESS_N.class'
+-rw-r--r-- 1 <username> <usergroup>   686 Mar 25 17:50 'dnsresolvh$DAT_HOSTNAME_N.class'
+-rw-r--r-- 1 <username> <usergroup>   684 Mar 25 17:50 'dnsresolvh$DAT_VERSION_N.class'
+-rw-r--r-- 1 <username> <usergroup>   680 Mar 25 17:50 'dnsresolvh$DAT_VERSION_V.class'
+-rw-r--r-- 1 <username> <usergroup>   687 Mar 25 17:50 'dnsresolvh$DEF_HOSTNAME.class'
+-rw-r--r-- 1 <username> <usergroup>   808 Mar 25 17:50 'dnsresolvh$DIGITS.class'
+-rw-r--r-- 1 <username> <usergroup>   713 Mar 25 17:50 'dnsresolvh$DMN_AUTHOR.class'
+-rw-r--r-- 1 <username> <usergroup>   702 Mar 25 17:50 'dnsresolvh$DMN_COPYRIGHT__.class'
+-rw-r--r-- 1 <username> <usergroup>  1064 Mar 25 17:50 'dnsresolvh$DMN_DESCRIPTION.class'
+-rw-r--r-- 1 <username> <usergroup>   704 Mar 25 17:50 'dnsresolvh$DMN_NAME.class'
+-rw-r--r-- 1 <username> <usergroup>   678 Mar 25 17:50 'dnsresolvh$DMN_VERSION.class'
+-rw-r--r-- 1 <username> <usergroup>   686 Mar 25 17:50 'dnsresolvh$DMN_VERSION_S__.class'
+-rw-r--r-- 1 <username> <usergroup>   670 Mar 25 17:50 'dnsresolvh$DQ1.class'
+-rw-r--r-- 1 <username> <usergroup>   670 Mar 25 17:50 'dnsresolvh$DQ2.class'
+-rw-r--r-- 1 <username> <usergroup>   676 Mar 25 17:50 'dnsresolvh$EMPTY_STRING.class'
+-rw-r--r-- 1 <username> <usergroup>   716 Mar 25 17:50 'dnsresolvh$ERR_CANNOT_START_SERVER.class'
+-rw-r--r-- 1 <username> <usergroup>   709 Mar 25 17:50 'dnsresolvh$ERR_COULD_NOT_LOOKUP.class'
+-rw-r--r-- 1 <username> <usergroup>  1046 Mar 25 17:50 'dnsresolvh$ERR_MUST_BE_ONE_TWO_ARGS_1.class'
+-rw-r--r-- 1 <username> <usergroup>   701 Mar 25 17:50 'dnsresolvh$ERR_MUST_BE_ONE_TWO_ARGS_2.class'
+-rw-r--r-- 1 <username> <usergroup>  1168 Mar 25 17:50 'dnsresolvh$ERR_PORT_MUST_BE_POSITIVE_INT.class'
+-rw-r--r-- 1 <username> <usergroup>   679 Mar 25 17:50 'dnsresolvh$ERR_PREFIX.class'
+-rw-r--r-- 1 <username> <usergroup>  1049 Mar 25 17:50 'dnsresolvh$ERR_SRV_PORT_IS_IN_USE.class'
+-rw-r--r-- 1 <username> <usergroup>  1035 Mar 25 17:50 'dnsresolvh$ERR_SRV_UNKNOWN_REASON.class'
+-rw-r--r-- 1 <username> <usergroup>   769 Mar 25 17:50 'dnsresolvh$EXIT_FAILURE.class'
+-rw-r--r-- 1 <username> <usergroup>   769 Mar 25 17:50 'dnsresolvh$EXIT_SUCCESS.class'
+-rw-r--r-- 1 <username> <usergroup>  1722 Mar 25 17:50 'dnsresolvh$fn__147.class'
+-rw-r--r-- 1 <username> <usergroup>  1722 Mar 25 17:50 'dnsresolvh$fn__149.class'
+-rw-r--r-- 1 <username> <usergroup>   696 Mar 25 17:50 'dnsresolvh$HDR_CACHE_CONTROL_N.class'
+-rw-r--r-- 1 <username> <usergroup>  1034 Mar 25 17:50 'dnsresolvh$HDR_CACHE_CONTROL_V.class'
+-rw-r--r-- 1 <username> <usergroup>   694 Mar 25 17:50 'dnsresolvh$HDR_CONTENT_TYPE_N.class'
+-rw-r--r-- 1 <username> <usergroup>   711 Mar 25 17:50 'dnsresolvh$HDR_CONTENT_TYPE_V_HTML.class'
+-rw-r--r-- 1 <username> <usergroup>   703 Mar 25 17:50 'dnsresolvh$HDR_CONTENT_TYPE_V_JSON.class'
+-rw-r--r-- 1 <username> <usergroup>   684 Mar 25 17:50 'dnsresolvh$HDR_EXPIRES_N.class'
+-rw-r--r-- 1 <username> <usergroup>   706 Mar 25 17:50 'dnsresolvh$HDR_EXPIRES_V.class'
+-rw-r--r-- 1 <username> <usergroup>   682 Mar 25 17:50 'dnsresolvh$HDR_PRAGMA_N.class'
+-rw-r--r-- 1 <username> <usergroup>   684 Mar 25 17:50 'dnsresolvh$HDR_PRAGMA_V.class'
+-rw-r--r-- 1 <username> <usergroup>  1581 Mar 25 17:50 'dnsresolvh$loading__6706__auto____145.class'
+-rw-r--r-- 1 <username> <usergroup>  1581 Mar 25 17:50 'dnsresolvh$loading__6706__auto____147.class'
+-rw-r--r-- 1 <username> <usergroup>   776 Mar 25 17:50 'dnsresolvh$MAX_PORT.class'
+-rw-r--r-- 1 <username> <usergroup>   776 Mar 25 17:50 'dnsresolvh$MIN_PORT.class'
+-rw-r--r-- 1 <username> <usergroup>   707 Mar 25 17:50 'dnsresolvh$MSG_SERVER_STARTED_1.class'
+-rw-r--r-- 1 <username> <usergroup>   715 Mar 25 17:50 'dnsresolvh$MSG_SERVER_STARTED_2.class'
+-rw-r--r-- 1 <username> <usergroup>   691 Mar 25 17:50 'dnsresolvh$MSG_USAGE_TEMPLATE_1.class'
+-rw-r--r-- 1 <username> <usergroup>   703 Mar 25 17:50 'dnsresolvh$MSG_USAGE_TEMPLATE_2.class'
+-rw-r--r-- 1 <username> <usergroup>   673 Mar 25 17:50 'dnsresolvh$NEW_LINE.class'
+-rw-r--r-- 1 <username> <usergroup>   681 Mar 25 17:50 'dnsresolvh$ONE_SPACE_STRING.class'
+-rw-r--r-- 1 <username> <usergroup>   813 Mar 25 17:50 'dnsresolvh$PARAMS_SEPS.class'
+-rw-r--r-- 1 <username> <usergroup>   682 Mar 25 17:50 'dnsresolvh$PRINT_BANNER_OPT.class'
+-rw-r--r-- 1 <username> <usergroup>   680 Mar 25 17:50 'dnsresolvh$PRM_FMT_HTML.class'
+-rw-r--r-- 1 <username> <usergroup>   680 Mar 25 17:50 'dnsresolvh$PRM_FMT_JSON.class'
+-rw-r--r-- 1 <username> <usergroup>   783 Mar 25 17:50 'dnsresolvh$RSC_HTTP_200_OK.class'
+-rw-r--r-- 1 <username> <usergroup>  1428 Mar 25 17:50 'dnsresolvh$separator_draw$iter__202__206$fn__207$fn__208.class'
+-rw-r--r-- 1 <username> <usergroup>  2637 Mar 25 17:50 'dnsresolvh$separator_draw$iter__202__206$fn__207.class'
+-rw-r--r-- 1 <username> <usergroup>   786 Mar 25 17:50 'dnsresolvh$separator_draw$iter__202__206.class'
+-rw-r--r-- 1 <username> <usergroup>  1428 Mar 25 17:50 'dnsresolvh$separator_draw$iter__204__208$fn__209$fn__210.class'
+-rw-r--r-- 1 <username> <usergroup>  2637 Mar 25 17:50 'dnsresolvh$separator_draw$iter__204__208$fn__209.class'
+-rw-r--r-- 1 <username> <usergroup>   786 Mar 25 17:50 'dnsresolvh$separator_draw$iter__204__208.class'
+-rw-r--r-- 1 <username> <usergroup>  1549 Mar 25 17:50 'dnsresolvh$separator_draw.class'
+-rw-r--r-- 1 <username> <usergroup> 17902 Mar 25 17:50  dnsresolvh__init.class
+drwxr-xr-x 3 <username> <usergroup>  4096 Mar 25 17:50  org
+
+srcs:
+total 28
+drwxr-xr-x 2 <username> <usergroup>  4096 Mar 25 17:50 .
+drwxr-xr-x 4 <username> <usergroup>  4096 Mar 25 17:50 ..
+-rw-r--r-- 1 <username> <usergroup> 10368 Mar 25 17:50 dnsresolvd.clj
+-rw-r--r-- 1 <username> <usergroup>  5554 Mar 25 17:50 dnsresolvh.clj
 $
-$ file dnsresolvd src/* lib/*
+$ file dnsresolvd srcs/* lib/*
+dnsresolvd:                                Clojure script text executable
+srcs/dnsresolvd.clj:                       Clojure module source, ASCII text
+srcs/dnsresolvh.clj:                       Clojure module source, ASCII text
+lib/dnsresolvd$dns_lookup.class:           compiled Java class data, version 52.0 (Java 1.8)
 ...
+lib/dnsresolvd$reqhandler.class:           compiled Java class data, version 52.0 (Java 1.8)
+...
+lib/dnsresolvd$startup.class:              compiled Java class data, version 52.0 (Java 1.8)
+lib/dnsresolvd__init.class:                compiled Java class data, version 52.0 (Java 1.8)
+lib/dnsresolvh$add_response_headers.class: compiled Java class data, version 52.0 (Java 1.8)
+...
+lib/dnsresolvh$cleanups_fixate.class:      compiled Java class data, version 52.0 (Java 1.8)
+...
+lib/dnsresolvh$separator_draw.class:       compiled Java class data, version 52.0 (Java 1.8)
+lib/dnsresolvh__init.class:                compiled Java class data, version 52.0 (Java 1.8)
+lib/org:                                   directory
 ```
 
 **TODO:** Describe the daemon's dependencies' build/install process under OpenBSD and Ubuntu Server.
