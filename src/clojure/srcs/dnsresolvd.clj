@@ -17,6 +17,9 @@
 
     (:require
         [dnsresolvh         :as AUX]
+        [clojure.walk       :refer [
+            keywordize-keys
+        ]]
         [org.httpkit.server :refer [
             run-server
             with-channel
@@ -85,7 +88,7 @@
             (AUX/EMPTY-STRING)
     )]
 
-    (let [params (clojure.walk/keywordize-keys
+    (let [params (keywordize-keys
         (try
             (apply hash-map (clojure.string/split params- (AUX/PARAMS-SEPS)))
         (catch
