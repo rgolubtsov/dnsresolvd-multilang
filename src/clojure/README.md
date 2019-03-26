@@ -8,13 +8,243 @@
 ## Table of Contents
 
 * **[Building](#building)**
+  * [Building under OpenBSD/amd64 6.3](#building-under-openbsdamd64-63)
   * [Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16046-lts-x86-64)
   * [Building under Arch Linux (kernel 5.0.2-arch1-1-ARCH x86-64)](#building-under-arch-linux-kernel-502-arch1-1-arch-x86-64)
 * **[Running](#running)**
 
 ## Building
 
-This daemon implementation is known to be built and run successfully on ~~OpenBSD,~~ Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
+This daemon implementation is known to be built and run successfully on OpenBSD (*partially*), Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
+
+### Building under OpenBSD/amd64 6.3
+
+Install the necessary dependencies (`clojure`, `maven`, `syslog4j`, `jna`, `http-kit`). Note that the `jdk` package will be installed automatically as a dependency to the `clojure` package:
+
+```
+$ sudo pkg_add -vvvvv clojure maven
+$
+$ clojure -e '(clojure-version)'
+"1.8.0"
+```
+
+The `syslog4j`, `jna`, and `http-kit` packages (as JARs) have to be installed via **Apache Maven**. The following compound one-liner script will actually do the job:
+
+```
+$ mvn dependency:get -Dartifact=org.graylog2:syslog4j:0.9.60                                          && \
+  mvn dependency:get -Dartifact=net.java.dev.jna:jna:5.2.0                                            && \
+  mvn dependency:get -Dartifact=http-kit:http-kit:2.3.0 -DremoteRepositories=https://repo.clojars.org
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:get (default-cli) @ standalone-pom ---
+[INFO] Resolving org.graylog2:syslog4j:jar:0.9.60 with transitive dependencies
+...
+Downloading: https://repo.maven.apache.org/maven2/org/graylog2/syslog4j/0.9.60/syslog4j-0.9.60.jar
+...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  X.XXX s
+[INFO] Finished at: XXXX-XX-XXTXX:XX:XX+XX:XX
+[INFO] Final Memory: XXM/XXM
+[INFO] ------------------------------------------------------------------------
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:get (default-cli) @ standalone-pom ---
+[INFO] Resolving net.java.dev.jna:jna:jar:5.2.0 with transitive dependencies
+...
+Downloading: https://repo.maven.apache.org/maven2/net/java/dev/jna/jna/5.2.0/jna-5.2.0.jar
+...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  X.XXX s
+[INFO] Finished at: XXXX-XX-XXTXX:XX:XX+XX:XX
+[INFO] Final Memory: XXM/XXM
+[INFO] ------------------------------------------------------------------------
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:get (default-cli) @ standalone-pom ---
+[INFO] Resolving http-kit:http-kit:jar:2.3.0 with transitive dependencies
+...
+Downloading: https://repo.maven.apache.org/maven2/http-kit/http-kit/2.3.0/http-kit-2.3.0.jar
+...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  X.XXX s
+[INFO] Finished at: XXXX-XX-XXTXX:XX:XX+XX:XX
+[INFO] Final Memory: XXM/XXM
+[INFO] ------------------------------------------------------------------------
+```
+
+Now the daemon might be built.
+
+```
+$ cd src/clojure
+$ gmake clean && gmake all
+rm -f -vR lib
+lib
+mv -v srcs src;                                                                      \
+if [ ! -d "lib" ]; then                                                                            \
+        mkdir lib;                                                                              \
+        echo "------------ Start  ahead-of-time compilation for modules in src/ -------------"; \
+        for ns in dnsresolvh dnsresolvd; do                                                                          \
+                clojure -e "(defmacro DEP-URL [] (str                                           \
+                                         \"file:\" (System/getProperty \"user.home\") \"/.m2/repository/\"    \
+                                         \"http-kit/http-kit/2.3.0/http-kit-2.3.0.jar\"))                     \
+                (let [acl (ClassLoader/getSystemClassLoader)                   ]                              \
+                (let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (.setAccessible fld true)    \
+                (let [ucp (.get    fld acl)                                    ]                              \
+                          (.addURL ucp (java.net.URL. (DEP-URL)))                                             \
+                )))                                                                                           \
+                                          (binding [*compile-path* \"lib\"]                                \
+                                          (compile (symbol \"$ns\")))";                                      \
+        done;                                                                                         \
+        echo "------------ Finish ahead-of-time compilation for modules in src/ -------------"; \
+fi;                                                                                                   \
+mv -v src srcs
+srcs -> src
+------------ Start  ahead-of-time compilation for modules in src/ -------------
+#'user/DEP-URL
+dnsresolvh
+#'user/DEP-URL
+dnsresolvd
+------------ Finish ahead-of-time compilation for modules in src/ -------------
+src -> srcs
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al . srcs lib
+.:
+total 132
+drwxr-xr-x   4 <username>  <usergroup>    512 Mar 26 16:50 .
+drwxr-xr-x  13 <username>  <usergroup>    512 Mar 26 13:50 ..
+-rw-r--r--   1 <username>  <usergroup>   2884 Mar 26 16:50 Makefile
+-rw-r--r--   1 <username>  <usergroup>  45865 Mar 26 16:50 README.md
+-rwxr-xr-x   1 <username>  <usergroup>   6052 Mar 26 16:50 dnsresolvd
+drwxr-xr-x   3 <username>  <usergroup>   3584 Mar 26 16:50 lib
+drwxr-xr-x   2 <username>  <usergroup>    512 Mar 26 16:50 srcs
+
+lib:
+total 376
+drwxr-xr-x  3 <username>  <usergroup>   3584 Mar 26 16:50 .
+drwxr-xr-x  4 <username>  <usergroup>    512 Mar 26 16:50 ..
+-rw-r--r--  1 <username>  <usergroup>   1542 Mar 26 16:50 dnsresolvd$dns_lookup.class
+-rw-r--r--  1 <username>  <usergroup>   1719 Mar 26 16:50 dnsresolvd$fn__242.class
+-rw-r--r--  1 <username>  <usergroup>   2645 Mar 26 16:50 dnsresolvd$loading__5569__auto____10.class
+-rw-r--r--  1 <username>  <usergroup>   1647 Mar 26 16:50 dnsresolvd$reqhandler$fn__245.class
+-rw-r--r--  1 <username>  <usergroup>   7581 Mar 26 16:50 dnsresolvd$reqhandler.class
+-rw-r--r--  1 <username>  <usergroup>   1622 Mar 26 16:50 dnsresolvd$startup$fn__249.class
+-rw-r--r--  1 <username>  <usergroup>   1608 Mar 26 16:50 dnsresolvd$startup$fn__251.class
+-rw-r--r--  1 <username>  <usergroup>   3264 Mar 26 16:50 dnsresolvd$startup.class
+-rw-r--r--  1 <username>  <usergroup>   3876 Mar 26 16:50 dnsresolvd__init.class
+-rw-r--r--  1 <username>  <usergroup>    669 Mar 26 16:50 dnsresolvh$CB1.class
+-rw-r--r--  1 <username>  <usergroup>    669 Mar 26 16:50 dnsresolvh$CB2.class
+-rw-r--r--  1 <username>  <usergroup>    681 Mar 26 16:50 dnsresolvh$COLON_SPACE_SEP.class
+-rw-r--r--  1 <username>  <usergroup>    681 Mar 26 16:50 dnsresolvh$COMMA_SPACE_SEP.class
+-rw-r--r--  1 <username>  <usergroup>    684 Mar 26 16:50 dnsresolvh$DAT_ADDRESS_N.class
+-rw-r--r--  1 <username>  <usergroup>    686 Mar 26 16:50 dnsresolvh$DAT_HOSTNAME_N.class
+-rw-r--r--  1 <username>  <usergroup>    684 Mar 26 16:50 dnsresolvh$DAT_VERSION_N.class
+-rw-r--r--  1 <username>  <usergroup>    680 Mar 26 16:50 dnsresolvh$DAT_VERSION_V.class
+-rw-r--r--  1 <username>  <usergroup>    687 Mar 26 16:50 dnsresolvh$DEF_HOSTNAME.class
+-rw-r--r--  1 <username>  <usergroup>    808 Mar 26 16:50 dnsresolvh$DIGITS.class
+-rw-r--r--  1 <username>  <usergroup>    713 Mar 26 16:50 dnsresolvh$DMN_AUTHOR.class
+-rw-r--r--  1 <username>  <usergroup>    702 Mar 26 16:50 dnsresolvh$DMN_COPYRIGHT__.class
+-rw-r--r--  1 <username>  <usergroup>   1064 Mar 26 16:50 dnsresolvh$DMN_DESCRIPTION.class
+-rw-r--r--  1 <username>  <usergroup>    704 Mar 26 16:50 dnsresolvh$DMN_NAME.class
+-rw-r--r--  1 <username>  <usergroup>    678 Mar 26 16:50 dnsresolvh$DMN_VERSION.class
+-rw-r--r--  1 <username>  <usergroup>    686 Mar 26 16:50 dnsresolvh$DMN_VERSION_S__.class
+-rw-r--r--  1 <username>  <usergroup>    670 Mar 26 16:50 dnsresolvh$DQ1.class
+-rw-r--r--  1 <username>  <usergroup>    670 Mar 26 16:50 dnsresolvh$DQ2.class
+-rw-r--r--  1 <username>  <usergroup>    676 Mar 26 16:50 dnsresolvh$EMPTY_STRING.class
+-rw-r--r--  1 <username>  <usergroup>    716 Mar 26 16:50 dnsresolvh$ERR_CANNOT_START_SERVER.class
+-rw-r--r--  1 <username>  <usergroup>    709 Mar 26 16:50 dnsresolvh$ERR_COULD_NOT_LOOKUP.class
+-rw-r--r--  1 <username>  <usergroup>   1046 Mar 26 16:50 dnsresolvh$ERR_MUST_BE_ONE_TWO_ARGS_1.class
+-rw-r--r--  1 <username>  <usergroup>    701 Mar 26 16:50 dnsresolvh$ERR_MUST_BE_ONE_TWO_ARGS_2.class
+-rw-r--r--  1 <username>  <usergroup>   1168 Mar 26 16:50 dnsresolvh$ERR_PORT_MUST_BE_POSITIVE_INT.class
+-rw-r--r--  1 <username>  <usergroup>    679 Mar 26 16:50 dnsresolvh$ERR_PREFIX.class
+-rw-r--r--  1 <username>  <usergroup>   1049 Mar 26 16:50 dnsresolvh$ERR_SRV_PORT_IS_IN_USE.class
+-rw-r--r--  1 <username>  <usergroup>   1035 Mar 26 16:50 dnsresolvh$ERR_SRV_UNKNOWN_REASON.class
+-rw-r--r--  1 <username>  <usergroup>    769 Mar 26 16:50 dnsresolvh$EXIT_FAILURE.class
+-rw-r--r--  1 <username>  <usergroup>    769 Mar 26 16:50 dnsresolvh$EXIT_SUCCESS.class
+-rw-r--r--  1 <username>  <usergroup>    696 Mar 26 16:50 dnsresolvh$HDR_CACHE_CONTROL_N.class
+-rw-r--r--  1 <username>  <usergroup>   1034 Mar 26 16:50 dnsresolvh$HDR_CACHE_CONTROL_V.class
+-rw-r--r--  1 <username>  <usergroup>    694 Mar 26 16:50 dnsresolvh$HDR_CONTENT_TYPE_N.class
+-rw-r--r--  1 <username>  <usergroup>    711 Mar 26 16:50 dnsresolvh$HDR_CONTENT_TYPE_V_HTML.class
+-rw-r--r--  1 <username>  <usergroup>    703 Mar 26 16:50 dnsresolvh$HDR_CONTENT_TYPE_V_JSON.class
+-rw-r--r--  1 <username>  <usergroup>    684 Mar 26 16:50 dnsresolvh$HDR_EXPIRES_N.class
+-rw-r--r--  1 <username>  <usergroup>    706 Mar 26 16:50 dnsresolvh$HDR_EXPIRES_V.class
+-rw-r--r--  1 <username>  <usergroup>    682 Mar 26 16:50 dnsresolvh$HDR_PRAGMA_N.class
+-rw-r--r--  1 <username>  <usergroup>    684 Mar 26 16:50 dnsresolvh$HDR_PRAGMA_V.class
+-rw-r--r--  1 <username>  <usergroup>    776 Mar 26 16:50 dnsresolvh$MAX_PORT.class
+-rw-r--r--  1 <username>  <usergroup>    776 Mar 26 16:50 dnsresolvh$MIN_PORT.class
+-rw-r--r--  1 <username>  <usergroup>    707 Mar 26 16:50 dnsresolvh$MSG_SERVER_STARTED_1.class
+-rw-r--r--  1 <username>  <usergroup>    715 Mar 26 16:50 dnsresolvh$MSG_SERVER_STARTED_2.class
+-rw-r--r--  1 <username>  <usergroup>    691 Mar 26 16:50 dnsresolvh$MSG_USAGE_TEMPLATE_1.class
+-rw-r--r--  1 <username>  <usergroup>    703 Mar 26 16:50 dnsresolvh$MSG_USAGE_TEMPLATE_2.class
+-rw-r--r--  1 <username>  <usergroup>    673 Mar 26 16:50 dnsresolvh$NEW_LINE.class
+-rw-r--r--  1 <username>  <usergroup>    681 Mar 26 16:50 dnsresolvh$ONE_SPACE_STRING.class
+-rw-r--r--  1 <username>  <usergroup>    813 Mar 26 16:50 dnsresolvh$PARAMS_SEPS.class
+-rw-r--r--  1 <username>  <usergroup>    682 Mar 26 16:50 dnsresolvh$PRINT_BANNER_OPT.class
+-rw-r--r--  1 <username>  <usergroup>    680 Mar 26 16:50 dnsresolvh$PRM_FMT_HTML.class
+-rw-r--r--  1 <username>  <usergroup>    680 Mar 26 16:50 dnsresolvh$PRM_FMT_JSON.class
+-rw-r--r--  1 <username>  <usergroup>    783 Mar 26 16:50 dnsresolvh$RSC_HTTP_200_OK.class
+-rw-r--r--  1 <username>  <usergroup>   1180 Mar 26 16:50 dnsresolvh$add_response_headers.class
+-rw-r--r--  1 <username>  <usergroup>    766 Mar 26 16:50 dnsresolvh$cleanups_fixate.class
+-rw-r--r--  1 <username>  <usergroup>   1721 Mar 26 16:50 dnsresolvh$fn__12.class
+-rw-r--r--  1 <username>  <usergroup>   1721 Mar 26 16:50 dnsresolvh$fn__14.class
+-rw-r--r--  1 <username>  <usergroup>   1521 Mar 26 16:50 dnsresolvh$loading__5569__auto____10.class
+-rw-r--r--  1 <username>  <usergroup>   1521 Mar 26 16:50 dnsresolvh$loading__5569__auto____12.class
+-rw-r--r--  1 <username>  <usergroup>   1344 Mar 26 16:50 dnsresolvh$separator_draw$iter__67__71$fn__72$fn__73.class
+-rw-r--r--  1 <username>  <usergroup>   2473 Mar 26 16:50 dnsresolvh$separator_draw$iter__67__71$fn__72.class
+-rw-r--r--  1 <username>  <usergroup>    780 Mar 26 16:50 dnsresolvh$separator_draw$iter__67__71.class
+-rw-r--r--  1 <username>  <usergroup>   1344 Mar 26 16:50 dnsresolvh$separator_draw$iter__69__73$fn__74$fn__75.class
+-rw-r--r--  1 <username>  <usergroup>   2473 Mar 26 16:50 dnsresolvh$separator_draw$iter__69__73$fn__74.class
+-rw-r--r--  1 <username>  <usergroup>    780 Mar 26 16:50 dnsresolvh$separator_draw$iter__69__73.class
+-rw-r--r--  1 <username>  <usergroup>   1546 Mar 26 16:50 dnsresolvh$separator_draw.class
+-rw-r--r--  1 <username>  <usergroup>  17799 Mar 26 16:50 dnsresolvh__init.class
+drwxr-xr-x  3 <username>  <usergroup>    512 Mar 26 16:50 org
+
+srcs:
+total 44
+drwxr-xr-x  2 <username>  <usergroup>    512 Mar 26 16:50 .
+drwxr-xr-x  4 <username>  <usergroup>    512 Mar 26 16:50 ..
+-rw-r--r--  1 <username>  <usergroup>  10431 Mar 26 16:50 dnsresolvd.clj
+-rw-r--r--  1 <username>  <usergroup>   5554 Mar 26 16:50 dnsresolvh.clj
+$
+$ file dnsresolvd srcs/* lib/*
+dnsresolvd:                                a clojure script text executable
+srcs/dnsresolvd.clj:                       ASCII English text
+srcs/dnsresolvh.clj:                       ASCII English text
+lib/dnsresolvd$dns_lookup.class:           compiled Java class data, version 49.0
+...
+lib/dnsresolvd$reqhandler.class:           compiled Java class data, version 49.0
+...
+lib/dnsresolvd$startup.class:              compiled Java class data, version 49.0
+lib/dnsresolvd__init.class:                compiled Java class data, version 49.0
+...
+lib/dnsresolvh$add_response_headers.class: compiled Java class data, version 49.0
+lib/dnsresolvh$cleanups_fixate.class:      compiled Java class data, version 49.0
+...
+lib/dnsresolvh$separator_draw.class:       compiled Java class data, version 49.0
+lib/dnsresolvh__init.class:                compiled Java class data, version 49.0
+lib/org:                                   directory
+```
 
 ### Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)
 
@@ -488,8 +718,6 @@ lib/dnsresolvh$separator_draw.class:       compiled Java class data, version 52.
 lib/dnsresolvh__init.class:                compiled Java class data, version 52.0 (Java 1.8)
 lib/org:                                   directory
 ```
-
-**TODO:** Describe the daemon's dependencies' build/install process under OpenBSD.
 
 ## Running
 
