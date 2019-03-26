@@ -19,7 +19,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 
 ## Table of Contents
 
-* **Building**
+* **Building** (The main prerequisite for building the daemon is the **GNU Make** utility, where applicable.)
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c#building)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#building)
   * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#building)
@@ -31,7 +31,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [Erlang (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/erlang#building)
   * [LFE (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lfe#building)
   * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#building)
-* **Running**
+* **Running** (Examples of making HTTP requests against the running daemon are based on using the `curl` utility.)
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c#running)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#running)
   * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#running)
