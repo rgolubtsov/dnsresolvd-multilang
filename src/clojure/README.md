@@ -21,7 +21,8 @@ This daemon implementation is known to be built and run successfully on ~~OpenBS
 Install the necessary dependencies (`maven`, `clojure`, `syslog4j`, `jna`, `http-kit`). Note that the `openjdk-8-jre-headless:amd64` package will be installed automatically as a dependency to the `maven` package:
 
 ```
-$ sudo apt-get install maven -y
+$ sudo apt-get update           && \
+  sudo apt-get install maven -y
 $
 $ curl -O https://download.clojure.org/install/linux-install-1.10.0.442.sh
 $
@@ -150,7 +151,7 @@ drwxrwxr-x 13 <username> <usergroup>  4096 Mar 25 21:25 ..
 -rwxrwxr-x  1 <username> <usergroup>  6052 Mar 26 00:50 dnsresolvd
 drwxrwxr-x  3 <username> <usergroup>  4096 Mar 26 00:50 lib
 -rw-rw-r--  1 <username> <usergroup>  2884 Mar 26 00:50 Makefile
--rw-rw-r--  1 <username> <usergroup> 31351 Mar 26 00:50 README.md
+-rw-rw-r--  1 <username> <usergroup> 31388 Mar 26 00:50 README.md
 drwxrwxr-x  2 <username> <usergroup>  4096 Mar 26 00:50 srcs
 
 lib:
