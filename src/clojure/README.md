@@ -15,7 +15,7 @@
 
 ## Building
 
-This daemon implementation is known to be built and run successfully on OpenBSD (*partially*), Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
+This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
 
 ### Building under OpenBSD/amd64 6.3
 
@@ -723,7 +723,7 @@ lib/org:                                   directory
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-Ubuntu Server LTS x86-64 | Arch Linux:
+OpenBSD/amd64 | Ubuntu Server LTS x86-64 | Arch Linux:
 
 ```
 $ ./dnsresolvd 8765
