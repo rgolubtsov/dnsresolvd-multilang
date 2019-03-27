@@ -146,6 +146,7 @@ To start up the daemon just specify a TCP port that should be used to listen on 
 OpenBSD/amd64:
 
 ```
+$ cd src/elixir
 $ ELIXIR_ERL_OPTIONS="-pz lib erlang_modules/deps/syslog/ebin \
                               erlang_modules/deps/cowboy/ebin \
                               erlang_modules/deps/cowlib/ebin \

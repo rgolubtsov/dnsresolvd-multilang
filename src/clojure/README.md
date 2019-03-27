@@ -726,6 +726,7 @@ To start up the daemon just specify a TCP port that should be used to listen on 
 OpenBSD/amd64 | Ubuntu Server LTS x86-64 | Arch Linux:
 
 ```
+$ cd src/clojure
 $ ./dnsresolvd 8765
 Server started on port 8765
 === Hit Ctrl+C to terminate it.
