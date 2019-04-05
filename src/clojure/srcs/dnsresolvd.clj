@@ -25,6 +25,9 @@
             with-channel
             send!
         ]]
+        [clojure.data.json  :refer [
+            write-str
+        ]]
     )
 
     (:import [java.net InetAddress ])
@@ -149,39 +152,32 @@
 "<body>"                                                                                  (AUX/NEW-LINE)
 "<div>"      hostname (AUX/ONE-SPACE-STRING       ))
         (= fmt (AUX/PRM-FMT-JSON))
-            (str (AUX/CB1                         )
-                 (AUX/DAT-HOSTNAME-N              )
-                 (AUX/DQ1                         )
-                 hostname
-                 (AUX/DQ2                         ))
+            (hash-map (AUX/DAT-HOSTNAME-N         )
+             hostname)
     )]
 
     ; If lookup error occurred.
     (let [resp-buffer0 (cond
         (= addr (AUX/ERR-PREFIX)) (cond
             (= fmt (AUX/PRM-FMT-HTML))
-                (str resp-buffer- (AUX/ERR-PREFIX          )
-                                  (AUX/COLON-SPACE-SEP     )
-                                  (AUX/ERR-COULD-NOT-LOOKUP))
+                (str   resp-buffer- (AUX/ERR-PREFIX          )
+                                    (AUX/COLON-SPACE-SEP     )
+                                    (AUX/ERR-COULD-NOT-LOOKUP))
             (= fmt (AUX/PRM-FMT-JSON))
-                (str resp-buffer- (AUX/ERR-PREFIX          )
-                                  (AUX/DQ1                 )
-                                  (AUX/ERR-COULD-NOT-LOOKUP))
+                (assoc resp-buffer- (AUX/ERR-PREFIX          )
+                                    (AUX/ERR-COULD-NOT-LOOKUP))
         ) :else (cond
             (= fmt (AUX/PRM-FMT-HTML))
-                (str resp-buffer- addr
-                                  (AUX/ONE-SPACE-STRING    )
-                                  (AUX/DAT-VERSION-V       )
-                                  ver)
+                (str   resp-buffer-  addr
+                                    (AUX/ONE-SPACE-STRING    )
+                                    (AUX/DAT-VERSION-V       )
+                                     ver                     )
             (= fmt (AUX/PRM-FMT-JSON))
-                (str resp-buffer- (AUX/DAT-ADDRESS-N       )
-                                  (AUX/DQ1                 )
-                                  addr
-                                  (AUX/DQ2                 )
-                                  (AUX/DAT-VERSION-N       )
-                                  (AUX/DQ1                 )
-                                  (AUX/DAT-VERSION-V       )
-                                  ver)
+                (assoc resp-buffer- (AUX/DAT-ADDRESS-N       )
+                                     addr
+                                    (AUX/DAT-VERSION-N       )
+                                    (str (AUX/DAT-VERSION-V  )
+                                     ver                     ))
         )
     )]
 
@@ -191,7 +187,7 @@
                               "</body>" (AUX/NEW-LINE)
                               "</html>" (AUX/NEW-LINE))
         (= fmt (AUX/PRM-FMT-JSON))
-            (str resp-buffer0           (AUX/CB2     ))
+            (write-str resp-buffer0)
     )]
 
     ; Returning HTTP status code, response headers, and a body of the response.
