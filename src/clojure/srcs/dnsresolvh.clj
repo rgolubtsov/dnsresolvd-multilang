@@ -28,12 +28,6 @@
 (defmacro DIGITS           [] #"\d+")
 (defmacro PARAMS-SEPS      [] #"=|&")
 
-; JSON entities :-).
-(defmacro CB1 []   "{\"")
-(defmacro CB2 []   "\"}")
-(defmacro DQ1 [] "\":\"")
-(defmacro DQ2 [] "\",\"")
-
 ; Common error messages.
 (defmacro ERR-PREFIX                    [] "error"                        )
 (defmacro ERR-PORT-MUST-BE-POSITIVE-INT [](str ": <port_number> must be "

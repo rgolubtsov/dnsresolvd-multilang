@@ -102,13 +102,17 @@ if [ ! -d "lib" ]; then                                                         
         mkdir lib;                                                                              \
         echo "------------ Start  ahead-of-time compilation for modules in src/ -------------"; \
         for ns in dnsresolvh dnsresolvd; do                                                                          \
-                clojure -e "(defmacro DEP-URL [] (str                                           \
-                                         \"file:\" (System/getProperty \"user.home\") \"/.m2/repository/\"    \
-                                         \"http-kit/http-kit/2.3.0/http-kit-2.3.0.jar\"))                     \
+                clojure -e "(defmacro DEP-PREF [] (str                                          \
+                                          \"file:\" (System/getProperty \"user.home\") \"/.m2/repository/\")) \
+                                          (defmacro DEP-URL0 [] (str                                          \
+                                          (DEP-PREF) \"http-kit/http-kit/2.3.0/http-kit-2.3.0.jar\"))         \
+                                          (defmacro DEP-URL1 [] (str                                          \
+                                          (DEP-PREF) \"org/clojure/data.json/0.2.6/data.json-0.2.6.jar\"))    \
                 (let [acl (ClassLoader/getSystemClassLoader)                   ]                              \
                 (let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (.setAccessible fld true)    \
                 (let [ucp (.get    fld acl)                                    ]                              \
-                          (.addURL ucp (java.net.URL. (DEP-URL)))                                             \
+                          (.addURL ucp (java.net.URL. (DEP-URL0)))                                            \
+                          (.addURL ucp (java.net.URL. (DEP-URL1)))                                            \
                 )))                                                                                           \
                                           (binding [*compile-path* \"lib\"]                                \
                                           (compile (symbol \"$ns\")))";                                      \
@@ -118,9 +122,13 @@ fi;                                                                             
 mv -v src srcs
 srcs -> src
 ------------ Start  ahead-of-time compilation for modules in src/ -------------
-#'user/DEP-URL
+#'user/DEP-PREF
+#'user/DEP-URL0
+#'user/DEP-URL1
 dnsresolvh
-#'user/DEP-URL
+#'user/DEP-PREF
+#'user/DEP-URL0
+#'user/DEP-URL1
 dnsresolvd
 ------------ Finish ahead-of-time compilation for modules in src/ -------------
 src -> srcs
@@ -575,13 +583,17 @@ if [ ! -d "lib" ]; then                                                         
         mkdir lib;                                                                              \
         echo "------------ Start  ahead-of-time compilation for modules in src/ -------------"; \
         for ns in dnsresolvh dnsresolvd; do                                                                          \
-                clojure -e "(defmacro DEP-URL [] (str                                           \
-                                         \"file:\" (System/getProperty \"user.home\") \"/.m2/repository/\"    \
-                                         \"http-kit/http-kit/2.3.0/http-kit-2.3.0.jar\"))                     \
+                clojure -e "(defmacro DEP-PREF [] (str                                          \
+                                          \"file:\" (System/getProperty \"user.home\") \"/.m2/repository/\")) \
+                                          (defmacro DEP-URL0 [] (str                                          \
+                                          (DEP-PREF) \"http-kit/http-kit/2.3.0/http-kit-2.3.0.jar\"))         \
+                                          (defmacro DEP-URL1 [] (str                                          \
+                                          (DEP-PREF) \"org/clojure/data.json/0.2.6/data.json-0.2.6.jar\"))    \
                 (let [acl (ClassLoader/getSystemClassLoader)                   ]                              \
                 (let [fld (aget (.getDeclaredFields java.net.URLClassLoader) 0)] (.setAccessible fld true)    \
                 (let [ucp (.get    fld acl)                                    ]                              \
-                          (.addURL ucp (java.net.URL. (DEP-URL)))                                             \
+                          (.addURL ucp (java.net.URL. (DEP-URL0)))                                            \
+                          (.addURL ucp (java.net.URL. (DEP-URL1)))                                            \
                 )))                                                                                           \
                                           (binding [*compile-path* \"lib\"]                                \
                                           (compile (symbol \"$ns\")))";                                      \
@@ -591,9 +603,13 @@ fi;                                                                             
 mv -v src srcs
 renamed 'srcs' -> 'src'
 ------------ Start  ahead-of-time compilation for modules in src/ -------------
-#'user/DEP-URL
+#'user/DEP-PREF
+#'user/DEP-URL0
+#'user/DEP-URL1
 dnsresolvh
-#'user/DEP-URL
+#'user/DEP-PREF
+#'user/DEP-URL0
+#'user/DEP-URL1
 dnsresolvd
 ------------ Finish ahead-of-time compilation for modules in src/ -------------
 renamed 'src' -> 'srcs'
