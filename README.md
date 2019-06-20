@@ -16,6 +16,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 * :small_blue_diamond: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
 * :small_blue_diamond: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
 * :small_blue_diamond: **Clojure ([HTTP Kit](http://http-kit.org "HTTP Kit"))**: `src/clojure/`
+* :small_orange_diamond: **Java ([Vertosphere](http://atmosphere.github.io/atmosphere-vertx "Vertosphere"))**: `src/java/`
 
 ## Table of Contents
 
@@ -31,6 +32,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [Erlang (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/erlang#building)
   * [LFE (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lfe#building)
   * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#building)
+  * [Java (Vertosphere)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/java#building)
 * **Running** (Examples of making HTTP requests against the running daemon are based on using the `curl` utility.)
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c#running)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#running)
@@ -43,6 +45,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [Erlang (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/erlang#running)
   * [LFE (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lfe#running)
   * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#running)
+  * [Java (Vertosphere)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/java#running)
 
 ---
 
