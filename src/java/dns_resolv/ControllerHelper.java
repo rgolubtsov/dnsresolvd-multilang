@@ -1,5 +1,5 @@
 /*
- * src/java/dnsresolvd/ControllerHelper.java
+ * src/java/dns_resolv/ControllerHelper.java
  * ============================================================================
  * DNS Resolver Daemon (dnsresolvd). Version 0.1
  * ============================================================================
@@ -12,7 +12,7 @@
  * (See the LICENSE file at the top of the source tree.)
  */
 
-package dnsresolvd;
+package dns_resolv;
 
 /** The helper for the controller class and related ones. */
 public class ControllerHelper {
