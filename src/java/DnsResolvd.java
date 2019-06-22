@@ -12,7 +12,7 @@
  * (See the LICENSE file at the top of the source tree.)
  */
 
-import dnsresolvd.ControllerHelper;
+import dns_resolv.ControllerHelper;
 
 /** The startup class of the daemon. */
 public class DnsResolvd {

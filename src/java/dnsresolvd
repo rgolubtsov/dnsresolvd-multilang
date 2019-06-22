@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# src/java/dnsresolvd
+# =============================================================================
+# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# =============================================================================
+# A daemon that performs DNS lookups for the given hostname
+# passed in an HTTP request, with the focus on its implementation
+# using various programming languages. (Vertosphere-boosted impl.)
+# =============================================================================
+# Copyright (C) 2017-2019 Radislav (Radicchio) Golubtsov
+#
+# (See the LICENSE file at the top of the source tree.)
+#
+
+# If we're on OpenBSD, set the JAVA_HOME env. var. and the path to java exec.
+if [ `uname` == "OpenBSD" ]; then
+    export JAVA_HOME=/usr/local/jdk-1.8.0
+    export PATH=${PATH}:${JAVA_HOME}/bin
+fi
+
+# Invoking the startup class of the daemon.
+java DnsResolvd $0 $1 $2
+
+exit $?
+
+# vim:set nu et ts=4 sw=4:
