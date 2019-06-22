@@ -12,10 +12,6 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-# Helper constants.
-declare -r EXIT_FAILURE=1 #    Failing exit status.
-declare -r EXIT_SUCCESS=0 # Successful exit status.
-
 # If we're on OpenBSD, set the JAVA_HOME env. var. and the path to java exec.
 if [ `uname` == "OpenBSD" ]; then
     export JAVA_HOME=/usr/local/jdk-1.8.0
@@ -25,11 +21,6 @@ fi
 # Invoking the startup class of the daemon.
 java DnsResolvd $0 $1 $2
 
-# If there is an error -- telling the OS about this.
-if [ $? -eq ${EXIT_FAILURE} ]; then
-    exit    ${EXIT_FAILURE}
-fi
-
-exit        ${EXIT_SUCCESS}
+exit $?
 
 # vim:set nu et ts=4 sw=4:
