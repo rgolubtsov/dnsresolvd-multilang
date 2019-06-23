@@ -14,6 +14,10 @@
 
 import static dns_resolv.ControllerHelper.*;
 
+import org.graylog2.syslog4j.impl.unix.UnixSyslog;
+import org.graylog2.syslog4j.impl.unix.UnixSyslogConfig;
+import org.graylog2.syslog4j.              SyslogIF;
+
 /** The startup class of the daemon. */
 public class DnsResolvd {
     /**
@@ -57,6 +61,16 @@ public class DnsResolvd {
             separator_draw(DMN_DESCRIPTION);
         }
 
+//      add_classpath();
+
+        // Opening the system logger.
+        // --- Calling <syslog.h> openlog(NULL, LOG_CONS | LOG_PID, LOG_DAEMON); ---
+        UnixSyslog       log = new UnixSyslog();
+        UnixSyslogConfig cfg = new UnixSyslogConfig();
+        cfg.setIdent(null);
+        cfg.setFacility(SyslogIF.FACILITY_DAEMON );
+        log.initialize (SyslogIF.UNIX_SYSLOG, cfg);
+
         // Checking for args presence.
         if (argc == 0) {
             ret = EXIT_FAILURE;
@@ -65,10 +79,14 @@ public class DnsResolvd {
                                     + argc + ERR_MUST_BE_ONE_TWO_ARGS_2
                                            + NEW_LINE);
 
+            log.error         (daemon_name + ERR_MUST_BE_ONE_TWO_ARGS_1
+                                    + argc + ERR_MUST_BE_ONE_TWO_ARGS_2
+                                           + NEW_LINE);
+
             System.err.println(MSG_USAGE_TEMPLATE_1 + daemon_name
                              + MSG_USAGE_TEMPLATE_2 + NEW_LINE);
 
-            cleanups_fixate();
+            cleanups_fixate(log);
 
             System.exit(ret);
         }
@@ -80,16 +98,19 @@ public class DnsResolvd {
             System.err.println(daemon_name + ERR_PORT_MUST_BE_POSITIVE_INT
                                            + NEW_LINE);
 
+            log.error         (daemon_name + ERR_PORT_MUST_BE_POSITIVE_INT
+                                           + NEW_LINE);
+
             System.err.println(MSG_USAGE_TEMPLATE_1 + daemon_name
                              + MSG_USAGE_TEMPLATE_2 + NEW_LINE);
 
-            cleanups_fixate();
+            cleanups_fixate(log);
 
             System.exit(ret);
         }
 
         // Making final cleanups.
-        cleanups_fixate();
+        cleanups_fixate(log);
 
         System.exit(ret);
     }

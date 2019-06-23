@@ -12,14 +12,22 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-# If we're on OpenBSD, set the JAVA_HOME env. var. and the path to java exec.
+DEP_PREF=${HOME}/.m2/repository/
+
+# If we're on OpenBSD, build the proper path to java exec. and extra libs.
 if [ `uname` == "OpenBSD" ]; then
     export JAVA_HOME=/usr/local/jdk-1.8.0
     export PATH=${PATH}:${JAVA_HOME}/bin
+
+    DEP_URL0=${DEP_PREF}org/graylog2/syslog4j/0.9.61-SNAPSHOT/syslog4j-0.9.61-SNAPSHOT.jar
+else
+    DEP_URL0=${DEP_PREF}org/graylog2/syslog4j/0.9.60/syslog4j-0.9.60.jar
 fi
 
+DEP_URL1=${DEP_PREF}net/java/dev/jna/jna/5.3.1/jna-5.3.1.jar
+
 # Invoking the startup class of the daemon.
-java DnsResolvd $0 $1 $2
+java -cp .:${DEP_URL0}:${DEP_URL1} DnsResolvd $0 $1 $2
 
 exit $?
 

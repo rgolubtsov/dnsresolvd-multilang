@@ -16,17 +16,24 @@ DEPS = DnsResolvd.class                  \
        dns_resolv/ControllerHelper.class
 
 # Specify flags and other vars here.
-# If we're on OpenBSD, set the JAVA_HOME env. var. and the path to java exec.
+DEP_PREF = $(HOME)/.m2/repository/
+
+# If we're on OpenBSD, build the proper path to javac exec. and extra libs.
 ifeq ($(shell uname), OpenBSD)
     JAVA_HOME = /usr/local/jdk-1.8.0
     JAVA_PATH = $(JAVA_HOME)/bin/
+
+    DEP_URL0 = $(DEP_PREF)org/graylog2/syslog4j/0.9.61-SNAPSHOT/syslog4j-0.9.61-SNAPSHOT.jar
+else
+    DEP_URL0 = $(DEP_PREF)org/graylog2/syslog4j/0.9.60/syslog4j-0.9.60.jar
 endif
 
-JC = $(JAVA_PATH)javac
+JC      = $(JAVA_PATH)javac
+JCFLAGS = -cp .:$(DEP_URL0)
 
 # Making the target.
 $(DEPS): %.class: %.java
-	$(JC) $^
+	$(JC) $(JCFLAGS) $^
 
 .PHONY: all clean
 
