@@ -14,6 +14,14 @@
 
 package dns_resolv;
 
+import java.net.URLClassLoader;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.lang.reflect.Field;
+import sun.misc.URLClassPath;
+
+import org.graylog2.syslog4j.impl.unix.UnixSyslog;
+
 /** The helper for the controller class and related ones. */
 public class ControllerHelper {
     // Helper constants.
@@ -54,9 +62,54 @@ public class ControllerHelper {
     public static final String DMN_COPYRIGHT__ = "Copyright (C) 2017-2019";
     public static final String DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
 
+    // --- add_classpath()-related constants.
+    public static final String DEP_PROT = "file:";
+    public static final String DEP_PREF = DEP_PROT
+        + System.getProperty("user.home") + "/.m2/repository/";
+    public static final String DEP_URL0 = DEP_PREF
+        + "org/graylog2/syslog4j/0.9.61-SNAPSHOT/syslog4j-0.9.61-SNAPSHOT.jar";
+//      + "org/graylog2/syslog4j/0.9.60/syslog4j-0.9.60.jar";
+//      + "org/graylog2/syslog4j/0.9.61/syslog4j-0.9.61.jar";
+//                               ^ ^ ^
+//                               | | |
+//                          +----+ | |
+//                          | +----+ |
+//                          | | +----+
+//                          | | |
+//  Note: When the syslog4j 0.9.61 release will be out, including the following
+//        fix: https://github.com/graylog-labs/syslog4j-graylog2/pull/27 ,
+//        the daemon will be ready to run on OpenBSD without adjusting/
+//        tweaking of building its extra classpath in any fitted manner.
+    public static final String DEP_URL1 = DEP_PREF
+        + "net/java/dev/jna/jna/5.3.1/jna-5.3.1.jar";
+
+    // Helper method. Adds a custom classpath entry (dir/jar).
+    public static void add_classpath() {
+        // --- Var names stand for: -------+
+        // ucl ==> java.net.URLClassLoader |
+        // fld ==> java.lang.reflect.Field |
+        // ucp ==> sun.misc.URLClassPath   |
+        // --------------------------------+
+
+        URLClassLoader ucl = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        //URL[]urls=ucl.getURLs();for(int i=0;i<urls.length;i++)System.out.println(urls[i]);
+        Field          fld = URLClassLoader.class.getDeclaredFields()[0];//System.out.println(fld);
+        fld.setAccessible(true); // <== Important: suppressing Java language access checking.
+        URLClassPath ucp = null;              try {
+                       ucp = (URLClassPath) fld.get(ucl);//System.out.println(ucp);
+        } catch (IllegalAccessException e) {} try {
+        ucp.addURL(new URL(DEP_URL0));//System.out.println();
+        //     urls=ucl.getURLs();for(int i=0;i<urls.length;i++)System.out.println(urls[i]);
+        ucp.addURL(new URL(DEP_URL1));//System.out.println();
+        //     urls=ucl.getURLs();for(int i=0;i<urls.length;i++)System.out.println(urls[i]);
+        } catch (MalformedURLException  e) {}
+    }
+
     // Helper method. Makes final buffer cleanups, closes streams, etc.
-    public static void cleanups_fixate() {
-        // TODO: Implement the cleanups_fixate method.
+    public static void cleanups_fixate(UnixSyslog log) {
+        // Closing the system logger.
+        // --- Calling <syslog.h> closelog(); ---
+        log.shutdown();
     }
 
     // Helper method. Draws a horizontal separator banner.
