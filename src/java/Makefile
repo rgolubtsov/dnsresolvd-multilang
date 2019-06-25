@@ -12,7 +12,8 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-DEPS = DnsResolvd.class                  \
+DEPS = DnsResolvd.class                     \
+       dns_resolv/DnsLookupController.class \
        dns_resolv/ControllerHelper.class
 
 # Specify flags and other vars here.
@@ -28,8 +29,10 @@ else
     DEP_URL0 = $(DEP_PREF)org/graylog2/syslog4j/0.9.60/syslog4j-0.9.60.jar
 endif
 
+DEP_URL1 = $(DEP_PREF)io/vertx/vertx-core/3.5.0/vertx-core-3.5.0.jar
+
 JC      = $(JAVA_PATH)javac
-JCFLAGS = -cp .:$(DEP_URL0)
+JCFLAGS = -cp .:$(DEP_URL0):$(DEP_URL1)
 
 # Making the target.
 $(DEPS): %.class: %.java
