@@ -106,14 +106,14 @@ public class ControllerHelper {
     }
 
     // Helper method. Makes final buffer cleanups, closes streams, etc.
-    public static void cleanups_fixate(UnixSyslog log) {
+    public static void cleanups_fixate(final UnixSyslog log) {
         // Closing the system logger.
         // --- Calling <syslog.h> closelog(); ---
         log.shutdown();
     }
 
     // Helper method. Draws a horizontal separator banner.
-    public static void separator_draw(String banner_text) {
+    public static void separator_draw(final String banner_text) {
         int i = banner_text.length();
 
         do { System.out.print('='); i--; } while (i > 0); System.out.println();
