@@ -38,6 +38,12 @@ public class ControllerHelper {
     public static final String ERR_PORT_MUST_BE_POSITIVE_INT = ": <port_number> must be "
                                                              + "a positive integer value, "
                                                              + "in the range 1024-49151.";
+    public static final String ERR_CANNOT_START_SERVER       = ": FATAL: Cannot start server ";
+    public static final String ERR_SRV_UNKNOWN_REASON        = "for an unknown reason. "
+                                                             +  "Exiting...";
+    public static final String ERR_SRV_PORT_IS_IN_USE        = "due to the port requested "
+                                                             +  "is in use. Exiting...";
+    public static final String ERR_ADDR_ALREADY_IN_USE       = "Address already in use";
 
     // Print this error message when there are no any args passed.
     public static final String ERR_MUST_BE_ONE_TWO_ARGS_1 = ": There must be one or two args passed: ";
@@ -52,6 +58,10 @@ public class ControllerHelper {
 
     /** Constant: The maximum port number allowed. */
     public static final int MAX_PORT = 49151;
+
+    // Common notification messages.
+    public static final String MSG_SERVER_STARTED_1 = "Server started on port ";
+    public static final String MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it.";
 
     // Daemon name, version, and copyright banners.
     public static final String DMN_NAME        = "DNS Resolver Daemon (dnsresolvd)";

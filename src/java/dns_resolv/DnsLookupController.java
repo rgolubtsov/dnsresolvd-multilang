@@ -14,53 +14,67 @@
 
 package dns_resolv;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Vertx;
-import io.vertx.core.Context;
-import io.vertx.core.Future;
+import static dns_resolv.ControllerHelper.*;
+
+import org.graylog2.syslog4j.impl.unix.UnixSyslog;
 
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.Vertx;
 
 /** The controller class of the daemon. */
-public class DnsLookupController extends AbstractVerticle {
+public class DnsLookupController {
     /**
-     * Reference to the Vert.x instance that deployed this verticle. &ndash;
-     * From the docs.
-     */
-    private Vertx vertx;
-
-    /** An HTTP and WebSockets server. &ndash; From the docs. */
-    private HttpServer server;
-
-    /**
-     * Overridden method that initializes the verticle.
+     * Starts up the daemon.
      *
-     * @param vertx   The deploying Vert.x object instance.
-     * @param context The context object of the verticle.
+     * @param port_number The server port number to listen on.
+     * @param daemon_name The name of the daemon startup script.
+     * @param log         The system logger object instance.
      */
-    public void init(final Vertx vertx, final Context context) {
-        this.vertx  = vertx;
-        this.server = vertx.createHttpServer();
-    }
+    public void startup(final int        port_number,
+                        final String     daemon_name,
+                        final UnixSyslog log) {
 
-    /**
-     * Overridden method that starts up the verticle.
-     *
-     * @param startFuture The Future object that should be invoked
-     *                    after the verticle startup procedure is complete.
-     */
-    public void start(final Future<Void> startFuture) {
-        System.out.println("--- start ---");
-    }
+        HttpServer server = Vertx.vertx().createHttpServer();
 
-    /**
-     * Overridden method that undeploys the verticle.
-     *
-     * @param stopFuture The Future object that should be invoked
-     *                   after the verticle undeploy procedure is complete.
-     */
-    public void stop(final Future<Void> stopFuture) {
-        server.close();
+        server.requestHandler(req -> {
+            System.out.println("--- server.requestHandler() called ---");
+        });
+
+        server.listen(port_number, res -> {
+            int ret = EXIT_SUCCESS;
+
+            if (res.succeeded()) {
+                System.out.println(MSG_SERVER_STARTED_1 + port_number + NEW_LINE
+                                 + MSG_SERVER_STARTED_2);
+
+                log.info(MSG_SERVER_STARTED_1 + port_number + NEW_LINE
+                       + MSG_SERVER_STARTED_2);
+            } else {
+                ret = EXIT_FAILURE;
+
+                if (res.cause().getMessage()
+                   .compareTo(ERR_ADDR_ALREADY_IN_USE) == 0) {
+
+                    System.err.println(daemon_name + ERR_CANNOT_START_SERVER
+                                                   + ERR_SRV_PORT_IS_IN_USE
+                                                   + NEW_LINE);
+
+                    log.error         (daemon_name + ERR_CANNOT_START_SERVER
+                                                   + ERR_SRV_PORT_IS_IN_USE
+                                                   + NEW_LINE);
+                } else {
+                    System.err.println(daemon_name + ERR_CANNOT_START_SERVER
+                                                   + ERR_SRV_UNKNOWN_REASON
+                                                   + NEW_LINE);
+
+                    log.error         (daemon_name + ERR_CANNOT_START_SERVER
+                                                   + ERR_SRV_UNKNOWN_REASON
+                                                   + NEW_LINE);
+                }
+
+                System.exit(ret);
+            }
+        });
     }
 }
 

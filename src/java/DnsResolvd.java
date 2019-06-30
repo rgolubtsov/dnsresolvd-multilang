@@ -13,6 +13,7 @@
  */
 
 import static dns_resolv.ControllerHelper.*;
+import        dns_resolv.DnsLookupController;
 
 import org.graylog2.syslog4j.impl.unix.UnixSyslog;
 import org.graylog2.syslog4j.impl.unix.UnixSyslogConfig;
@@ -20,24 +21,6 @@ import org.graylog2.syslog4j.              SyslogIF;
 
 /** The startup class of the daemon. */
 public class DnsResolvd {
-    /**
-     * Starts up the daemon.
-     *
-     * @param port_number The server port number to listen on.
-     * @param daemon_name The name of the daemon startup script.
-     * @param log         The system logger object instance.
-     *
-     * @return The server exit code when interrupted.
-     */
-    private static int startup(final int        port_number,
-                               final String     daemon_name,
-                               final UnixSyslog log) {
-
-        int ret = EXIT_SUCCESS;
-
-        return ret;
-    }
-
     /**
      * The daemon entry point.
      *
@@ -128,12 +111,10 @@ public class DnsResolvd {
         }
 
         // Starting up the daemon.
-        ret = startup(port_number, daemon_name, log);
+        new DnsLookupController().startup(port_number, daemon_name, log);
 
         // Making final cleanups.
         cleanups_fixate(log);
-
-        System.exit(ret);
     }
 }
 
