@@ -24,10 +24,20 @@ else
     DEP_URL0=${DEP_PREF}org/graylog2/syslog4j/0.9.60/syslog4j-0.9.60.jar
 fi
 
-DEP_URL1=${DEP_PREF}net/java/dev/jna/jna/5.3.1/jna-5.3.1.jar
+DU1=${DEP_PREF}net/java/dev/jna/jna/5.3.1/jna-5.3.1.jar
+DU2=${DEP_PREF}io/vertx/vertx-core/3.5.0/vertx-core-3.5.0.jar
+DU3=${DEP_PREF}io/netty/netty-buffer/4.1.15.Final/netty-buffer-4.1.15.Final.jar
+DU4=${DEP_PREF}io/netty/netty-codec/4.1.15.Final/netty-codec-4.1.15.Final.jar
+DU5=${DEP_PREF}io/netty/netty-codec-dns/4.1.15.Final/netty-codec-dns-4.1.15.Final.jar
+DU6=${DEP_PREF}io/netty/netty-codec-http/4.1.15.Final/netty-codec-http-4.1.15.Final.jar
+DU7=${DEP_PREF}io/netty/netty-codec-http2/4.1.15.Final/netty-codec-http2-4.1.15.Final.jar
+DU8=${DEP_PREF}io/netty/netty-common/4.1.15.Final/netty-common-4.1.15.Final.jar
+DU9=${DEP_PREF}io/netty/netty-resolver/4.1.15.Final/netty-resolver-4.1.15.Final.jar
+D10=${DEP_PREF}io/netty/netty-resolver-dns/4.1.15.Final/netty-resolver-dns-4.1.15.Final.jar
+D11=${DEP_PREF}io/netty/netty-transport/4.1.15.Final/netty-transport-4.1.15.Final.jar
 
 # Invoking the startup class of the daemon.
-java -cp .:${DEP_URL0}:${DEP_URL1} DnsResolvd $0 $1 $2
+java -cp .:${DEP_URL0}:${DU1}:${DU2}:${DU3}:${DU4}:${DU5}:${DU6}:${DU7}:${DU8}:${DU9}:${D10}:${D11} DnsResolvd $0 $1 $2
 
 exit $?
 
