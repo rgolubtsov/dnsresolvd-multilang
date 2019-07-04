@@ -35,9 +35,12 @@ DU8=${DEP_PREF}io/netty/netty-common/4.1.15.Final/netty-common-4.1.15.Final.jar
 DU9=${DEP_PREF}io/netty/netty-resolver/4.1.15.Final/netty-resolver-4.1.15.Final.jar
 D10=${DEP_PREF}io/netty/netty-resolver-dns/4.1.15.Final/netty-resolver-dns-4.1.15.Final.jar
 D11=${DEP_PREF}io/netty/netty-transport/4.1.15.Final/netty-transport-4.1.15.Final.jar
+D12=${DEP_PREF}com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar
+D13=${DEP_PREF}com/fasterxml/jackson/core/jackson-core/2.9.0/jackson-core-2.9.0.jar
+D14=${DEP_PREF}com/fasterxml/jackson/core/jackson-databind/2.9.0/jackson-databind-2.9.0.jar
 
 # Invoking the startup class of the daemon.
-java -cp .:${DEP_URL0}:${DU1}:${DU2}:${DU3}:${DU4}:${DU5}:${DU6}:${DU7}:${DU8}:${DU9}:${D10}:${D11} DnsResolvd $0 $1 $2
+java -cp .:${DEP_URL0}:${DU1}:${DU2}:${DU3}:${DU4}:${DU5}:${DU6}:${DU7}:${DU8}:${DU9}:${D10}:${D11}:${D12}:${D13}:${D14} DnsResolvd $0 $1 $2
 
 exit $?
 
