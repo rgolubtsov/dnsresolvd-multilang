@@ -20,6 +20,7 @@ import org.graylog2.syslog4j.impl.unix.UnixSyslog;
 
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
 
 /** The controller class of the daemon. */
 public class DnsLookupController {
@@ -37,7 +38,33 @@ public class DnsLookupController {
         HttpServer server = Vertx.vertx().createHttpServer();
 
         server.requestHandler(req -> {
-            System.out.println("--- server.requestHandler() called ---");
+            HttpMethod mtd = req.method();
+
+            String hostname = null; // The effective hostname to look up for.
+            String fmt      = null; // The response format selector.
+
+            // ----------------------------------------------------------------
+            // --- Parsing and validating request params - Begin --------------
+            // ----------------------------------------------------------------
+                   if (mtd == HttpMethod.GET ) {
+                hostname = req.getParam("h");//<---+
+                //                                 |
+                // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+                //                                              |
+                fmt      = req.getParam("f");//<----------------+
+            } else if (mtd == HttpMethod.POST) {
+                req.bodyHandler(body -> {
+//                    System.out.println(body.toJsonObject()); // <== Needs to be a valid JSON.
+                });
+            }
+
+            System.out.println(hostname);
+            System.out.println(fmt     );
+            // ----------------------------------------------------------------
+            // --- Parsing and validating request params - End ----------------
+            // ----------------------------------------------------------------
+
+            req.response().end(hostname + NEW_LINE + fmt);
         });
 
         server.listen(port_number, res -> {
