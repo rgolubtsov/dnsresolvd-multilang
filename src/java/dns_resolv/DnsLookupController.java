@@ -43,6 +43,13 @@ public class DnsLookupController {
             String hostname = null; // The effective hostname to look up for.
             String fmt      = null; // The response format selector.
 
+            // Used in the HTTP POST handler's lambda as a wrapper
+            // to hold hostname and fmt values.
+            String[] params = {
+                null,               // The effective hostname to look up for.
+                null                // The response format selector.
+            };
+
             // ----------------------------------------------------------------
             // --- Parsing and validating request params - Begin --------------
             // ----------------------------------------------------------------
@@ -54,12 +61,31 @@ public class DnsLookupController {
                 fmt      = req.getParam("f");//<----------------+
             } else if (mtd == HttpMethod.POST) {
                 req.bodyHandler(body -> {
-//                    System.out.println(body.toJsonObject()); // <== Needs to be a valid JSON.
-                });
-            }
+                    if (body != null) {
+                        String req_body_data = body.toString();
 
-            System.out.println(hostname);
-            System.out.println(fmt     );
+                        if (!req_body_data.isEmpty()) {
+                            String[] qry_ary = req_body_data.split(AMPER);
+
+             // $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
+             //            |            |
+             //            |            +-------------------------------------+
+             //            +------------------------------------------------+ |
+             //                                                             | |
+                            for (int i = 0; i < qry_ary.length; i++) { //   | |
+                                       if(qry_ary[i].startsWith("h=")){//<--+ |
+                                    params[0]=qry_ary[i].substring(2); //     |
+                                } else if(qry_ary[i].startsWith("f=")){//<----+
+                                    params[1]=qry_ary[i].substring(2);
+                                }
+                            }
+                        }
+                    }
+                });
+
+                hostname = params[0];
+                fmt      = params[1];
+            }
             // ----------------------------------------------------------------
             // --- Parsing and validating request params - End ----------------
             // ----------------------------------------------------------------
