@@ -29,6 +29,7 @@ public class ControllerHelper {
     public static final int    EXIT_SUCCESS     =    0; // Successful exit status.
     public static final String EMPTY_STRING     =   "";
     public static final String ONE_SPACE_STRING =  " ";
+    public static final String AMPER            =  "&";
     public static final String COLON_SPACE_SEP  = ": ";
     public static final String COMMA_SPACE_SEP  = ", ";
     public static final String PRINT_BANNER_OPT = "-V";
