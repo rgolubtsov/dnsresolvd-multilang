@@ -86,6 +86,33 @@ public class DnsLookupController {
                 hostname = params[0];
                 fmt      = params[1];
             }
+
+            if((hostname == null) || (hostname.isEmpty())) {
+                hostname  = DEF_HOSTNAME;
+            }
+
+            if((fmt      == null) || (fmt     .isEmpty())) {
+                fmt       = PRM_FMT_JSON;
+            } else {
+                fmt       = fmt.toLowerCase();
+
+                String[] fmt_ = {
+                    PRM_FMT_HTML,
+                    PRM_FMT_JSON
+                };
+
+                boolean _fmt = false;
+
+                for (int i  = 0; i < fmt_.length; i++) {
+                    if (fmt.compareTo(fmt_[i]) == 0) {
+                       _fmt = true; break;
+                    }
+                }
+
+                if (!_fmt) {
+                    fmt   = PRM_FMT_JSON;
+                }
+            }
             // ----------------------------------------------------------------
             // --- Parsing and validating request params - End ----------------
             // ----------------------------------------------------------------

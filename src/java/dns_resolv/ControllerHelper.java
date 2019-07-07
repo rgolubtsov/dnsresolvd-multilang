@@ -64,6 +64,10 @@ public class ControllerHelper {
     public static final String MSG_SERVER_STARTED_1 = "Server started on port ";
     public static final String MSG_SERVER_STARTED_2 = "=== Hit Ctrl+C to terminate it.";
 
+    // HTTP request methods and params.
+    public static final String PRM_FMT_HTML = "html";
+    public static final String PRM_FMT_JSON = "json";
+
     // Daemon name, version, and copyright banners.
     public static final String DMN_NAME        = "DNS Resolver Daemon (dnsresolvd)";
     public static final String DMN_DESCRIPTION = "Performs DNS lookups for the given "
@@ -72,6 +76,9 @@ public class ControllerHelper {
     public static final String DMN_VERSION     = "0.1";
     public static final String DMN_COPYRIGHT__ = "Copyright (C) 2017-2019";
     public static final String DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
+
+    /** Constant: The default hostname to look up for. */
+    public static final String DEF_HOSTNAME = "openbsd.org";
 
     // --- add_classpath()-related constants.
     public static final String DEP_PROT = "file:";
