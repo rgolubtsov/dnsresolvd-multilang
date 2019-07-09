@@ -21,6 +21,7 @@ import org.graylog2.syslog4j.impl.unix.UnixSyslog;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.HttpServerResponse;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
@@ -77,6 +78,8 @@ public class DnsLookupController {
         HttpServer server = Vertx.vertx().createHttpServer();
 
         server.requestHandler(req -> {
+            String resp_buffer = EMPTY_STRING;
+
             HttpMethod mtd = req.method();
 
             String hostname = null; // The effective hostname to look up for.
@@ -159,7 +162,57 @@ public class DnsLookupController {
             // Performing DNS lookup for the given hostname.
             String[] addr_ver = dns_lookup(hostname);
 
-            req.response().end(hostname + NEW_LINE + fmt);
+            String addr = addr_ver[0];
+            String ver  = addr_ver[1];
+
+                   if (fmt.compareTo(PRM_FMT_HTML) == 0) {
+                resp_buffer = "<!DOCTYPE html>"                                             + NEW_LINE
++ "<html lang=\"en-US\" dir=\"ltr\">"                                                       + NEW_LINE
++ "<head>"                                                                                  + NEW_LINE
++ "<meta http-equiv=\"" + HDR_CONTENT_TYPE_N      +                      "\"    content=\""
+                        + HDR_CONTENT_TYPE_V_HTML +                      "\"           />"  + NEW_LINE
++ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + NEW_LINE
++ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + NEW_LINE
++ "<title>" + DMN_NAME  + "</title>"                                                        + NEW_LINE
++ "</head>"                                                                                 + NEW_LINE
++ "<body>"                                                                                  + NEW_LINE
++ "<div>"   + hostname  + ONE_SPACE_STRING;
+            } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+            }
+
+            // If lookup error occurred.
+            if (addr.compareTo(ERR_PREFIX) == 0) {
+                       if (fmt.compareTo(PRM_FMT_HTML) == 0) {
+                    resp_buffer += ERR_PREFIX
+                                +  COLON_SPACE_SEP
+                                +  ERR_COULD_NOT_LOOKUP;
+                } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+                }
+            } else {
+                       if (fmt.compareTo(PRM_FMT_HTML) == 0) {
+                    resp_buffer += addr
+                                +  ONE_SPACE_STRING
+                                +  DAT_VERSION_V
+                                +  ver;
+                } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+                }
+            }
+
+                   if (fmt.compareTo(PRM_FMT_HTML) == 0) {
+                resp_buffer += "</div>"  + NEW_LINE
+                            +  "</body>" + NEW_LINE
+                            +  "</html>" + NEW_LINE;
+            } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+            }
+
+            HttpServerResponse resp = req.response();
+
+            // Adding headers to the response.
+            add_response_headers(resp, fmt);
+            resp.putHeader(HDR_CONTENT_LENGTH_N,
+                           new Integer(resp_buffer.length()).toString());
+
+            resp.setStatusCode(RSC_HTTP_200_OK).write(resp_buffer).end();
         });
 
         server.listen(port_number, res -> {
