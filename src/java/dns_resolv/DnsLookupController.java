@@ -18,12 +18,51 @@ import static dns_resolv.ControllerHelper.*;
 
 import org.graylog2.syslog4j.impl.unix.UnixSyslog;
 
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpMethod;
+
+import java.net.InetAddress;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.UnknownHostException;
 
 /** The controller class of the daemon. */
 public class DnsLookupController {
+    /**
+     * Performs DNS lookup action for the given hostname,
+     * i.e. (in this case) IP address retrieval by hostname.
+     *
+     * @param hostname The effective hostname to look up for.
+     *
+     * @return The array containing IP address of the analyzing host/service
+     *         and corresponding IP version (family) used to look up in DNS:
+     *         <code>4</code> for IPv4-only hosts,
+     *         <code>6</code> for IPv6-capable hosts.
+     */
+    public String[] dns_lookup(final String hostname) {
+        String[] addr_ver = new String[2];
+
+        // Trying to get an A record (IPv4) for the host
+        // or its AAAA record (IPv6).
+        try {
+            InetAddress hostent = InetAddress.getByName(hostname);
+
+            addr_ver[0] = hostent.getHostAddress();
+
+                   if (hostent instanceof Inet4Address) {
+                addr_ver[1] = new Integer(4).toString();
+            } else if (hostent instanceof Inet6Address) {
+                addr_ver[1] = new Integer(6).toString();
+            }
+        } catch (UnknownHostException e) {
+            addr_ver[0] = ERR_PREFIX;
+            addr_ver[1] = EMPTY_STRING;
+        }
+
+        return addr_ver;
+    }
+
     /**
      * Starts up the daemon.
      *
@@ -116,6 +155,9 @@ public class DnsLookupController {
             // ----------------------------------------------------------------
             // --- Parsing and validating request params - End ----------------
             // ----------------------------------------------------------------
+
+            // Performing DNS lookup for the given hostname.
+            String[] addr_ver = dns_lookup(hostname);
 
             req.response().end(hostname + NEW_LINE + fmt);
         });

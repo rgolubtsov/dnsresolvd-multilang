@@ -36,6 +36,7 @@ public class ControllerHelper {
     public static final String NEW_LINE         = System.lineSeparator();
 
     // Common error messages.
+    public static final String ERR_PREFIX                    = "error";
     public static final String ERR_PORT_MUST_BE_POSITIVE_INT = ": <port_number> must be "
                                                              + "a positive integer value, "
                                                              + "in the range 1024-49151.";
