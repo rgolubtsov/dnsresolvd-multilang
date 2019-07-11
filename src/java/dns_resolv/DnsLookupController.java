@@ -21,6 +21,7 @@ import org.graylog2.syslog4j.impl.unix.UnixSyslog;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.http.HttpServerResponse;
 
 import java.net.InetAddress;
@@ -165,6 +166,8 @@ public class DnsLookupController {
             String addr = addr_ver[0];
             String ver  = addr_ver[1];
 
+            JsonObject jobj = new JsonObject();
+
                    if (fmt.compareTo(PRM_FMT_HTML) == 0) {
                 resp_buffer = "<!DOCTYPE html>"                                             + NEW_LINE
 + "<html lang=\"en-US\" dir=\"ltr\">"                                                       + NEW_LINE
@@ -178,6 +181,7 @@ public class DnsLookupController {
 + "<body>"                                                                                  + NEW_LINE
 + "<div>"   + hostname  + ONE_SPACE_STRING;
             } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+                jobj.put(DAT_HOSTNAME_N, hostname);
             }
 
             // If lookup error occurred.
@@ -187,6 +191,8 @@ public class DnsLookupController {
                                 +  COLON_SPACE_SEP
                                 +  ERR_COULD_NOT_LOOKUP;
                 } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+                          jobj.put(ERR_PREFIX,
+                                   ERR_COULD_NOT_LOOKUP);
                 }
             } else {
                        if (fmt.compareTo(PRM_FMT_HTML) == 0) {
@@ -195,6 +201,9 @@ public class DnsLookupController {
                                 +  DAT_VERSION_V
                                 +  ver;
                 } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+                          jobj.put(DAT_ADDRESS_N, addr);
+                          jobj.put(DAT_VERSION_N,
+                                   DAT_VERSION_V + ver);
                 }
             }
 
@@ -203,6 +212,7 @@ public class DnsLookupController {
                             +  "</body>" + NEW_LINE
                             +  "</html>" + NEW_LINE;
             } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+                resp_buffer  = jobj.toString();
             }
 
             HttpServerResponse resp = req.response();
