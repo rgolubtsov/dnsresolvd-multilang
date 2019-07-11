@@ -21,8 +21,9 @@ import org.graylog2.syslog4j.impl.unix.UnixSyslog;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
@@ -79,31 +80,25 @@ public class DnsLookupController {
         HttpServer server = Vertx.vertx().createHttpServer();
 
         server.requestHandler(req -> {
-            String resp_buffer = EMPTY_STRING;
-
             HttpMethod mtd = req.method();
 
-            String hostname = null; // The effective hostname to look up for.
-            String fmt      = null; // The response format selector.
-
             // Used in the HTTP POST handler's lambda as a wrapper
-            // to hold hostname and fmt values.
+            // to hold <hostname> and <fmt> values.
             String[] params = {
                 null,               // The effective hostname to look up for.
                 null                // The response format selector.
             };
 
-            // ----------------------------------------------------------------
-            // --- Parsing and validating request params - Begin --------------
-            // ----------------------------------------------------------------
                    if (mtd == HttpMethod.GET ) {
-                hostname = req.getParam("h");//<---+
-                //                                 |
-                // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
-                //                                              |
-                fmt      = req.getParam("f");//<----------------+
+                parse_and_write(new String[] {
+                    req.getParam("h"), // <------------+
+                    //                                 |
+                    // http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+                    //                                              |
+                    req.getParam("f")  // <-------------------------+
+                },  req);
             } else if (mtd == HttpMethod.POST) {
-                req.bodyHandler(body -> {
+                req.handler(body -> {
                     if (body != null) {
                         String req_body_data = body.toString();
 
@@ -124,105 +119,8 @@ public class DnsLookupController {
                             }
                         }
                     }
-                });
-
-                hostname = params[0];
-                fmt      = params[1];
+                }).endHandler(__ -> { parse_and_write(params, req); });
             }
-
-            if((hostname == null) || (hostname.isEmpty())) {
-                hostname  = DEF_HOSTNAME;
-            }
-
-            if((fmt      == null) || (fmt     .isEmpty())) {
-                fmt       = PRM_FMT_JSON;
-            } else {
-                fmt       = fmt.toLowerCase();
-
-                String[] fmt_ = {
-                    PRM_FMT_HTML,
-                    PRM_FMT_JSON
-                };
-
-                boolean _fmt = false;
-
-                for (int i  = 0; i < fmt_.length; i++) {
-                    if (fmt.compareTo(fmt_[i]) == 0) {
-                       _fmt = true; break;
-                    }
-                }
-
-                if (!_fmt) {
-                    fmt   = PRM_FMT_JSON;
-                }
-            }
-            // ----------------------------------------------------------------
-            // --- Parsing and validating request params - End ----------------
-            // ----------------------------------------------------------------
-
-            // Performing DNS lookup for the given hostname.
-            String[] addr_ver = dns_lookup(hostname);
-
-            String addr = addr_ver[0];
-            String ver  = addr_ver[1];
-
-            JsonObject jobj = new JsonObject();
-
-                   if (fmt.compareTo(PRM_FMT_HTML) == 0) {
-                resp_buffer = "<!DOCTYPE html>"                                             + NEW_LINE
-+ "<html lang=\"en-US\" dir=\"ltr\">"                                                       + NEW_LINE
-+ "<head>"                                                                                  + NEW_LINE
-+ "<meta http-equiv=\"" + HDR_CONTENT_TYPE_N      +                      "\"    content=\""
-                        + HDR_CONTENT_TYPE_V_HTML +                      "\"           />"  + NEW_LINE
-+ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + NEW_LINE
-+ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + NEW_LINE
-+ "<title>" + DMN_NAME  + "</title>"                                                        + NEW_LINE
-+ "</head>"                                                                                 + NEW_LINE
-+ "<body>"                                                                                  + NEW_LINE
-+ "<div>"   + hostname  + ONE_SPACE_STRING;
-            } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
-                jobj.put(DAT_HOSTNAME_N, hostname);
-            }
-
-            // If lookup error occurred.
-            if (addr.compareTo(ERR_PREFIX) == 0) {
-                       if (fmt.compareTo(PRM_FMT_HTML) == 0) {
-                    resp_buffer += ERR_PREFIX
-                                +  COLON_SPACE_SEP
-                                +  ERR_COULD_NOT_LOOKUP;
-                } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
-                          jobj.put(ERR_PREFIX,
-                                   ERR_COULD_NOT_LOOKUP);
-                }
-            } else {
-                       if (fmt.compareTo(PRM_FMT_HTML) == 0) {
-                    resp_buffer += addr
-                                +  ONE_SPACE_STRING
-                                +  DAT_VERSION_V
-                                +  ver;
-                } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
-                          jobj.put(DAT_ADDRESS_N, addr);
-                          jobj.put(DAT_VERSION_N,
-                                   DAT_VERSION_V + ver);
-                }
-            }
-
-                   if (fmt.compareTo(PRM_FMT_HTML) == 0) {
-                resp_buffer += "</div>"  + NEW_LINE
-                            +  "</body>" + NEW_LINE
-                            +  "</html>" + NEW_LINE;
-            } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
-                resp_buffer  = jobj.toString();
-            }
-
-            HttpServerResponse resp = req.response();
-
-            // Adding headers to the response.
-            add_response_headers(resp, fmt);
-            resp.putHeader(HDR_CONTENT_LENGTH_N,
-                           new Integer(resp_buffer.length()).toString());
-
-            resp.setStatusCode(RSC_HTTP_200_OK).write(resp_buffer).end();
         });
 
         server.listen(port_number, res -> {
@@ -260,6 +158,113 @@ public class DnsLookupController {
                 System.exit(ret);
             }
         });
+    }
+
+    // Parses and validates request params and writes the response out.
+    private void parse_and_write(final String[]          params,
+                                 final HttpServerRequest req) {
+
+        String resp_buffer = EMPTY_STRING;
+
+        String hostname = params[0]; // The effective hostname to look up for.
+        String fmt      = params[1]; // The response format selector.
+
+        // --------------------------------------------------------------------
+        // --- Parsing and validating request params - Begin ------------------
+        // --------------------------------------------------------------------
+        if((hostname == null) || (hostname.isEmpty())) {
+            hostname  = DEF_HOSTNAME;
+        }
+
+        if((fmt      == null) || (fmt     .isEmpty())) {
+            fmt       = PRM_FMT_JSON;
+        } else {
+            fmt       = fmt.toLowerCase();
+
+            String[] fmt_ = {
+                PRM_FMT_HTML,
+                PRM_FMT_JSON
+            };
+
+            boolean _fmt = false;
+
+            for (int i  = 0; i < fmt_.length; i++) {
+                if (fmt.compareTo(fmt_[i]) == 0) {
+                   _fmt = true; break;
+                }
+            }
+
+            if (!_fmt) {
+                fmt   = PRM_FMT_JSON;
+            }
+        }
+        // --------------------------------------------------------------------
+        // --- Parsing and validating request params - End --------------------
+        // --------------------------------------------------------------------
+
+        // Performing DNS lookup for the given hostname.
+        String[] addr_ver = dns_lookup(hostname);
+
+        String addr = addr_ver[0];
+        String ver  = addr_ver[1];
+
+        JsonObject jobj = new JsonObject();
+
+               if (fmt.compareTo(PRM_FMT_HTML) == 0) {
+            resp_buffer = "<!DOCTYPE html>"                                                 + NEW_LINE
++ "<html lang=\"en-US\" dir=\"ltr\">"                                                       + NEW_LINE
++ "<head>"                                                                                  + NEW_LINE
++ "<meta http-equiv=\"" + HDR_CONTENT_TYPE_N      +                      "\"    content=\""
+                        + HDR_CONTENT_TYPE_V_HTML +                      "\"           />"  + NEW_LINE
++ "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + NEW_LINE
++ "<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + NEW_LINE
++ "<title>" + DMN_NAME  + "</title>"                                                        + NEW_LINE
++ "</head>"                                                                                 + NEW_LINE
++ "<body>"                                                                                  + NEW_LINE
++ "<div>"   + hostname  + ONE_SPACE_STRING;
+        } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+            jobj.put(DAT_HOSTNAME_N, hostname);
+        }
+
+        // If lookup error occurred.
+        if (addr.compareTo(ERR_PREFIX) == 0) {
+                   if (fmt.compareTo(PRM_FMT_HTML) == 0) {
+                resp_buffer += ERR_PREFIX
+                            +  COLON_SPACE_SEP
+                            +  ERR_COULD_NOT_LOOKUP;
+            } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+                      jobj.put(ERR_PREFIX,
+                               ERR_COULD_NOT_LOOKUP);
+            }
+        } else {
+                   if (fmt.compareTo(PRM_FMT_HTML) == 0) {
+                resp_buffer += addr
+                            +  ONE_SPACE_STRING
+                            +  DAT_VERSION_V
+                            +  ver;
+            } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+                      jobj.put(DAT_ADDRESS_N, addr);
+                      jobj.put(DAT_VERSION_N,
+                               DAT_VERSION_V + ver);
+            }
+        }
+
+               if (fmt.compareTo(PRM_FMT_HTML) == 0) {
+            resp_buffer += "</div>"  + NEW_LINE
+                        +  "</body>" + NEW_LINE
+                        +  "</html>" + NEW_LINE;
+        } else if (fmt.compareTo(PRM_FMT_JSON) == 0) {
+            resp_buffer  = jobj.toString();
+        }
+
+        HttpServerResponse resp = req.response();
+
+        // Adding headers to the response.
+        add_response_headers(resp, fmt);
+        resp.putHeader(HDR_CONTENT_LENGTH_N,
+                       new Integer(resp_buffer.length()).toString());
+
+        resp.setStatusCode(RSC_HTTP_200_OK).write(resp_buffer).end();
     }
 }
 
