@@ -10,11 +10,12 @@
 * **[Building](#building)**
   * [Building under OpenBSD/amd64 6.5](#building-under-openbsdamd64-65)
   * [Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16046-lts-x86-64)
+  * [Building under Arch Linux (kernel 5.1.3-arch2-1-ARCH x86-64)](#building-under-arch-linux-kernel-513-arch2-1-arch-x86-64)
 * **[Running](#running)**
 
 ## Building
 
-This daemon implementation is known to be built and run successfully on OpenBSD and Ubuntu Server operating systems. So let's describe each build process sequentially.
+This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
 
 ### Building under OpenBSD/amd64 6.5
 
@@ -264,11 +265,133 @@ dns_resolv/ControllerHelper.class:    compiled Java class data, version 52.0 (Ja
 dns_resolv/DnsLookupController.class: compiled Java class data, version 52.0 (Java 1.8)
 ```
 
+### Building under Arch Linux (kernel 5.1.3-arch2-1-ARCH x86-64)
+
+Install the necessary dependencies (`jdk8-openjdk`, `maven`, `syslog4j`, `jna`, `atmosphere-vertx`):
+
+```
+$ sudo pacman -Sy jdk8-openjdk maven
+$
+$ java -version
+openjdk version "1.8.0_212"
+OpenJDK Runtime Environment (build 1.8.0_212-b01)
+OpenJDK 64-Bit Server VM (build 25.212-b01, mixed mode)
+```
+
+The `syslog4j`, `jna`, and `atmosphere-vertx` packages (as JARs) have to be installed via **Apache Maven**. The following compound one-liner script will actually do the job:
+
+```
+$ mvn dependency:get -Dartifact=org.graylog2:syslog4j:0.9.60          && \
+  mvn dependency:get -Dartifact=net.java.dev.jna:jna:5.3.1            && \
+  mvn dependency:get -Dartifact=org.atmosphere:atmosphere-vertx:3.0.0
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------< org.apache.maven:standalone-pom >-------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:get (default-cli) @ standalone-pom ---
+[INFO] Resolving org.graylog2:syslog4j:jar:0.9.60 with transitive dependencies
+...
+Downloading from central: https://repo.maven.apache.org/maven2/org/graylog2/syslog4j/0.9.60/syslog4j-0.9.60.jar
+...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  X.XXX s
+[INFO] Finished at: XXXX-XX-XXTXX:XX:XX+XX:XX
+[INFO] ------------------------------------------------------------------------
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------< org.apache.maven:standalone-pom >-------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:get (default-cli) @ standalone-pom ---
+[INFO] Resolving net.java.dev.jna:jna:jar:5.3.1 with transitive dependencies
+...
+Downloading from central: https://repo.maven.apache.org/maven2/net/java/dev/jna/jna/5.3.1/jna-5.3.1.jar
+...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  X.XXX s
+[INFO] Finished at: XXXX-XX-XXTXX:XX:XX+XX:XX
+[INFO] ------------------------------------------------------------------------
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------< org.apache.maven:standalone-pom >-------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:get (default-cli) @ standalone-pom ---
+[INFO] Resolving org.atmosphere:atmosphere-vertx:jar:3.0.0 with transitive dependencies
+...
+Downloading from central: https://repo.maven.apache.org/maven2/org/atmosphere/atmosphere-vertx/3.0.0/atmosphere-vertx-3.0.0.jar
+...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  X.XXX s
+[INFO] Finished at: XXXX-XX-XXTXX:XX:XX+XX:XX
+[INFO] ------------------------------------------------------------------------
+```
+
+Now the daemon might be built.
+
+```
+$ cd src/java
+$ make clean && make all
+rm -f DnsResolvd.class dns_resolv/DnsLookupController.class dns_resolv/ControllerHelper.class
+javac -cp .:/home/<username>/.m2/repository/org/graylog2/syslog4j/0.9.60/syslog4j-0.9.60.jar:/home/<username>/.m2/repository/io/vertx/vertx-core/3.5.0/vertx-core-3.5.0.jar DnsResolvd.java
+./dns_resolv/ControllerHelper.java:21: warning: URLClassPath is internal proprietary API and may be removed in a future release
+import sun.misc.URLClassPath;
+               ^
+./dns_resolv/ControllerHelper.java:140: warning: URLClassPath is internal proprietary API and may be removed in a future release
+        URLClassPath ucp = null;              try {
+        ^
+./dns_resolv/ControllerHelper.java:141: warning: URLClassPath is internal proprietary API and may be removed in a future release
+                       ucp = (URLClassPath) fld.get(ucl);//System.out.println(ucp);
+                              ^
+3 warnings
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al . dns_resolv
+.:
+total 52
+drwxr-xr-x  3 <username> <usergroup>  4096 Jul 16 11:40 .
+drwxr-xr-x 14 <username> <usergroup>  4096 Jul  1 23:20 ..
+drwxr-xr-x  2 <username> <usergroup>  4096 Jul 16 11:40 dns_resolv
+-rwxr-xr-x  1 <username> <usergroup>  2420 Jul 16 11:40 dnsresolvd
+-rw-r--r--  1 <username> <usergroup>  2600 Jul 16 11:40 DnsResolvd.class
+-rw-r--r--  1 <username> <usergroup>  4151 Jul 16 11:40 DnsResolvd.java
+-rw-r--r--  1 <username> <usergroup>  1474 Jul 16 11:40 Makefile
+-rw-r--r--  1 <username> <usergroup> 19710 Jul 16 11:40 README.md
+
+dns_resolv:
+total 48
+drwxr-xr-x 2 <username> <usergroup>  4096 Jul 16 11:40 .
+drwxr-xr-x 3 <username> <usergroup>  4096 Jul 16 11:40 ..
+-rw-r--r-- 1 <username> <usergroup>  5285 Jul 16 11:40 ControllerHelper.class
+-rw-r--r-- 1 <username> <usergroup>  9302 Jul 16 11:40 ControllerHelper.java
+-rw-r--r-- 1 <username> <usergroup>  7333 Jul 16 11:40 DnsLookupController.class
+-rw-r--r-- 1 <username> <usergroup> 11145 Jul 16 11:40 DnsLookupController.java
+$
+$ file dnsresolvd *.class dns_resolv/*.class
+dnsresolvd:                           Bourne-Again shell script, ASCII text executable
+DnsResolvd.class:                     compiled Java class data, version 52.0 (Java 1.8)
+dns_resolv/ControllerHelper.class:    compiled Java class data, version 52.0 (Java 1.8)
+dns_resolv/DnsLookupController.class: compiled Java class data, version 52.0 (Java 1.8)
+```
+
 ## Running
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-OpenBSD/amd64 | Ubuntu Server LTS x86-64:
+OpenBSD/amd64 | Ubuntu Server LTS x86-64 | Arch Linux:
 
 ```
 $ cd src/java

@@ -16,7 +16,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 * :small_blue_diamond: **Erlang ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/erlang/`
 * :small_blue_diamond: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
 * :small_blue_diamond: **Clojure ([HTTP Kit](http://http-kit.org "HTTP Kit"))**: `src/clojure/`
-* :cd: **Java ([Eclipse Vert.x](http://vertx.io "Eclipse Vert.x"))**: `src/java/`
+* :small_blue_diamond: **Java ([Eclipse Vert.x](http://vertx.io "Eclipse Vert.x"))**: `src/java/`
 
 ## Table of Contents
 
