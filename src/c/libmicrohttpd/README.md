@@ -26,7 +26,7 @@ This daemon implementation is known to be built and run successfully on OpenBSD,
 Now the daemon might be built.
 
 ```
-$ cd src/c
+$ cd src/c/libmicrohttpd
 $ gmake clean && gmake all
 rm -f dnsresolvd dnsresolvd.o
 egcc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
@@ -71,7 +71,7 @@ This package contains all the development stuff and is actually depends on the p
 Now let's build the daemon.
 
 ```
-$ cd src/c
+$ cd src/c/libmicrohttpd
 $ make clean && make all
 rm -f dnsresolvd dnsresolvd.o
 cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE -I/usr/local/include   -c -o dnsresolvd.o dnsresolvd.c
@@ -110,7 +110,7 @@ The version of the compiler GCC used is 7.3.0. The version of the library GNU li
 Now let's build the daemon.
 
 ```
-$ cd src/c
+$ cd src/c/libmicrohttpd
 $ make clean && make all
 rm -f dnsresolvd dnsresolvd.o
 cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE -I/usr/local/include   -c -o dnsresolvd.o dnsresolvd.c
@@ -151,7 +151,7 @@ To start up the daemon just specify a TCP port that should be used to listen on 
 OpenBSD/amd64 | Arch Linux:
 
 ```
-$ ./src/c/dnsresolvd 8765
+$ ./src/c/libmicrohttpd/dnsresolvd 8765
 Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
