@@ -18,7 +18,8 @@
 *.pyc
 
 # === Executables =============================================================
-src/c/dnsresolvd
+src/c/libmicrohttpd/dnsresolvd
+src/c/libsoup/dnsresolvd
 src/vala/dnsresolvd
 src/genie/dnsresolvd
 
