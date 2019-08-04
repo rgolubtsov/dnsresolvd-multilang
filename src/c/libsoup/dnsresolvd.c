@@ -105,11 +105,11 @@ int main(int argc, char *const *argv) {
     if ((dmn == NULL) || (loop == NULL)) {
         ret = EXIT_FAILURE;
 
-        fprintf(stderr, _ERR_CANNOT_START_SERVER _NEW_LINE _NEW_LINE,
-                         daemon_name);
+        fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
+                        _NEW_LINE _NEW_LINE, daemon_name);
 
-        syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _NEW_LINE _NEW_LINE,
-                         daemon_name);
+        syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
+                        _NEW_LINE _NEW_LINE, daemon_name);
 
         _cleanups_fixate(NULL);
 
