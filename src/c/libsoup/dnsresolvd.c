@@ -135,9 +135,19 @@ int main(int argc, char *const *argv) {
     } else {
         ret = EXIT_FAILURE;
 
-        fprintf(stderr, "%s\n", error->message);
+        if (strstr(error->message, _ERR_ADDR_ALREADY_IN_USE) != NULL) {
+            fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_PORT_IS_IN_USE
+                            _NEW_LINE _NEW_LINE, daemon_name);
 
-        syslog(LOG_ERR, "%s\n", error->message);
+            syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_PORT_IS_IN_USE
+                            _NEW_LINE _NEW_LINE, daemon_name);
+        } else {
+            fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
+                            _NEW_LINE _NEW_LINE, daemon_name);
+
+            syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
+                            _NEW_LINE _NEW_LINE, daemon_name);
+        }
 
         g_clear_error(&error);
 
