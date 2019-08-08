@@ -14,6 +14,33 @@
 
 #include "dnsresolvd.h"
 
+/* Main callback. Default request handler. */
+void _request_handler(      SoupServer        *dmn,
+                            SoupMessage       *msg,
+                      const char              *pth,
+                            GHashTable        *qry,
+                            SoupClientContext *cln,
+                            gpointer           usr) {
+
+    char *resp_buffer = "<!DOCTYPE html><html><head><title>" _DMN_NAME \
+                        "</title></head><body><div>"         _DMN_NAME \
+                        "</div></body></html>";
+
+    char *HDR_CONTENT_TYPE_V;
+
+    char *hostname; /* The effective hostname to look up for. */
+    char *fmt;      /* The response format selector.          */
+
+    /* Adding headers to the response. */
+    HDR_CONTENT_TYPE_V = add_response_headers(msg->response_headers, /*fmt*/_PRM_FMT_HTML);
+
+    soup_message_set_status  (msg, SOUP_STATUS_OK);
+    soup_message_set_response(msg, HDR_CONTENT_TYPE_V, SOUP_MEMORY_COPY,
+                              resp_buffer, strlen(resp_buffer));
+
+    free(HDR_CONTENT_TYPE_V);
+}
+
 /* The daemon entry point. */
 int main(int argc, char *const *argv) {
     int ret = EXIT_SUCCESS;
@@ -105,11 +132,11 @@ int main(int argc, char *const *argv) {
     if ((dmn == NULL) || (loop == NULL)) {
         ret = EXIT_FAILURE;
 
-        fprintf(stderr, _ERR_CANNOT_START_SERVER _NEW_LINE _NEW_LINE,
-                         daemon_name);
+        fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
+                        _NEW_LINE _NEW_LINE, daemon_name);
 
-        syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _NEW_LINE _NEW_LINE,
-                         daemon_name);
+        syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
+                        _NEW_LINE _NEW_LINE, daemon_name);
 
         _cleanups_fixate(NULL);
 
@@ -119,6 +146,12 @@ int main(int argc, char *const *argv) {
     /* Attaching Unix signal handlers to ensure daemon clean shutdown. */
     g_unix_signal_add(SIGINT,  (GSourceFunc) _cleanups_fixate, loop);
     g_unix_signal_add(SIGTERM, (GSourceFunc) _cleanups_fixate, loop);
+
+    /*
+     * Attaching HTTP request handlers to process incoming requests
+     * and producing the response.
+     */
+    soup_server_add_handler(dmn, NULL, _request_handler, NULL, NULL);
 
     /* Setting up the daemon to listen on all TCP IPv4 interfaces. */
     if (soup_server_listen_all(dmn, port_number,
@@ -135,9 +168,19 @@ int main(int argc, char *const *argv) {
     } else {
         ret = EXIT_FAILURE;
 
-        fprintf(stderr, "%s\n", error->message);
+        if (strstr(error->message, _ERR_ADDR_ALREADY_IN_USE) != NULL) {
+            fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_PORT_IS_IN_USE
+                            _NEW_LINE _NEW_LINE, daemon_name);
 
-        syslog(LOG_ERR, "%s\n", error->message);
+            syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_PORT_IS_IN_USE
+                            _NEW_LINE _NEW_LINE, daemon_name);
+        } else {
+            fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
+                            _NEW_LINE _NEW_LINE, daemon_name);
+
+            syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
+                            _NEW_LINE _NEW_LINE, daemon_name);
+        }
 
         g_clear_error(&error);
 
@@ -150,6 +193,39 @@ int main(int argc, char *const *argv) {
     _cleanups_fixate(loop);
 
     return ret;
+}
+
+/**
+ * Adds headers to the response.
+ *
+ * @param resp_hdrs The response headers object.
+ * @param fmt       The response format selector.
+ *
+ * @return The <code>"Content-Type"</code> response header value
+ *         used in the caller's <code>soup_message_set_response()</code>
+ *         function.
+ */
+char *add_response_headers(SoupMessageHeaders *resp_hdrs, const char *fmt) {
+    char *HDR_CONTENT_TYPE_V;
+
+    soup_message_headers_append(resp_hdrs, _HDR_CACHE_CONTROL_N,
+                                           _HDR_CACHE_CONTROL_V);
+    soup_message_headers_append(resp_hdrs, _HDR_EXPIRES_N,
+                                           _HDR_EXPIRES_V      );
+    soup_message_headers_append(resp_hdrs, _HDR_PRAGMA_N,
+                                           _HDR_PRAGMA_V       );
+
+           if (strcmp(fmt, _PRM_FMT_HTML) == 0) {
+        HDR_CONTENT_TYPE_V = malloc(sizeof(_HDR_CONTENT_TYPE_V_HTML));
+        HDR_CONTENT_TYPE_V = strcpy(HDR_CONTENT_TYPE_V,
+                                   _HDR_CONTENT_TYPE_V_HTML);
+    } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+        HDR_CONTENT_TYPE_V = malloc(sizeof(_HDR_CONTENT_TYPE_V_JSON));
+        HDR_CONTENT_TYPE_V = strcpy(HDR_CONTENT_TYPE_V,
+                                   _HDR_CONTENT_TYPE_V_JSON);
+    }
+
+    return HDR_CONTENT_TYPE_V;
 }
 
 /* Helper function. Makes final buffer cleanups, closes streams, etc. */
