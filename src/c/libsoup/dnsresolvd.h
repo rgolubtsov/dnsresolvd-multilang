@@ -59,6 +59,20 @@
 #define _MSG_SERVER_STARTED_1 "Server started on port %u"
 #define _MSG_SERVER_STARTED_2 "=== Hit Ctrl+C to terminate it."
 
+/* HTTP request params. */
+#define _PRM_FMT_HTML "html"
+#define _PRM_FMT_JSON "json"
+
+/* HTTP response headers. */
+#define _HDR_CONTENT_TYPE_V_HTML "text/html; charset=UTF-8"
+#define _HDR_CONTENT_TYPE_V_JSON "application/json"
+#define _HDR_CACHE_CONTROL_N     "Cache-Control"
+#define _HDR_CACHE_CONTROL_V     "no-cache, no-store, must-revalidate"
+#define _HDR_EXPIRES_N           "Expires"
+#define _HDR_EXPIRES_V           "Thu, 01 Dec 1994 16:00:00 GMT"
+#define _HDR_PRAGMA_N            "Pragma"
+#define _HDR_PRAGMA_V            "no-cache"
+
 /* Daemon name, version, and copyright banners. */
 #define _DMN_NAME        "DNS Resolver Daemon (dnsresolvd)"
 #define _DMN_DESCRIPTION "Performs DNS lookups for the given hostname " \
@@ -67,6 +81,8 @@
 #define _DMN_VERSION     "0.1"
 #define _DMN_COPYRIGHT__ "Copyright (C) 2017-2019"
 #define _DMN_AUTHOR      "Radislav Golubtsov <ragolubtsov@my.com>"
+
+char *add_response_headers(SoupMessageHeaders *, const char *);
 
 /* Helper protos. */
 void _cleanups_fixate(const gpointer);
