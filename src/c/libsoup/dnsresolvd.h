@@ -20,6 +20,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <syslog.h>
+#include <stdbool.h>
 
 #include <libsoup/soup.h>
 #include <glib.h>
@@ -81,6 +82,9 @@
 #define _DMN_VERSION     "0.1"
 #define _DMN_COPYRIGHT__ "Copyright (C) 2017-2019"
 #define _DMN_AUTHOR      "Radislav Golubtsov <ragolubtsov@my.com>"
+
+/** Constant: The default hostname to look up for. */
+#define _DEF_HOSTNAME "openbsd.org"
 
 char *add_response_headers(SoupMessageHeaders *, const char *);
 

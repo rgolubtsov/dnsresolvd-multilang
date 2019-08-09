@@ -26,10 +26,83 @@ void _request_handler(      SoupServer        *dmn,
                         "</title></head><body><div>"         _DMN_NAME \
                         "</div></body></html>";
 
+    char *mtd;
+    SoupMessageBody *req_body;
+
     char *HDR_CONTENT_TYPE_V;
 
     char *hostname; /* The effective hostname to look up for. */
     char *fmt;      /* The response format selector.          */
+
+    char *fmt_[] = {
+        _PRM_FMT_HTML,
+        _PRM_FMT_JSON
+    };
+
+    bool _fmt;
+
+    int i;
+
+    /* --------------------------------------------------------------------- */
+    /* --- Parsing and validating request params - Begin ------------------- */
+    /* --------------------------------------------------------------------- */
+    mtd = msg->method;
+    req_body = msg->request_body;
+
+           if (mtd == SOUP_METHOD_GET ) {
+        if (qry      != NULL) {
+            hostname  = g_hash_table_lookup(qry, "h"); /*
+                                                  ^
+                                                  |
+                                            +-----+
+                                            |
+            http://localhost:<port_number>/?h=<hostname>&f=<fmt>
+                                                         |
+                                                  +------+
+                                                  |
+                                                  v */
+            fmt       = g_hash_table_lookup(qry, "f");
+        }
+    } else if (mtd == SOUP_METHOD_POST) {
+        if((req_body != NULL) && (strlen(req_body) > 0)) {
+            puts("req_body");
+        }
+    }
+
+    if ((hostname == NULL) || (strlen(hostname) == 0            )
+                           || (strlen(hostname)  > HOST_NAME_MAX)) {
+
+//      hostname = strcpy(hostname, _DEF_HOSTNAME);
+        hostname = _DEF_HOSTNAME;
+    }
+
+    if ((fmt      == NULL) || (strlen(fmt     )  < 3            )
+                           || (strlen(fmt     )  > 4            )) {
+
+//      fmt      = strcpy(fmt,      _PRM_FMT_JSON);
+        fmt      = _PRM_FMT_JSON;
+    } else {
+        for (i = 0; fmt[i]; i++) { fmt[i] = tolower(fmt[i]); }
+
+        _fmt = false;
+
+        for (i = 0; i < 2; i++) {
+            if (strcmp(fmt, fmt_[i]) == 0) {
+                _fmt = true; break;
+            }
+        }
+
+        if (!_fmt) {
+//          fmt  = strcpy(fmt,      _PRM_FMT_JSON);
+            fmt  = _PRM_FMT_JSON;
+        }
+    }
+
+    puts(hostname);
+    puts(fmt     );
+    /* --------------------------------------------------------------------- */
+    /* --- Parsing and validating request params - End --------------------- */
+    /* --------------------------------------------------------------------- */
 
     /* Adding headers to the response. */
     HDR_CONTENT_TYPE_V = add_response_headers(msg->response_headers, /*fmt*/_PRM_FMT_HTML);
