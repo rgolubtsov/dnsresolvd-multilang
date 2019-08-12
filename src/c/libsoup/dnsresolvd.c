@@ -64,12 +64,21 @@ void _request_handler(      SoupServer        *dmn,
                                                   |
                                                   v */
             fmt       = g_hash_table_lookup(qry, "f");
+        } else {
+            hostname  = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+            fmt       = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+
+            hostname  = strcpy(hostname, _EMPTY_STRING);
+            fmt       = strcpy(fmt,      _EMPTY_STRING);
         }
     } else if (mtd == SOUP_METHOD_POST) {
         req_body = msg->request_body;
 
         hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
         fmt      = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+
+        hostname = strcpy(hostname, _EMPTY_STRING);
+        fmt      = strcpy(fmt,      _EMPTY_STRING);
 
         if((req_body != NULL) && (req_body->length > 0)) {
             req_body_data_ = req_body_data = strdup(req_body->data); /*
@@ -93,6 +102,8 @@ void _request_handler(      SoupServer        *dmn,
 
             free(req_body_data_);
         }
+    } else {
+        return; /* <== In case of HTTP method not supported. */
     }
 
     if ((hostname == NULL) || (strlen(hostname) == 0            )
@@ -136,7 +147,7 @@ void _request_handler(      SoupServer        *dmn,
 
     free(HDR_CONTENT_TYPE_V);
 
-    if (mtd == SOUP_METHOD_POST) {
+    if ((qry == NULL) || (mtd == SOUP_METHOD_POST)) {
         free(fmt     );
         free(hostname);
     }
