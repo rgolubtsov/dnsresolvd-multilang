@@ -131,15 +131,12 @@ void _request_handler(      SoupServer        *dmn,
             fmt  = strcpy(fmt,      _PRM_FMT_JSON);
         }
     }
-
-    puts(hostname);
-    puts(fmt     );
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
 
     /* Adding headers to the response. */
-    HDR_CONTENT_TYPE_V = add_response_headers(msg->response_headers, /*fmt*/_PRM_FMT_HTML);
+    HDR_CONTENT_TYPE_V = add_response_headers(msg->response_headers, fmt);
 
     soup_message_set_status  (msg, SOUP_STATUS_OK);
     soup_message_set_response(msg, HDR_CONTENT_TYPE_V, SOUP_MEMORY_COPY,
