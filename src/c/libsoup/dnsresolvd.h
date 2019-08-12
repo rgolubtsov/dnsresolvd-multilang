@@ -31,6 +31,7 @@
 #define _ONE_SPACE_STRING  " "
 #define _COMMA_SPACE_SEP  ", "
 #define _NEW_LINE         "\n"
+#define _AMPER             "&"
 #define _PRINT_BANNER_OPT "-V"
 
 /* Common error messages. */

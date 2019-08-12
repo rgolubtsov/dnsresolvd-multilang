@@ -27,60 +27,84 @@ void _request_handler(      SoupServer        *dmn,
                         "</div></body></html>";
 
     char *mtd;
-    SoupMessageBody *req_body;
-
-    char *HDR_CONTENT_TYPE_V;
 
     char *hostname; /* The effective hostname to look up for. */
     char *fmt;      /* The response format selector.          */
+
+    SoupMessageBody *req_body;
+
+    char *req_body_data, *req_body_data_, *param;
+
+    int param_val_len, i;
+
+    bool _fmt;
 
     char *fmt_[] = {
         _PRM_FMT_HTML,
         _PRM_FMT_JSON
     };
 
-    bool _fmt;
-
-    int i;
+    char *HDR_CONTENT_TYPE_V;
 
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - Begin ------------------- */
     /* --------------------------------------------------------------------- */
-    mtd = msg->method;
-    req_body = msg->request_body;
+    mtd = (gchar *) msg->method;
 
            if (mtd == SOUP_METHOD_GET ) {
         if (qry      != NULL) {
             hostname  = g_hash_table_lookup(qry, "h"); /*
                                                   ^
                                                   |
-                                            +-----+
-                                            |
-            http://localhost:<port_number>/?h=<hostname>&f=<fmt>
-                                                         |
-                                                  +------+
+                                                  +-+
+                                                    |
+            $ curl 'http://localhost:<port-number>/?h=<hostname>&f=<fmt>'
+                                                                 |
+                                                  +--------------+
                                                   |
                                                   v */
             fmt       = g_hash_table_lookup(qry, "f");
         }
     } else if (mtd == SOUP_METHOD_POST) {
-        if((req_body != NULL) && (strlen(req_body) > 0)) {
-            puts("req_body");
+        req_body = msg->request_body;
+
+        hostname = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+        fmt      = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+
+        if((req_body != NULL) && (req_body->length > 0)) {
+            req_body_data_ = req_body_data = strdup(req_body->data); /*
+
+            $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number>
+                       |            |
+                       |            +--------------------------------------+
+                       +-------------------------------------------------+ |
+                                                                         | | */
+            while (param = strsep(&req_body_data, _AMPER)) {          /* | | */
+                param_val_len = strlen(param) - 2;                    /* | |
+                                                                         | | */
+                       if (strncmp("h=", param, 2) == 0) { /* <----------+ | */
+                    hostname = strncpy(hostname,param+2,param_val_len); /* | */
+                    hostname[param_val_len] = '\0';                     /* | */
+                } else if (strncmp("f=", param, 2) == 0) { /* <------------+ */
+                    fmt      = strncpy(fmt,     param+2,param_val_len);
+                    fmt     [param_val_len] = '\0';
+                }
+            }
+
+            free(req_body_data_);
         }
     }
 
     if ((hostname == NULL) || (strlen(hostname) == 0            )
                            || (strlen(hostname)  > HOST_NAME_MAX)) {
 
-//      hostname = strcpy(hostname, _DEF_HOSTNAME);
-        hostname = _DEF_HOSTNAME;
+        hostname = strcpy(hostname, _DEF_HOSTNAME);
     }
 
     if ((fmt      == NULL) || (strlen(fmt     )  < 3            )
                            || (strlen(fmt     )  > 4            )) {
 
-//      fmt      = strcpy(fmt,      _PRM_FMT_JSON);
-        fmt      = _PRM_FMT_JSON;
+        fmt      = strcpy(fmt,      _PRM_FMT_JSON);
     } else {
         for (i = 0; fmt[i]; i++) { fmt[i] = tolower(fmt[i]); }
 
@@ -93,8 +117,7 @@ void _request_handler(      SoupServer        *dmn,
         }
 
         if (!_fmt) {
-//          fmt  = strcpy(fmt,      _PRM_FMT_JSON);
-            fmt  = _PRM_FMT_JSON;
+            fmt  = strcpy(fmt,      _PRM_FMT_JSON);
         }
     }
 
@@ -112,6 +135,11 @@ void _request_handler(      SoupServer        *dmn,
                               resp_buffer, strlen(resp_buffer));
 
     free(HDR_CONTENT_TYPE_V);
+
+    if (mtd == SOUP_METHOD_POST) {
+        free(fmt     );
+        free(hostname);
+    }
 }
 
 /* The daemon entry point. */
