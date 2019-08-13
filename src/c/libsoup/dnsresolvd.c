@@ -22,9 +22,7 @@ void _request_handler(      SoupServer        *dmn,
                             SoupClientContext *cln,
                             gpointer           usr) {
 
-    char *resp_buffer = "<!DOCTYPE html><html><head><title>" _DMN_NAME \
-                        "</title></head><body><div>"         _DMN_NAME \
-                        "</div></body></html>";
+    char *resp_buffer, ver[2];
 
     char *mtd;
 
@@ -43,6 +41,8 @@ void _request_handler(      SoupServer        *dmn,
         _PRM_FMT_HTML,
         _PRM_FMT_JSON
     };
+
+    ADDR_VER *addr_ver;
 
     char *HDR_CONTENT_TYPE_V;
 
@@ -135,13 +135,56 @@ void _request_handler(      SoupServer        *dmn,
     /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
 
-    ADDR_VER *addr_ver;
-
     addr_ver       = malloc(sizeof(ADDR_VER));
     addr_ver->addr = malloc(INET6_ADDRSTRLEN);
 
     /* Performing DNS lookup for the given hostname. */
     addr_ver = dns_lookup(addr_ver, hostname);
+
+           if (strcmp(fmt, _PRM_FMT_HTML) == 0) {
+        resp_buffer = g_strconcat("<!DOCTYPE html>",                                       _NEW_LINE,
+"<html lang=\"en-US\" dir=\"ltr\">",                                                       _NEW_LINE,
+"<head>",                                                                                  _NEW_LINE,
+"<meta http-equiv=\"", _HDR_CONTENT_TYPE_N,                            "\"    content=\"",
+                       _HDR_CONTENT_TYPE_V_HTML,                       "\"           />",  _NEW_LINE,
+"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />",  _NEW_LINE,
+"<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />",  _NEW_LINE,
+"<title>",  _DMN_NAME, "</title>",                                                         _NEW_LINE,
+"</head>",                                                                                 _NEW_LINE,
+"<body>",                                                                                  _NEW_LINE,
+"<div>",     hostname, _ONE_SPACE_STRING, NULL);
+    } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+    }
+
+    /* If lookup error occurred. */
+    if (strcmp(addr_ver->addr, _ERR_PREFIX) == 0) {
+               if (strcmp(fmt, _PRM_FMT_HTML) == 0) {
+            resp_buffer = g_strconcat(resp_buffer,
+                               _ERR_PREFIX,
+                               _COLON_SPACE_SEP,
+                               _ERR_COULD_NOT_LOOKUP, NULL);
+        } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+        }
+    } else {
+        sprintf(ver, "%u", addr_ver->ver);
+
+               if (strcmp(fmt, _PRM_FMT_HTML) == 0) {
+            resp_buffer = g_strconcat(resp_buffer,
+                                addr_ver->addr,
+                               _ONE_SPACE_STRING,
+                               _DAT_VERSION_V,
+                                ver, NULL);
+        } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+        }
+    }
+
+           if (strcmp(fmt, _PRM_FMT_HTML) == 0) {
+        resp_buffer = g_strconcat(resp_buffer,
+                            "</div>",  _NEW_LINE
+                            "</body>", _NEW_LINE
+                            "</html>", _NEW_LINE, NULL);
+    } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+    }
 
     /* Adding headers to the response. */
     HDR_CONTENT_TYPE_V = add_response_headers(msg->response_headers, fmt);
