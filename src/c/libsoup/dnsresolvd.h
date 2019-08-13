@@ -25,16 +25,18 @@
 #include <libsoup/soup.h>
 #include <glib.h>
 #include <glib-unix.h>
+#include <json-glib/json-glib.h>
 
 #include <netdb.h>
 #include <arpa/inet.h>
 
 /* Helper constants. */
 #define _EMPTY_STRING       ""
-#define _ONE_SPACE_STRING  " "
+#define _COLON_SPACE_SEP  ": "
 #define _COMMA_SPACE_SEP  ", "
 #define _NEW_LINE         "\n"
 #define _AMPER             "&"
+#define _ONE_SPACE_STRING  " "
 #define _PRINT_BANNER_OPT "-V"
 
 /* Common error messages. */
@@ -46,6 +48,7 @@
 #define _ERR_SRV_UNKNOWN_REASON        "for an unknown reason. Exiting..."
 #define _ERR_SRV_PORT_IS_IN_USE        "due to the port requested is in use. "\
                                        "Exiting..."
+#define _ERR_COULD_NOT_LOOKUP          "could not lookup hostname"
 #define _ERR_ADDR_ALREADY_IN_USE       "Address already in use"
 
 /* Print this error message when there are no any args passed. */
@@ -70,6 +73,7 @@
 #define _PRM_FMT_JSON "json"
 
 /* HTTP response headers. */
+#define _HDR_CONTENT_TYPE_N      "Content-Type"
 #define _HDR_CONTENT_TYPE_V_HTML "text/html; charset=UTF-8"
 #define _HDR_CONTENT_TYPE_V_JSON "application/json"
 #define _HDR_CACHE_CONTROL_N     "Cache-Control"
@@ -78,6 +82,12 @@
 #define _HDR_EXPIRES_V           "Thu, 01 Dec 1994 16:00:00 GMT"
 #define _HDR_PRAGMA_N            "Pragma"
 #define _HDR_PRAGMA_V            "no-cache"
+
+/* Response data names. */
+#define _DAT_HOSTNAME_N "hostname"
+#define _DAT_ADDRESS_N  "address"
+#define _DAT_VERSION_N  "version"
+#define _DAT_VERSION_V  "IPv"
 
 /* Daemon name, version, and copyright banners. */
 #define _DMN_NAME        "DNS Resolver Daemon (dnsresolvd)"
