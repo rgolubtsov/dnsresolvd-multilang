@@ -25,6 +25,7 @@
 #include <libsoup/soup.h>
 #include <glib.h>
 #include <glib-unix.h>
+#include <json-glib/json-glib.h>
 
 #include <netdb.h>
 #include <arpa/inet.h>
@@ -83,7 +84,10 @@
 #define _HDR_PRAGMA_V            "no-cache"
 
 /* Response data names. */
-#define _DAT_VERSION_V "IPv"
+#define _DAT_HOSTNAME_N "hostname"
+#define _DAT_ADDRESS_N  "address"
+#define _DAT_VERSION_N  "version"
+#define _DAT_VERSION_V  "IPv"
 
 /* Daemon name, version, and copyright banners. */
 #define _DMN_NAME        "DNS Resolver Daemon (dnsresolvd)"

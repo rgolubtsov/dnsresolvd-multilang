@@ -44,6 +44,9 @@ void _request_handler(      SoupServer        *dmn,
 
     ADDR_VER *addr_ver;
 
+    JsonNode   *node;
+    JsonObject *jobj;
+
     char *HDR_CONTENT_TYPE_V;
 
     /* --------------------------------------------------------------------- */
@@ -141,6 +144,9 @@ void _request_handler(      SoupServer        *dmn,
     /* Performing DNS lookup for the given hostname. */
     addr_ver = dns_lookup(addr_ver, hostname);
 
+    node = json_node_new(JSON_NODE_OBJECT);
+    jobj = json_object_new();
+
            if (strcmp(fmt, _PRM_FMT_HTML) == 0) {
         resp_buffer = g_strconcat("<!DOCTYPE html>",                                       _NEW_LINE,
 "<html lang=\"en-US\" dir=\"ltr\">",                                                       _NEW_LINE,
@@ -154,6 +160,7 @@ void _request_handler(      SoupServer        *dmn,
 "<body>",                                                                                  _NEW_LINE,
 "<div>",     hostname, _ONE_SPACE_STRING, NULL);
     } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+        json_object_set_string_member(jobj, _DAT_HOSTNAME_N, hostname);
     }
 
     /* If lookup error occurred. */
@@ -164,6 +171,9 @@ void _request_handler(      SoupServer        *dmn,
                                _COLON_SPACE_SEP,
                                _ERR_COULD_NOT_LOOKUP, NULL);
         } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+            json_object_set_string_member(jobj,
+                               _ERR_PREFIX,
+                               _ERR_COULD_NOT_LOOKUP);
         }
     } else {
         sprintf(ver, "%u", addr_ver->ver);
@@ -175,6 +185,13 @@ void _request_handler(      SoupServer        *dmn,
                                _DAT_VERSION_V,
                                 ver, NULL);
         } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+            json_object_set_string_member(jobj,
+                               _DAT_ADDRESS_N,
+                                addr_ver->addr);
+            json_object_set_string_member(jobj,
+                               _DAT_VERSION_N,
+                   g_strconcat(_DAT_VERSION_V,
+                                ver, NULL));
         }
     }
 
@@ -184,7 +201,11 @@ void _request_handler(      SoupServer        *dmn,
                             "</body>", _NEW_LINE
                             "</html>", _NEW_LINE, NULL);
     } else if (strcmp(fmt, _PRM_FMT_JSON) == 0) {
+        resp_buffer = json_to_string(json_node_init_object(node, jobj), false);
     }
+
+    json_object_unref(jobj);
+    json_node_free   (node);
 
     /* Adding headers to the response. */
     HDR_CONTENT_TYPE_V = add_response_headers(msg->response_headers, fmt);
@@ -197,6 +218,8 @@ void _request_handler(      SoupServer        *dmn,
 
     free(addr_ver->addr);
     free(addr_ver      );
+
+    g_free(resp_buffer);
 
     if ((qry == NULL) || (mtd == SOUP_METHOD_POST)) {
         free(fmt     );
