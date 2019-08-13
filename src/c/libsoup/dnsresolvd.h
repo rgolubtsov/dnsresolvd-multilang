@@ -26,6 +26,9 @@
 #include <glib.h>
 #include <glib-unix.h>
 
+#include <netdb.h>
+#include <arpa/inet.h>
+
 /* Helper constants. */
 #define _EMPTY_STRING       ""
 #define _ONE_SPACE_STRING  " "
@@ -35,6 +38,7 @@
 #define _PRINT_BANNER_OPT "-V"
 
 /* Common error messages. */
+#define _ERR_PREFIX                    "error"
 #define _ERR_PORT_MUST_BE_POSITIVE_INT "%s: <port_number> must be "           \
                                        "a positive integer value, "           \
                                        "in the range 1024-49151."
@@ -87,6 +91,21 @@
 /** Constant: The default hostname to look up for. */
 #define _DEF_HOSTNAME "openbsd.org"
 
+/**
+ * The structure to hold IP address of the analyzing host/service
+ * and corresponding IP version (family) used to look up in DNS:
+ * <code>4</code> for IPv4-only hosts,
+ * <code>6</code> for IPv6-capable hosts.
+ */
+typedef struct {
+    char           *addr;
+    unsigned short  ver;
+} ADDR_VER;
+
+/* Performs DNS lookup action for the given hostname. */
+ADDR_VER *dns_lookup(ADDR_VER *, const char *);
+
+/* Adds headers to the response. */
 char *add_response_headers(SoupMessageHeaders *, const char *);
 
 /* Helper protos. */
