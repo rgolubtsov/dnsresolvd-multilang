@@ -131,21 +131,29 @@ void _request_handler(      SoupServer        *dmn,
             fmt  = strcpy(fmt,      _PRM_FMT_JSON);
         }
     }
-
-    puts(hostname);
-    puts(fmt     );
     /* --------------------------------------------------------------------- */
     /* --- Parsing and validating request params - End --------------------- */
     /* --------------------------------------------------------------------- */
 
+    ADDR_VER *addr_ver;
+
+    addr_ver       = malloc(sizeof(ADDR_VER));
+    addr_ver->addr = malloc(INET6_ADDRSTRLEN);
+
+    /* Performing DNS lookup for the given hostname. */
+    addr_ver = dns_lookup(addr_ver, hostname);
+
     /* Adding headers to the response. */
-    HDR_CONTENT_TYPE_V = add_response_headers(msg->response_headers, /*fmt*/_PRM_FMT_HTML);
+    HDR_CONTENT_TYPE_V = add_response_headers(msg->response_headers, fmt);
 
     soup_message_set_status  (msg, SOUP_STATUS_OK);
     soup_message_set_response(msg, HDR_CONTENT_TYPE_V, SOUP_MEMORY_COPY,
                               resp_buffer, strlen(resp_buffer));
 
     free(HDR_CONTENT_TYPE_V);
+
+    free(addr_ver->addr);
+    free(addr_ver      );
 
     if ((qry == NULL) || (mtd == SOUP_METHOD_POST)) {
         free(fmt     );
@@ -305,6 +313,49 @@ int main(int argc, char *const *argv) {
     _cleanups_fixate(loop);
 
     return ret;
+}
+
+/**
+ * Performs DNS lookup action for the given hostname,
+ * i.e. (in this case) IP address retrieval by hostname.
+ *
+ * @param addr_ver The pointer to a structure containing IP address
+ *                 of the analyzing host/service and corresponding
+ *                 IP version (family) used to look up in DNS:
+ *                 <code>4</code> for IPv4-only hosts,
+ *                 <code>6</code> for IPv6-capable hosts.
+ * @param hostname The effective hostname to look up for.
+ *
+ * @return The <code>addr_ver</code> pointer is returned.
+ */
+ADDR_VER *dns_lookup(ADDR_VER *addr_ver, const char *hostname) {
+    struct hostent *hent;
+
+    hent = gethostbyname2(hostname, AF_INET);
+
+    /*
+     * If the host doesn't have the A record (IPv4),
+     * trying to find its AAAA record (IPv6).
+     */
+    if (hent == NULL) {
+        hent = gethostbyname2(hostname, AF_INET6);
+
+        if (hent == NULL) {
+            addr_ver->addr = strcpy(addr_ver->addr, _ERR_PREFIX);
+        } else {
+            addr_ver->addr = (char *) inet_ntop(AF_INET6, hent->h_addr_list[0],
+            addr_ver->addr,                        INET6_ADDRSTRLEN);
+
+            addr_ver->ver  = 6;
+        }
+    } else {
+        addr_ver->addr     = (char *) inet_ntop(AF_INET,  hent->h_addr_list[0],
+        addr_ver->addr,                            INET_ADDRSTRLEN);
+
+        addr_ver->ver      = 4;
+    }
+
+    return addr_ver;
 }
 
 /**
