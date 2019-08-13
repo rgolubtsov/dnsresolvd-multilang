@@ -26,7 +26,7 @@ CFLAGS = -Wall -pedantic -std=$(C_STD) -O3 \
 # function -- very important when building for Linux.
 #CFLAGS += -D_DEFAULT_SOURCE
 
-LDLIBS = -lsoup-2.4 -lglib-2.0
+LDLIBS = -lsoup-2.4 -lglib-2.0 -ljson-glib-1.0
 
 # If we're on OpenBSD, invoke its gcc from packages
 # instead of implicitly using its system default gcc or clang.
@@ -37,6 +37,7 @@ else
     CFLAGS += -I/usr/include/libsoup-2.4
     CFLAGS += -I/usr/include/glib-2.0
     CFLAGS += -I/usr/lib/glib-2.0/include
+    CFLAGS += -I/usr/include/json-glib-1.0
 endif
 
 # Making the target.
