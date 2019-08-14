@@ -10,7 +10,7 @@
 * **[Building](#building)**
   * [Building under OpenBSD/amd64 6.5](#building-under-openbsdamd64-65)
   * [Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16046-lts-x86-64)
-  * [Building under Arch Linux (kernel 4.15.10-1-ARCH x86-64)](#building-under-arch-linux-kernel-41510-1-arch-x86-64)
+  * [Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)](#building-under-arch-linux-kernel-522-arch1-1-arch-x86-64)
 * **[Running](#running)**
 
 ## Building
@@ -88,7 +88,7 @@ $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=4598dfb6e593925e7abb04ffe32e1608534d868a, not stripped
 ```
 
-### Building under Arch Linux (kernel 4.15.10-1-ARCH x86-64)
+### Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)
 
 This is quite equal to the process of building the daemon under Ubuntu. Install the necessary dependencies:
 
@@ -98,7 +98,7 @@ $
 $ sudo pacman -Sy libmicrohttpd
 ```
 
-The version of the compiler GCC used is 7.3.0. The version of the library GNU libmicrohttpd used is 0.9.59.
+The version of the compiler GCC used is 9.1.0. The version of the library GNU libmicrohttpd used is 0.9.65.
 
 Now let's build the daemon.
 
@@ -106,18 +106,18 @@ Now let's build the daemon.
 $ cd src/c/libmicrohttpd
 $ make clean && make all
 rm -f dnsresolvd dnsresolvd.o
-cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE -I/usr/local/include   -c -o dnsresolvd.o dnsresolvd.c
-dnsresolvd.c: In function '_request_handler':
-dnsresolvd.c:371:27: warning: '%u' directive writing between 1 and 5 bytes into a region of size 2 [-Wformat-overflow=]
-         sprintf(ver_str, "%u", ver);
-                           ^~
+cc -Wall -pedantic -std=c99 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
+dnsresolvd.c: In function ‘_request_handler’:
+dnsresolvd.c:371:27: warning: ‘%u’ directive writing between 1 and 5 bytes into a region of size 2 [-Wformat-overflow=]
+  371 |         sprintf(ver_str, "%u", ver);
+      |                           ^~
 dnsresolvd.c:371:26: note: directive argument in the range [0, 65535]
-         sprintf(ver_str, "%u", ver);
-                          ^~~~
-dnsresolvd.c:371:9: note: 'sprintf' output between 2 and 6 bytes into a destination of size 2
-         sprintf(ver_str, "%u", ver);
-         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-cc -L/usr/local/lib  dnsresolvd.o  -lmicrohttpd -o dnsresolvd
+  371 |         sprintf(ver_str, "%u", ver);
+      |                          ^~~~
+dnsresolvd.c:371:9: note: ‘sprintf’ output between 2 and 6 bytes into a destination of size 2
+  371 |         sprintf(ver_str, "%u", ver);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
 ```
 
 Once this is done, check it out... just for fun:))
