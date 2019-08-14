@@ -29,6 +29,7 @@
 
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 
 /* Helper constants. */
 #define _EMPTY_STRING       ""
