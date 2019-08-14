@@ -17,10 +17,9 @@ DEPS = $(EXEC).o
 
 # Specify flags and other vars here.
 # The following standards-compliance options work well with gcc 4.9.4
-# (OpenBSD 6.3, from packages):
+# (OpenBSD 6.5, from packages):
 #C_STD = c90 # Same as c89, same as -ansi .
-#C_STD = c99
-C_STD = c11
+C_STD = c99
 
 CFLAGS = -Wall -pedantic -std=$(C_STD) -O3 \
          -march=x86-64 -mtune=generic -pipe -fstack-protector-strong
@@ -36,9 +35,7 @@ LDLIBS = -lmicrohttpd
 # instead of implicitly using its system default gcc or clang.
 ifeq ($(shell uname), OpenBSD)
     CC = egcc
-else
-    CFLAGS  += -I/usr/local/include
-    LDFLAGS += -L/usr/local/lib
+    CFLAGS += -I/usr/local/include
 endif
 
 # Making the target.

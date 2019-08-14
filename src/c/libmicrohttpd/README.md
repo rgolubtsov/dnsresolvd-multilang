@@ -8,7 +8,7 @@
 ## Table of Contents
 
 * **[Building](#building)**
-  * [Building under OpenBSD/amd64 6.3](#building-under-openbsdamd64-63)
+  * [Building under OpenBSD/amd64 6.5](#building-under-openbsdamd64-65)
   * [Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16044-lts-x86-64)
   * [Building under Arch Linux (kernel 4.15.10-1-ARCH x86-64)](#building-under-arch-linux-kernel-41510-1-arch-x86-64)
 * **[Running](#running)**
@@ -17,9 +17,9 @@
 
 This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
 
-### Building under OpenBSD/amd64 6.3
+### Building under OpenBSD/amd64 6.5
 
-**Dependencies:** The only build and runtime dependency is the main library &ndash; **GNU libmicrohttpd**. ~~Since OpenBSD doesn't have it neither in packages nor in ports, it needs to build it from source.~~ In OpenBSD 6.3 it is prebuilt as a package &ndash; `libmicrohttpd-0.9.59.tgz` can be installed as usual: `$ sudo pkg_add -vvvvv libmicrohttpd`. Assuming the compiler GCC 4.9.4 is installed (preferably from packages: `$ sudo pkg_add -vvvvv gcc`)~~, the build process is straightforward, just as stated in the docs (download, unpack, configure, build, install):~~
+**Dependencies:** The only build and runtime dependency is the main library &ndash; **GNU libmicrohttpd**. ~~Since OpenBSD doesn't have it neither in packages nor in ports, it needs to build it from source.~~ In OpenBSD 6.5 it is prebuilt as a package &ndash; `libmicrohttpd-0.9.63.tgz` can be installed as usual: `$ sudo pkg_add -vvvvv libmicrohttpd`. Assuming the compiler GCC 4.9.4 is installed (preferably from packages: `$ sudo pkg_add -vvvvv gcc`)~~, the build process is straightforward, just as stated in the docs (download, unpack, configure, build, install):~~
 
 (Note that prior to this the **GNU make** package needs to be installed: `$ sudo pkg_add -vvvvv gmake`.)
 
@@ -29,15 +29,8 @@ Now the daemon might be built.
 $ cd src/c/libmicrohttpd
 $ gmake clean && gmake all
 rm -f dnsresolvd dnsresolvd.o
-egcc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
+egcc -Wall -pedantic -std=c99 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE -I/usr/local/include   -c -o dnsresolvd.o dnsresolvd.c
 egcc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
-dnsresolvd.o: In function `_request_handler':
-dnsresolvd.c:(.text+0x754): warning: sprintf() is often misused, please use snprintf()
-dnsresolvd.c:(.text+0x3ed): warning: strcat() is almost always misused, please use strlcat()
-dnsresolvd.o: In function `_query_params_iterator':
-dnsresolvd.c:(.text+0xe4): warning: strcpy() is almost always misused, please use strlcpy()
-/usr/local/lib/gcc/x86_64-unknown-openbsd6.3/4.9.4/../../../libunistring.so.0.1: warning: stpcpy() is dangerous; do not use it
-/usr/local/lib/gcc/x86_64-unknown-openbsd6.3/4.9.4/../../../libgmp.so.10.0: warning: vsprintf() is often misused, please use vsnprintf()
 ```
 
 Once this is done, check it out... just for fun:))
