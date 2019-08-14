@@ -22,7 +22,7 @@ void _request_handler(      SoupServer        *dmn,
                             SoupClientContext *cln,
                             gpointer           usr) {
 
-    char *resp_buffer, ver[2];
+    char *resp_buffer, ver[2], *ver_;
 
     char *mtd;
 
@@ -188,10 +188,15 @@ void _request_handler(      SoupServer        *dmn,
             json_object_set_string_member(jobj,
                                _DAT_ADDRESS_N,
                                 addr_ver->addr);
+
+            ver_ = g_strconcat(_DAT_VERSION_V,
+                                ver, NULL);
+
             json_object_set_string_member(jobj,
                                _DAT_VERSION_N,
-                   g_strconcat(_DAT_VERSION_V,
-                                ver, NULL));
+                                ver_);
+
+            g_free(ver_);
         }
     }
 
