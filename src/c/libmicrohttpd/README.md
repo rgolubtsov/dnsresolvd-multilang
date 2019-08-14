@@ -9,7 +9,7 @@
 
 * **[Building](#building)**
   * [Building under OpenBSD/amd64 6.5](#building-under-openbsdamd64-65)
-  * [Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16044-lts-x86-64)
+  * [Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16046-lts-x86-64)
   * [Building under Arch Linux (kernel 4.15.10-1-ARCH x86-64)](#building-under-arch-linux-kernel-41510-1-arch-x86-64)
 * **[Running](#running)**
 
@@ -50,7 +50,7 @@ $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1
 ```
 
-### Building under Ubuntu Server (Ubuntu 16.04.4 LTS x86-64)
+### Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)
 
 **Dependencies:** The only build and runtime dependency is the main library &ndash; **GNU libmicrohttpd**. It has to be installed from packages:
 
@@ -67,8 +67,8 @@ Now let's build the daemon.
 $ cd src/c/libmicrohttpd
 $ make clean && make all
 rm -f dnsresolvd dnsresolvd.o
-cc -Wall -pedantic -std=c11 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE -I/usr/local/include   -c -o dnsresolvd.o dnsresolvd.c
-cc -L/usr/local/lib  dnsresolvd.o  -lmicrohttpd -o dnsresolvd
+cc -Wall -pedantic -std=c99 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE   -c -o dnsresolvd.o dnsresolvd.c
+cc   dnsresolvd.o  -lmicrohttpd -o dnsresolvd
 ```
 
 Once this is done, check it out... just for fun:))
@@ -141,7 +141,7 @@ dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically 
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-OpenBSD/amd64 | Arch Linux:
+OpenBSD/amd64 | Ubuntu Server LTS x86-64 | Arch Linux:
 
 ```
 $ ./src/c/libmicrohttpd/dnsresolvd 8765
