@@ -24,9 +24,10 @@ CFLAGS = -Wall -pedantic -std=$(C_STD) -O3 \
 # Telling the compiler to use additional set of features including those
 # from BSD and SVID, e.g. this macro explicitly declares the gethostbyname2()
 # function -- very important when building for Linux.
-#CFLAGS += -D_DEFAULT_SOURCE
+CFLAGS += -D_DEFAULT_SOURCE
 
-LDLIBS = -lsoup-2.4 -lglib-2.0 -ljson-glib-1.0
+CFLAGS += `pkg-config --cflags-only-I libsoup-2.4 json-glib-1.0`
+LDLIBS  = `pkg-config   --libs-only-l libsoup-2.4 json-glib-1.0`
 
 # If we're on OpenBSD, invoke its gcc from packages
 # instead of implicitly using its system default gcc or clang.
@@ -34,10 +35,7 @@ ifeq ($(shell uname), OpenBSD)
     CC = egcc
 else
     CC = tcc
-    CFLAGS += -I/usr/include/libsoup-2.4
-    CFLAGS += -I/usr/include/glib-2.0
-    CFLAGS += -I/usr/lib/glib-2.0/include
-    CFLAGS += -I/usr/include/json-glib-1.0
+#   CC = cc
 endif
 
 # Making the target.

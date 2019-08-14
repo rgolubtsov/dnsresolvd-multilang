@@ -22,7 +22,7 @@ void _request_handler(      SoupServer        *dmn,
                             SoupClientContext *cln,
                             gpointer           usr) {
 
-    char *resp_buffer, ver[2], *ver_;
+    char *resp_buffer = NULL, ver[2], *ver_;
 
     char *mtd;
 
@@ -91,7 +91,7 @@ void _request_handler(      SoupServer        *dmn,
                        |            +--------------------------------------+
                        +-------------------------------------------------+ |
                                                                          | | */
-            while (param = strsep(&req_body_data, _AMPER)) {          /* | | */
+            while ((param = strsep(&req_body_data, _AMPER))) {        /* | | */
                 param_val_len = strlen(param) - 2;                    /* | |
                                                                          | | */
                        if (strncmp("h=", param, 2) == 0) { /* <----------+ | */
@@ -440,7 +440,7 @@ ADDR_VER *dns_lookup(ADDR_VER *addr_ver, const char *hostname) {
  *         function.
  */
 char *add_response_headers(SoupMessageHeaders *resp_hdrs, const char *fmt) {
-    char *HDR_CONTENT_TYPE_V;
+    char *HDR_CONTENT_TYPE_V = NULL;
 
     soup_message_headers_append(resp_hdrs, _HDR_CACHE_CONTROL_N,
                                            _HDR_CACHE_CONTROL_V);
