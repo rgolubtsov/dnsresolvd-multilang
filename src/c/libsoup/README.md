@@ -1,0 +1,129 @@
+# DNS Resolver Daemon written in C
+
+**A daemon that performs DNS lookups for the given hostname passed in an HTTP request
+<br />(using the [GNOME libsoup](https://developer.gnome.org/libsoup "GNOME libsoup") HTTP client/server library)**
+
+---
+
+## Table of Contents
+
+* **[Building](#building)**
+  * [Building under OpenBSD/amd64 6.5](#building-under-openbsdamd64-65)
+  * [Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16046-lts-x86-64)
+  * [Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)](#building-under-arch-linux-kernel-522-arch1-1-arch-x86-64)
+* **[Running](#running)**
+
+## Building
+
+This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
+
+### Building under OpenBSD/amd64 6.5
+
+Install the necessary dependencies (`gmake`, `gcc`, `libsoup`, `json-glib`):
+
+```
+$ sudo pkg_add -vvvvv gmake gcc libsoup json-glib
+$
+$ egcc --version
+egcc (GCC) 4.9.4
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
+Now the daemon might be built.
+
+```
+$ cd src/c/libsoup
+$ gmake clean && gmake all
+rm -f dnsresolvd dnsresolvd.o
+egcc -Wall -pedantic -std=c99 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE `pkg-config --cflags-only-I libsoup-2.4 json-glib-1.0`   -c -o dnsresolvd.o dnsresolvd.c
+egcc   dnsresolvd.o  `pkg-config   --libs-only-l libsoup-2.4 json-glib-1.0` -o dnsresolvd
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al
+total 144
+drwxr-xr-x  2 <username>  <usergroup>    512 Aug 15 21:50 .
+drwxr-xr-x  4 <username>  <usergroup>    512 Aug 14 13:10 ..
+-rw-r--r--  1 <username>  <usergroup>   1536 Aug 15 21:50 Makefile
+-rw-r--r--  1 <username>  <usergroup>      0 Aug 15 21:50 README.md
+-rwxr-xr-x  1 <username>  <usergroup>  23104 Aug 15 21:50 dnsresolvd
+-rw-r--r--  1 <username>  <usergroup>  17762 Aug 15 21:50 dnsresolvd.c
+-rw-r--r--  1 <username>  <usergroup>   4494 Aug 15 21:50 dnsresolvd.h
+-rw-r--r--  1 <username>  <usergroup>  17192 Aug 15 21:50 dnsresolvd.o
+$
+$ file dnsresolvd
+dnsresolvd: ELF 64-bit LSB shared object, x86-64, version 1
+$
+$ ldd dnsresolvd
+dnsresolvd:
+        Start            End              Type  Open Ref GrpRef Name
+        000002489063a000 0000024890640000 exe   2    0   0      dnsresolvd
+        0000024af3524000 0000024af35c4000 rlib  0    1   0      /usr/local/lib/libsoup-2.4.so.10.2
+        0000024a9257d000 0000024a925ab000 rlib  0    1   0      /usr/local/lib/libjson-glib-1.0.so.6.0
+        0000024ae22f9000 0000024ae24ee000 rlib  0    3   0      /usr/local/lib/libgio-2.0.so.4200.8
+        0000024b25a6d000 0000024b25ac6000 rlib  0    4   0      /usr/local/lib/libgobject-2.0.so.4200.8
+        0000024a9e1ce000 0000024a9e308000 rlib  0    6   0      /usr/local/lib/libglib-2.0.so.4201.1
+        0000024af54b1000 0000024af54be000 rlib  0    8   0      /usr/local/lib/libintl.so.6.0
+        0000024b75176000 0000024b7526b000 rlib  0    1   0      /usr/lib/libc.so.95.0
+        0000024abd870000 0000024abda2a000 rlib  0    1   0      /usr/local/lib/libxml2.so.16.1
+        0000024ae4f08000 0000024ae50bb000 rlib  0    1   0      /usr/local/lib/libsqlite3.so.37.5
+        0000024b12bae000 0000024b12bc1000 rlib  0    1   0      /usr/local/lib/libpsl.so.1.2
+        0000024b56d62000 0000024b56d69000 rlib  0    1   0      /usr/local/lib/libgmodule-2.0.so.4200.8
+        0000024b83322000 0000024b8333d000 rlib  0    3   0      /usr/lib/libz.so.5.0
+        0000024b5fea3000 0000024b5feaf000 rlib  0    7   0      /usr/lib/libpthread.so.26.1
+        0000024b43082000 0000024b4308d000 rlib  0    1   0      /usr/local/lib/libffi.so.1.2
+        0000024a9cfed000 0000024a9d034000 rlib  0    1   0      /usr/local/lib/libpcre.so.3.0
+        0000024afc747000 0000024afc849000 rlib  0    6   0      /usr/local/lib/libiconv.so.6.0
+        0000024b658c6000 0000024b658f3000 rlib  0    1   0      /usr/local/lib/liblzma.so.2.1
+        0000024b22da5000 0000024b22dd4000 rlib  0    2   0      /usr/lib/libm.so.10.1
+        0000024b30b69000 0000024b30b99000 rlib  0    1   0      /usr/local/lib/libidn2.so.1.0
+        0000024aa4473000 0000024aa4819000 rlib  0    2   0      /usr/local/lib/libunistring.so.0.1
+        0000024ab90fd000 0000024ab90fd000 ld.so 0    1   0      /usr/libexec/ld.so
+```
+
+### Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)
+
+### Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)
+
+## Running
+
+To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
+
+OpenBSD/amd64:
+
+```
+$ ./src/c/libsoup/dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
+
+Example of making **GET** and **POST** requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=openports.se&f=xml'
+{"hostname":"openports.se","address":"37.49.241.43","version":"IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.google.com&f=HTml' http://localhost:8765
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+<meta http-equiv="Content-Type"    content="text/html; charset=UTF-8"           />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"                            />
+<meta       name="viewport"        content="width=device-width,initial-scale=1" />
+<title>DNS Resolver Daemon (dnsresolvd)</title>
+</head>
+<body>
+<div>ipv6.google.com 2a00:1450:401b:804::200e IPv6</div>
+</body>
+</html>
+
+=== 200
+=== text/html; charset=UTF-8
+```
+
