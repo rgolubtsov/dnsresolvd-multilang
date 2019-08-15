@@ -1,0 +1,74 @@
+#
+# .travis.yml
+# =============================================================================
+# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# =============================================================================
+# A daemon that performs DNS lookups for the given hostname
+# passed in an HTTP request, with the focus on its implementation
+# using various programming languages.
+#
+# This is the configuration of the project characteristics
+# used by the Travis CI (continuous integration) service
+# to rebuild the project on every push and pull request.
+#
+
+%YAML 1.1
+---
+
+language: generic
+
+sudo: required
+
+dist: xenial
+
+before_install:
+    - sudo apt-get update
+
+    ## Installing required GNU and GNOME libs to build */C impls.
+    - sudo apt-get install libmicrohttpd-dev libsoup2.4-dev libjson-glib-dev -y
+
+    ## Installing the Tiny C Compiler (TCC) to build libsoup/C impl.
+    - sudo apt-get install tcc
+
+script:
+    ## TODO: Building all the packages under src/.
+    - cd src && ls -al
+
+    ## TODO: Building all the packages under c/.
+    - cd c && ls -al
+
+    ## Building the DNS Resolver Daemon as the libmicrohttpd/C impl.
+    - cd libmicrohttpd && ls -al
+                       && make clean
+                       && make clean
+                       && ls -al
+                       && make all
+                       && make all
+                       && ls -al
+                       && echo
+
+    ## Returning to the previous working dir.
+    - cd - && ls -al
+
+    ## Building the DNS Resolver Daemon as the libsoup/C impl.
+    - cd libsoup && ls -al
+                 && make clean
+                 && make clean
+                 && ls -al
+                 && make all
+                 && make all
+                 && ls -al
+                 && echo
+
+    ## Returning to the previous working dir.
+    - cd - && ls -al
+
+    ## Going one level up.
+    - cd .. && ls -al
+
+    ## Going one level up.
+    - cd .. && ls -al
+
+...
+
+# vim:set nu et ts=4 sw=4:
