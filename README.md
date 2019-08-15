@@ -1,4 +1,4 @@
-# DNS Resolver Daemon (dnsresolvd)
+# DNS Resolver Daemon (dnsresolvd) [![Build Status](https://travis-ci.org/rgolubtsov/dnsresolvd-multilang.svg?branch=master)](https://travis-ci.org/rgolubtsov/dnsresolvd-multilang)
 
 **A daemon that performs DNS lookups for the given hostname passed in an HTTP request,
 <br />with the focus on its implementation using various programming languages**
