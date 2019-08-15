@@ -22,12 +22,12 @@ void _request_handler(      SoupServer        *dmn,
                             SoupClientContext *cln,
                             gpointer           usr) {
 
-    char *resp_buffer = NULL, ver[2], *ver_;
-
-    char *mtd;
+    char *mtd, *resp_buffer = NULL, ver[2], *ver_;
 
     char *hostname; /* The effective hostname to look up for. */
     char *fmt;      /* The response format selector.          */
+
+    bool hostname_to_free = false, fmt_to_free = false;
 
     SoupMessageBody *req_body;
 
@@ -67,6 +67,16 @@ void _request_handler(      SoupServer        *dmn,
                                                   |
                                                   v */
             fmt       = g_hash_table_lookup(qry, "f");
+
+            if (hostname == NULL) {
+                hostname         = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+                hostname_to_free = true;
+            }
+
+            if (fmt      == NULL) {
+                fmt              = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
+                fmt_to_free      = true;
+            }
         } else {
             hostname  = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
             fmt       = malloc(sizeof(char) * (HOST_NAME_MAX + 1));
@@ -109,15 +119,11 @@ void _request_handler(      SoupServer        *dmn,
         return; /* <== In case of HTTP method not supported. */
     }
 
-    if ((hostname == NULL) || (strlen(hostname) == 0            )
-                           || (strlen(hostname)  > HOST_NAME_MAX)) {
-
+    if ((strlen(hostname) == 0) || (strlen(hostname) > HOST_NAME_MAX)) {
         hostname = strcpy(hostname, _DEF_HOSTNAME);
     }
 
-    if ((fmt      == NULL) || (strlen(fmt     )  < 3            )
-                           || (strlen(fmt     )  > 4            )) {
-
+    if ((strlen(fmt     )  < 3) || (strlen(fmt     ) > HOST_NAME_MAX)) {
         fmt      = strcpy(fmt,      _PRM_FMT_JSON);
     } else {
         for (i = 0; fmt[i]; i++) { fmt[i] = tolower(fmt[i]); }
@@ -226,7 +232,15 @@ void _request_handler(      SoupServer        *dmn,
 
     g_free(resp_buffer);
 
-    if ((qry == NULL) || (mtd == SOUP_METHOD_POST)) {
+           if (mtd == SOUP_METHOD_GET ) {
+        if (qry != NULL) {
+            if (     fmt_to_free) { free(fmt     ); }
+            if (hostname_to_free) { free(hostname); }
+        } else {
+            free(fmt     );
+            free(hostname);
+        }
+    } else if (mtd == SOUP_METHOD_POST) {
         free(fmt     );
         free(hostname);
     }
