@@ -153,11 +153,85 @@ $ ldd dnsresolvd
 
 ### Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)
 
+Install the necessary dependencies (`tcc`, `libsoup`, `json-glib`):
+
+```
+$ sudo pacman -Sy tcc libsoup json-glib
+$
+$ tcc -v
+tcc version 0.9.27 (x86_64 Linux)
+```
+
+Now the daemon might be built.
+
+```
+$ cd src/c/libsoup
+$ make clean && make all
+rm -f dnsresolvd dnsresolvd.o
+tcc -Wall -pedantic -std=c99 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE `pkg-config --cflags-only-I libsoup-2.4 json-glib-1.0`   -c -o dnsresolvd.o dnsresolvd.c
+tcc   dnsresolvd.o  `pkg-config   --libs-only-l libsoup-2.4 json-glib-1.0` -o dnsresolvd
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al
+total 84
+drwxr-xr-x 2 <username> <usergroup>  4096 Aug 15 21:50 .
+drwxr-xr-x 4 <username> <usergroup>  4096 Aug 15 19:40 ..
+-rwxr-xr-x 1 <username> <usergroup> 16716 Aug 15 21:50 dnsresolvd
+-rw-r--r-- 1 <username> <usergroup> 17762 Aug 15 21:50 dnsresolvd.c
+-rw-r--r-- 1 <username> <usergroup>  4494 Aug 15 21:50 dnsresolvd.h
+-rw-r--r-- 1 <username> <usergroup> 20636 Aug 15 21:50 dnsresolvd.o
+-rw-r--r-- 1 <username> <usergroup>  1536 Aug 15 21:50 Makefile
+-rw-r--r-- 1 <username> <usergroup>     0 Aug 15 21:50 README.md
+$
+$ file dnsresolvd
+dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, stripped
+$
+$ ldd dnsresolvd
+        linux-vdso.so.1 (0x00007ffd1a73c000)
+        libsoup-2.4.so.1 => /usr/lib/libsoup-2.4.so.1 (0x00007f0b25d55000)
+        libc.so.6 => /usr/lib/libc.so.6 (0x00007f0b25b92000)
+        libglib-2.0.so.0 => /usr/lib/libglib-2.0.so.0 (0x00007f0b25a70000)
+        libgobject-2.0.so.0 => /usr/lib/libgobject-2.0.so.0 (0x00007f0b25a14000)
+        libgio-2.0.so.0 => /usr/lib/libgio-2.0.so.0 (0x00007f0b2586b000)
+        libjson-glib-1.0.so.0 => /usr/lib/libjson-glib-1.0.so.0 (0x00007f0b25841000)
+        libgssapi_krb5.so.2 => /usr/lib/libgssapi_krb5.so.2 (0x00007f0b257ef000)
+        libxml2.so.2 => /usr/lib/libxml2.so.2 (0x00007f0b25687000)
+        libsqlite3.so.0 => /usr/lib/libsqlite3.so.0 (0x00007f0b2555c000)
+        libpsl.so.5 => /usr/lib/libpsl.so.5 (0x00007f0b25549000)
+        /lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x00007f0b25e13000)
+        libpcre.so.1 => /usr/lib/libpcre.so.1 (0x00007f0b254d6000)
+        libpthread.so.0 => /usr/lib/libpthread.so.0 (0x00007f0b254b5000)
+        libffi.so.6 => /usr/lib/libffi.so.6 (0x00007f0b254a8000)
+        libgmodule-2.0.so.0 => /usr/lib/libgmodule-2.0.so.0 (0x00007f0b254a3000)
+        libz.so.1 => /usr/lib/libz.so.1 (0x00007f0b2528c000)
+        libmount.so.1 => /usr/lib/libmount.so.1 (0x00007f0b2522c000)
+        libresolv.so.2 => /usr/lib/libresolv.so.2 (0x00007f0b25213000)
+        libkrb5.so.3 => /usr/lib/libkrb5.so.3 (0x00007f0b25125000)
+        libk5crypto.so.3 => /usr/lib/libk5crypto.so.3 (0x00007f0b250ee000)
+        libcom_err.so.2 => /usr/lib/libcom_err.so.2 (0x00007f0b250e8000)
+        libkrb5support.so.0 => /usr/lib/libkrb5support.so.0 (0x00007f0b250d8000)
+        libdl.so.2 => /usr/lib/libdl.so.2 (0x00007f0b250d3000)
+        libkeyutils.so.1 => /usr/lib/libkeyutils.so.1 (0x00007f0b250cc000)
+        libicuuc.so.64 => /usr/lib/libicuuc.so.64 (0x00007f0b24ef4000)
+        liblzma.so.5 => /usr/lib/liblzma.so.5 (0x00007f0b24ccc000)
+        libm.so.6 => /usr/lib/libm.so.6 (0x00007f0b24b86000)
+        libunistring.so.2 => /usr/lib/libunistring.so.2 (0x00007f0b24806000)
+        libidn2.so.0 => /usr/lib/libidn2.so.0 (0x00007f0b247e7000)
+        libblkid.so.1 => /usr/lib/libblkid.so.1 (0x00007f0b24791000)
+        librt.so.1 => /usr/lib/librt.so.1 (0x00007f0b24786000)
+        libicudata.so.64 => /usr/lib/libicudata.so.64 (0x00007f0b22d40000)
+        libstdc++.so.6 => /usr/lib/libstdc++.so.6 (0x00007f0b22b58000)
+        libgcc_s.so.1 => /usr/lib/libgcc_s.so.1 (0x00007f0b22b3e000)
+```
+
 ## Running
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-OpenBSD/amd64 | Ubuntu Server LTS x86-64:
+OpenBSD/amd64 | Ubuntu Server LTS x86-64 | Arch Linux:
 
 ```
 $ ./src/c/libsoup/dnsresolvd 8765
@@ -190,4 +264,3 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d 'h=ipv6.google.com&f=HT
 === 200
 === text/html; charset=UTF-8
 ```
-
