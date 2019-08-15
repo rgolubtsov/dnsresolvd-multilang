@@ -6,7 +6,7 @@
 The following implementations are on the workbench (:small_blue_diamond: &ndash; complete, :small_orange_diamond: &ndash; planned/postponed, :cd: &ndash; in progress):
 
 * :small_blue_diamond: **C ([GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd"))**: `src/c/libmicrohttpd/`
-* :cd: **C ([GNOME libsoup](https://developer.gnome.org/libsoup "GNOME libsoup"))**: `src/c/libsoup/`
+* :small_blue_diamond: **C ([GNOME libsoup](https://developer.gnome.org/libsoup "GNOME libsoup"))**: `src/c/libsoup/`
 * :small_blue_diamond: **JavaScript ([Node.js](https://nodejs.org "Node.js"))**: `src/js/`
 * :small_blue_diamond: **Lua ([Luvit](https://luvit.io "Luvit"))**: `src/lua/`
 * :small_blue_diamond: **Perl 5 ([Mojolicious](http://mojolicious.org "Mojolicious"))**: `src/perl/`
@@ -23,6 +23,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 
 * **Building** (The main prerequisite for building the daemon is the **GNU Make** utility, where applicable.)
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c/libmicrohttpd#building)
+  * [C (GNOME libsoup)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c/libsoup#building)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#building)
   * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#building)
   * [Perl 5 (Mojolicious)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/perl#building)
@@ -36,6 +37,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [Java (Eclipse Vert.x)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/java#building)
 * **Running** (Examples of making HTTP requests against the running daemon are based on using the `curl` utility.)
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c/libmicrohttpd#running)
+  * [C (GNOME libsoup)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c/libsoup#running)
   * [JavaScript (Node.js)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/js#running)
   * [Lua (Luvit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lua#running)
   * [Perl 5 (Mojolicious)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/perl#running)
