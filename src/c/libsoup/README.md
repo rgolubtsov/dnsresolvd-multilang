@@ -45,11 +45,11 @@ Once this is done, check it out... just for fun:))
 
 ```
 $ ls -al
-total 144
+total 172
 drwxr-xr-x  2 <username>  <usergroup>    512 Aug 15 21:50 .
 drwxr-xr-x  4 <username>  <usergroup>    512 Aug 14 13:10 ..
 -rw-r--r--  1 <username>  <usergroup>   1536 Aug 15 21:50 Makefile
--rw-r--r--  1 <username>  <usergroup>      0 Aug 15 21:50 README.md
+-rw-r--r--  1 <username>  <usergroup>  13000 Aug 15 21:50 README.md
 -rwxr-xr-x  1 <username>  <usergroup>  23104 Aug 15 21:50 dnsresolvd
 -rw-r--r--  1 <username>  <usergroup>  17762 Aug 15 21:50 dnsresolvd.c
 -rw-r--r--  1 <username>  <usergroup>   4494 Aug 15 21:50 dnsresolvd.h
@@ -111,7 +111,7 @@ Once this is done, check it out... just for fun:))
 
 ```
 $ ls -al
-total 96
+total 112
 drwxrwxr-x 2 <username> <usergroup>  4096 Aug 15 21:50 .
 drwxrwxr-x 4 <username> <usergroup>  4096 Aug 14 13:05 ..
 -rwxrwxr-x 1 <username> <usergroup> 32016 Aug 15 21:50 dnsresolvd
@@ -119,7 +119,7 @@ drwxrwxr-x 4 <username> <usergroup>  4096 Aug 14 13:05 ..
 -rw-rw-r-- 1 <username> <usergroup>  4494 Aug 15 21:50 dnsresolvd.h
 -rw-rw-r-- 1 <username> <usergroup> 21752 Aug 15 21:50 dnsresolvd.o
 -rw-rw-r-- 1 <username> <usergroup>  1536 Aug 15 21:50 Makefile
--rw-rw-r-- 1 <username> <usergroup>     0 Aug 15 21:50 README.md
+-rw-rw-r-- 1 <username> <usergroup> 13000 Aug 15 21:50 README.md
 $
 $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/l, not stripped
@@ -176,7 +176,7 @@ Once this is done, check it out... just for fun:))
 
 ```
 $ ls -al
-total 84
+total 100
 drwxr-xr-x 2 <username> <usergroup>  4096 Aug 15 21:50 .
 drwxr-xr-x 4 <username> <usergroup>  4096 Aug 15 19:40 ..
 -rwxr-xr-x 1 <username> <usergroup> 16716 Aug 15 21:50 dnsresolvd
@@ -184,7 +184,7 @@ drwxr-xr-x 4 <username> <usergroup>  4096 Aug 15 19:40 ..
 -rw-r--r-- 1 <username> <usergroup>  4494 Aug 15 21:50 dnsresolvd.h
 -rw-r--r-- 1 <username> <usergroup> 20636 Aug 15 21:50 dnsresolvd.o
 -rw-r--r-- 1 <username> <usergroup>  1536 Aug 15 21:50 Makefile
--rw-r--r-- 1 <username> <usergroup>     0 Aug 15 21:50 README.md
+-rw-r--r-- 1 <username> <usergroup> 13000 Aug 15 21:50 README.md
 $
 $ file dnsresolvd
 dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, stripped
