@@ -115,8 +115,10 @@ void _request_handler(      SoupServer        *dmn,
 
             free(req_body_data_);
         }
-    } else {
-        return; /* <== In case of HTTP method not supported. */
+    } else { /* <== In case of HTTP method not supported. */
+        soup_message_set_status(msg, SOUP_STATUS_NOT_IMPLEMENTED);
+
+        return;
     }
 
     if ((strlen(hostname) == 0) || (strlen(hostname) > HOST_NAME_MAX)) {
