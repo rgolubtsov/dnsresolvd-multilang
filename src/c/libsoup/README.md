@@ -87,13 +87,77 @@ dnsresolvd:
 
 ### Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)
 
+Install the necessary dependencies (`tcc`, `libsoup2.4-dev`, `libjson-glib-dev`):
+
+```
+$ sudo apt-get update                                         && \
+  sudo apt-get install tcc libsoup2.4-dev libjson-glib-dev -y
+$
+$ tcc -v
+tcc version 0.9.26 (x86-64 Linux)
+```
+
+Now the daemon might be built.
+
+```
+$ cd src/c/libsoup
+$ make clean && make all
+rm -f dnsresolvd dnsresolvd.o
+tcc -Wall -pedantic -std=c99 -O3 -march=x86-64 -mtune=generic -pipe -fstack-protector-strong -D_DEFAULT_SOURCE `pkg-config --cflags-only-I libsoup-2.4 json-glib-1.0`   -c -o dnsresolvd.o dnsresolvd.c
+tcc   dnsresolvd.o  `pkg-config   --libs-only-l libsoup-2.4 json-glib-1.0` -o dnsresolvd
+```
+
+Once this is done, check it out... just for fun:))
+
+```
+$ ls -al
+total 96
+drwxrwxr-x 2 <username> <usergroup>  4096 Aug 15 21:50 .
+drwxrwxr-x 4 <username> <usergroup>  4096 Aug 14 13:05 ..
+-rwxrwxr-x 1 <username> <usergroup> 32016 Aug 15 21:50 dnsresolvd
+-rw-rw-r-- 1 <username> <usergroup> 17762 Aug 15 21:50 dnsresolvd.c
+-rw-rw-r-- 1 <username> <usergroup>  4494 Aug 15 21:50 dnsresolvd.h
+-rw-rw-r-- 1 <username> <usergroup> 21752 Aug 15 21:50 dnsresolvd.o
+-rw-rw-r-- 1 <username> <usergroup>  1536 Aug 15 21:50 Makefile
+-rw-rw-r-- 1 <username> <usergroup>     0 Aug 15 21:50 README.md
+$
+$ file dnsresolvd
+dnsresolvd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/l, not stripped
+$
+$ ldd dnsresolvd
+        linux-vdso.so.1 =>  (0x00007ffdf7ad5000)
+        libsoup-2.4.so.1 => /usr/lib/x86_64-linux-gnu/libsoup-2.4.so.1 (0x00007f22c12e4000)
+        libgio-2.0.so.0 => /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0 (0x00007f22c0f5c000)
+        libgobject-2.0.so.0 => /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0 (0x00007f22c0d09000)
+        libglib-2.0.so.0 => /lib/x86_64-linux-gnu/libglib-2.0.so.0 (0x00007f22c09f8000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f22c062e000)
+        libjson-glib-1.0.so.0 => /usr/lib/x86_64-linux-gnu/libjson-glib-1.0.so.0 (0x00007f22c0406000)
+        libxml2.so.2 => /usr/lib/x86_64-linux-gnu/libxml2.so.2 (0x00007f22c004b000)
+        libsqlite3.so.0 => /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 (0x00007f22bfd76000)
+        libgmodule-2.0.so.0 => /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0 (0x00007f22bfb72000)
+        libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007f22bf958000)
+        libselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f22bf736000)
+        libresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f22bf51b000)
+        libffi.so.6 => /usr/lib/x86_64-linux-gnu/libffi.so.6 (0x00007f22bf313000)
+        libpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f22bf0a3000)
+        libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f22bee86000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f22c15bb000)
+        libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f22bec82000)
+        libicuuc.so.55 => /usr/lib/x86_64-linux-gnu/libicuuc.so.55 (0x00007f22be8ee000)
+        liblzma.so.5 => /lib/x86_64-linux-gnu/liblzma.so.5 (0x00007f22be6cc000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f22be3c3000)
+        libicudata.so.55 => /usr/lib/x86_64-linux-gnu/libicudata.so.55 (0x00007f22bc90c000)
+        libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f22bc58a000)
+        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f22bc374000)
+```
+
 ### Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)
 
 ## Running
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-OpenBSD/amd64:
+OpenBSD/amd64 | Ubuntu Server LTS x86-64:
 
 ```
 $ ./src/c/libsoup/dnsresolvd 8765
