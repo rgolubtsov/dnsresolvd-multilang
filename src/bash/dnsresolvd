@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# src/bash/dnsresolvd
+# =============================================================================
+# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# =============================================================================
+# A daemon that performs DNS lookups for the given hostname
+# passed in an HTTP request, with the focus on its implementation
+# using various programming languages. (Netcat-boosted impl.)
+# =============================================================================
+# Copyright (C) 2017-2019 Radislav (Radicchio) Golubtsov
+#
+# (See the LICENSE file at the top of the source tree.)
+#
+
+# Helper constants.
+declare -r EXIT_FAILURE=1 #    Failing exit status.
+declare -r EXIT_SUCCESS=0 # Successful exit status.
+
+declare -r _UNAME=`uname`
+
+# If we're on OpenBSD, or on Linux, ...
+  if [ ${_UNAME} == "OpenBSD" ]; then
+    echo "==> ${_UNAME}: Using OpenBSD Netcat."
+elif [ ${_UNAME} == "Linux"   ]; then
+    echo "==> ${_UNAME}: Using Linux Netcat."
+else
+    echo "==> ${_UNAME}: Unix-?-"
+fi
+
+# If there is an error -- telling the OS about this.
+if [ $? -eq ${EXIT_FAILURE} ]; then
+    exit    ${EXIT_FAILURE}
+fi
+
+exit        ${EXIT_SUCCESS}
+
+# vim:set nu et ts=4 sw=4:
