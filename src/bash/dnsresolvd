@@ -13,8 +13,10 @@
 #
 
 # Helper constants.
-declare -r EXIT_FAILURE=1 #    Failing exit status.
-declare -r EXIT_SUCCESS=0 # Successful exit status.
+declare -r _EXIT_FAILURE=1 #    Failing exit status.
+declare -r _EXIT_SUCCESS=0 # Successful exit status.
+declare -r _EMPTY_STRING=""
+declare -r _PRINT_BANNER_OPT="-V"
 
 declare -r _UNAME=`uname`
 
@@ -27,11 +29,30 @@ else
     echo "==> ${_UNAME}: Unix-?-"
 fi
 
-# If there is an error -- telling the OS about this.
-if [ $? -eq ${EXIT_FAILURE} ]; then
-    exit    ${EXIT_FAILURE}
+ret=${_EXIT_SUCCESS}
+
+argc=$#
+
+daemon_name=$0
+port_number=$1
+
+print_banner_opt=${_EMPTY_STRING}
+
+if [ ${argc} -gt 1 ]; then
+    print_banner_opt=${2^^}
 fi
 
-exit        ${EXIT_SUCCESS}
+echo ${ret} ${argc} ${daemon_name} ${port_number} ${print_banner_opt}
+
+if [ ${print_banner_opt} == ${_PRINT_BANNER_OPT} ]; then
+    echo ${print_banner_opt}
+fi
+
+# If there is an error -- telling the OS about this.
+if [ $? -eq ${_EXIT_FAILURE} ]; then
+    exit    ${_EXIT_FAILURE}
+fi
+
+exit        ${_EXIT_SUCCESS}
 
 # vim:set nu et ts=4 sw=4:
