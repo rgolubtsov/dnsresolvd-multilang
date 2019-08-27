@@ -12,19 +12,33 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-# Helper function. Draws a horizontal separator banner.
-_separator_draw() { banner_text=$1 # <== C-ished "(const char *banner_text)":-)
-    i=${#banner_text} # <== C-ished "unsigned char i = strlen(banner_text);":-)
-
-    while ((i > 0)); do echo -n '='; let i--; done; echo
-}
-
 # Helper constants.
 declare -r _EXIT_FAILURE=1 #    Failing exit status.
 declare -r _EXIT_SUCCESS=0 # Successful exit status.
 declare -r _EMPTY_STRING=""
 declare -r _COMMA=","
+declare -r _NEW_LINE="\n"
 declare -r _PRINT_BANNER_OPT="-V"
+
+# Common error messages.
+declare -r _ERR_PORT_MUST_BE_POSITIVE_INT=": <port_number> must be "`
+                                         `"a positive integer value, "`
+                                         `"in the range 1024-49151."
+
+# Print this error message when there are no any args passed.
+declare -r _ERR_MUST_BE_ONE_TWO_ARGS_1=": There must be one or two args "`
+                                      `"passed: "
+declare -r _ERR_MUST_BE_ONE_TWO_ARGS_2=" args found"
+
+# Print this usage info just after any inappropriate input.
+declare -r _MSG_USAGE_TEMPLATE_1="Usage: "
+declare -r _MSG_USAGE_TEMPLATE_2=" <port_number> [-V]"
+
+# Constant: The minimum port number allowed.
+declare -r _MIN_PORT=1024
+
+# Constant: The maximum port number allowed.
+declare -r _MAX_PORT=49151
 
 # Daemon name, version, and copyright banners. */
 declare -r _DMN_NAME="DNS Resolver Daemon (dnsresolvd)"
@@ -34,5 +48,12 @@ declare -r _DMN_VERSION_S__="Version"
 declare -r _DMN_VERSION="0.1"
 declare -r _DMN_COPYRIGHT__="Copyright (C) 2017-2019"
 declare -r _DMN_AUTHOR="Radislav Golubtsov <ragolubtsov@my.com>"
+
+# Helper function. Draws a horizontal separator banner.
+_separator_draw() { banner_text=$1 # <== C-ished "(const char *banner_text)":-)
+    i=${#banner_text} # <== C-ished "unsigned char i = strlen(banner_text);":-)
+
+    while ((i > 0)); do echo -n '='; let i--; done; echo
+}
 
 # vim:set nu et ts=4 sw=4:
