@@ -12,12 +12,7 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-# Helper constants.
-declare -r _EXIT_FAILURE=1 #    Failing exit status.
-declare -r _EXIT_SUCCESS=0 # Successful exit status.
-declare -r _EMPTY_STRING=""
-declare -r _PRINT_BANNER_OPT="-V"
-
+# --- Debug output - Begin ----------------------------------------------------
 declare -r _UNAME=`uname`
 
 # If we're on OpenBSD, or on Linux, ...
@@ -28,6 +23,10 @@ elif [ ${_UNAME} == "Linux"   ]; then
 else
     echo "==> ${_UNAME}: Unix-?-"
 fi
+# --- Debug output - End ------------------------------------------------------
+
+# Sourcing the helper script of the daemon.
+. `dirname ${BASH_SOURCE}`/dnsresolvh
 
 ret=${_EXIT_SUCCESS}
 
@@ -42,10 +41,14 @@ if [ ${argc} -gt 1 ]; then
     print_banner_opt=${2^^}
 fi
 
-echo ${ret} ${argc} ${daemon_name} ${port_number} ${print_banner_opt}
-
 if [ ${print_banner_opt} == ${_PRINT_BANNER_OPT} ]; then
-    echo ${print_banner_opt}
+    _separator_draw "${_DMN_DESCRIPTION}"
+
+    echo "${_DMN_NAME}${_COMMA} ${_DMN_VERSION_S__} ${_DMN_VERSION}
+${_DMN_DESCRIPTION}
+${_DMN_COPYRIGHT__} ${_DMN_AUTHOR}"
+
+    _separator_draw "${_DMN_DESCRIPTION}"
 fi
 
 # If there is an error -- telling the OS about this.
