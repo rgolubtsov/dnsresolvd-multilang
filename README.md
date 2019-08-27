@@ -18,6 +18,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 * :small_blue_diamond: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
 * :small_blue_diamond: **Clojure ([HTTP Kit](http://http-kit.org "HTTP Kit"))**: `src/clojure/`
 * :small_blue_diamond: **Java ([Eclipse Vert.x](http://vertx.io "Eclipse Vert.x"))**: `src/java/`
+* :cd: **Bash ([Netcat](http://nc110.sourceforge.net "Netcat: the TCP/IP swiss army"))**: `src/bash/`
 
 ## Table of Contents
 
