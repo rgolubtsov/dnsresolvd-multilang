@@ -12,6 +12,22 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
+##
+# Performs DNS lookup action for the given hostname,
+# i.e. (in this case) IP address retrieval by hostname.
+#
+# @param hostname The effective hostname to look up for.
+#
+dns_lookup() {
+    hostname=$1
+
+    local addr
+    addr=`ping -qc1 ${hostname}|grep PING|sed -e "s/).*//g"|sed -e "s/.*(//g"`
+
+    # Returning the IP address of the analyzing host/service.
+    echo "${addr}"
+}
+
 # --- Debug output - Begin ----------------------------------------------------
 declare -r _UNAME=`uname`
 
@@ -90,6 +106,14 @@ if [ ${port_number} -lt ${_MIN_PORT} -o ${port_number} -gt ${_MAX_PORT} ]; then
 
     exit ${ret}
 fi
+
+hostname=${_DEF_HOSTNAME}
+
+# Performing DNS lookup for the given hostname.
+addr=`dns_lookup "${hostname}"`
+
+echo "==> ${hostname}"
+echo "==> ${addr}"
 
 # If there is an error -- telling the OS about this.
 if [ $? -eq ${_EXIT_FAILURE} ]; then
