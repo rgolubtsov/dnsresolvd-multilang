@@ -55,12 +55,12 @@ fi
 if [ ${argc} -eq 0 ]; then
     ret=${_EXIT_FAILURE}
 
-    echo -e "${daemon_name}${_ERR_MUST_BE_ONE_TWO_ARGS_1}"`
-                  `"${argc}${_ERR_MUST_BE_ONE_TWO_ARGS_2}"`
-                         `"${_NEW_LINE}"
+    >&2 echo -e "${daemon_name}${_ERR_MUST_BE_ONE_TWO_ARGS_1}"`
+                      `"${argc}${_ERR_MUST_BE_ONE_TWO_ARGS_2}"`
+                             `"${_NEW_LINE}"
 
-    echo -e "${_MSG_USAGE_TEMPLATE_1}${daemon_name}"`
-           `"${_MSG_USAGE_TEMPLATE_2}${_NEW_LINE}"
+    >&2 echo -e "${_MSG_USAGE_TEMPLATE_1}${daemon_name}"`
+               `"${_MSG_USAGE_TEMPLATE_2}${_NEW_LINE}"
 
     exit ${ret}
 fi
@@ -75,11 +75,11 @@ echo "==> ${port_number}"
 if [ ${port_number} -lt ${_MIN_PORT} -o ${port_number} -gt ${_MAX_PORT} ]; then
     ret=${_EXIT_FAILURE}
 
-    echo -e "${daemon_name}${_ERR_PORT_MUST_BE_POSITIVE_INT}"`
-                         `"${_NEW_LINE}"
+    >&2 echo -e "${daemon_name}${_ERR_PORT_MUST_BE_POSITIVE_INT}"`
+                             `"${_NEW_LINE}"
 
-    echo -e "${_MSG_USAGE_TEMPLATE_1}${daemon_name}"`
-           `"${_MSG_USAGE_TEMPLATE_2}${_NEW_LINE}"
+    >&2 echo -e "${_MSG_USAGE_TEMPLATE_1}${daemon_name}"`
+               `"${_MSG_USAGE_TEMPLATE_2}${_NEW_LINE}"
 
     exit ${ret}
 fi
