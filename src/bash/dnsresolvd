@@ -31,13 +31,22 @@ dns_lookup() {
 # --- Debug output - Begin ----------------------------------------------------
 declare -r _UNAME=`uname`
 
-# If we're on OpenBSD, or on Linux, ...
+_netcat="nc"
+
+# If we're on OpenBSD, or on Linux, let's get using
+# an appropriate Netcat implementation.
   if [ ${_UNAME} == "OpenBSD" ]; then
-    echo "==> ${_UNAME}: Using OpenBSD Netcat."
+    echo "==> Using OpenBSD Netcat."
 elif [ ${_UNAME} == "Linux"   ]; then
-    echo "==> ${_UNAME}: Using Linux Netcat."
-else
-    echo "==> ${_UNAME}: Unix-?-"
+    declare -r _UNAME_R=`uname -r | grep '.*-ARCH$'`
+
+    if [ ${#_UNAME_R} -gt 0 ]; then
+        echo "==> Using Arch Linux Nmap's Ncat."
+
+        _netcat="ncat"
+    else
+        echo "==> Using \"other\" Linux Netcat."
+    fi
 fi
 # --- Debug output - End ------------------------------------------------------
 
@@ -89,8 +98,6 @@ fi
 printf -v port_number "%d" ${port_number} 2>/dev/null
 if [ $? -ne 0 ]; then port_number=0; fi
 
-echo "==> ${port_number}"
-
 # Checking for port correctness.
 if [ ${port_number} -lt ${_MIN_PORT} -o ${port_number} -gt ${_MAX_PORT} ]; then
     ret=${_EXIT_FAILURE}
@@ -107,13 +114,18 @@ if [ ${port_number} -lt ${_MIN_PORT} -o ${port_number} -gt ${_MAX_PORT} ]; then
     exit ${ret}
 fi
 
-hostname=${_DEF_HOSTNAME}
+# Starting up the daemon by executing the Netcat utility in a loop
+# against the port provided.
+while true; do
+    hostname=${_DEF_HOSTNAME} # <== Dummy for a while... a default one.
 
-# Performing DNS lookup for the given hostname.
-addr=`dns_lookup "${hostname}"`
+    # Performing DNS lookup for the given hostname.
+    addr=`dns_lookup "${hostname}"`
 
-echo "==> ${hostname}"
-echo "==> ${addr}"
+    echo -e "HTTP/1.1 200 OK${_NEW_LINE}${_NEW_LINE}"`
+           `"${hostname} ${addr}" |                    \
+    ${_netcat} -l ${port_number}
+done
 
 # If there is an error -- telling the OS about this.
 if [ $? -eq ${_EXIT_FAILURE} ]; then
