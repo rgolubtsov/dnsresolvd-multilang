@@ -40,6 +40,10 @@ declare -r _MIN_PORT=1024
 # Constant: The maximum port number allowed.
 declare -r _MAX_PORT=49151
 
+# Common notification messages.
+declare -r _MSG_SERVER_STARTED_1="Server started on port "
+declare -r _MSG_SERVER_STARTED_2="=== Hit Ctrl+C to terminate it."
+
 # Daemon name, version, and copyright banners.
 declare -r _DMN_NAME="DNS Resolver Daemon (dnsresolvd)"
 declare -r _DMN_DESCRIPTION="Performs DNS lookups for the given hostname "`

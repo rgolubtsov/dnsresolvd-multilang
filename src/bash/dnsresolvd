@@ -109,6 +109,13 @@ if [ ${port_number} -lt ${_MIN_PORT} -o ${port_number} -gt ${_MAX_PORT} ]; then
     exit ${ret}
 fi
 
+echo -e                "${_MSG_SERVER_STARTED_1}${port_number}${_NEW_LINE}"`
+                      `"${_MSG_SERVER_STARTED_2}"
+
+logger -t `basename     ${daemon_name}`                                      \
+       -p  daemon.info "${_MSG_SERVER_STARTED_1}${port_number}${_NEW_LINE}"`
+                      `"${_MSG_SERVER_STARTED_2}"
+
 # Starting up the daemon by executing the Netcat utility in a loop
 # against the port provided.
 while true; do
