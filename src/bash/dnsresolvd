@@ -28,27 +28,22 @@ dns_lookup() {
     echo "${addr}"
 }
 
-# --- Debug output - Begin ----------------------------------------------------
 declare -r _UNAME=`uname`
 
-_netcat="nc"
-
-# If we're on OpenBSD, or on Linux, let's get using
-# an appropriate Netcat implementation.
-  if [ ${_UNAME} == "OpenBSD" ]; then
-    echo "==> Using OpenBSD Netcat."
+_netcat="nc" # --------------------------------------+
+#                                                    |
+# If we're on OpenBSD, or on Linux, let's get using  |
+# an appropriate Netcat implementation.              |
+# On Ubuntu/Debian we'll stick to `nc` by default.   |
+  if [ ${_UNAME} == "OpenBSD" ]; then #              |
+    _netcat="nc"                      # <------------+
 elif [ ${_UNAME} == "Linux"   ]; then
-    declare -r _UNAME_R=`uname -r | grep '.*-ARCH$'`
+    declare -r _UNAME_R=`uname -r | grep '.*-ARCH$'` # <== Arch Linux.
 
     if [ ${#_UNAME_R} -gt 0 ]; then
-        echo "==> Using Arch Linux Nmap's Ncat."
-
         _netcat="ncat"
-    else
-        echo "==> Using \"other\" Linux Netcat."
     fi
 fi
-# --- Debug output - End ------------------------------------------------------
 
 # Sourcing the helper script of the daemon.
 . `dirname ${BASH_SOURCE}`/dnsresolvh
