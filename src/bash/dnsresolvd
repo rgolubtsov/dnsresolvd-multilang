@@ -38,7 +38,7 @@ _netcat="nc" # --------------------------------------+
   if [ ${_UNAME} == "OpenBSD" ]; then #              |
     _netcat="nc"                      # <------------+
 elif [ ${_UNAME} == "Linux"   ]; then
-    declare -r _UNAME_R=`uname -r | grep '.*-ARCH$'` # <== Arch Linux.
+    declare -r _UNAME_R=`uname -r | grep ".*-ARCH$"` # <== Arch Linux.
 
     if [ ${#_UNAME_R} -gt 0 ]; then
         _netcat="ncat"
@@ -120,13 +120,21 @@ logger -t `basename     ${daemon_name}`                                      \
 # against the port provided.
 while true; do
     hostname=${_DEF_HOSTNAME} # <== Dummy for a while... a default one.
+    fmt=${_PRM_FMT_HTML}      # <== Let's stop with HTML for a while...
 
     # Performing DNS lookup for the given hostname.
     addr=`dns_lookup "${hostname}"`
 
-    echo -e "HTTP/1.1 200 OK${_NEW_LINE}${_NEW_LINE}"`
-           `"${hostname} ${addr}"     |                \
-    ${_netcat} -l ${port_number} 2>&1 |                \
+    resp_buffer="${hostname} ${addr}"
+
+    resp_buffer_len=`expr length "${resp_buffer}" + 1`
+
+    # Adding headers to the response.
+    resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len}`
+
+    echo -e "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
+                              `"${_NEW_LINE}${resp_buffer}" | \
+    ${_netcat} -l ${port_number} 2>&1                       | \
     grep -o "${_ERR_ADDR_ALREADY_IN_USE}" 1>/dev/null
 
     if [ $? -eq 0 ]; then
