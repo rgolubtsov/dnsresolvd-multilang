@@ -125,8 +125,23 @@ while true; do
     addr=`dns_lookup "${hostname}"`
 
     echo -e "HTTP/1.1 200 OK${_NEW_LINE}${_NEW_LINE}"`
-           `"${hostname} ${addr}" |                    \
-    ${_netcat} -l ${port_number}
+           `"${hostname} ${addr}"     |                \
+    ${_netcat} -l ${port_number} 2>&1 |                \
+    grep -o "${_ERR_ADDR_ALREADY_IN_USE}" 1>/dev/null
+
+    if [ $? -eq 0 ]; then
+        ret=${_EXIT_FAILURE}
+
+        >&2 echo -e           "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
+                                           `"${_ERR_SRV_PORT_IS_IN_USE}"`
+                                           `"${_NEW_LINE}"
+
+        logger -t `basename    ${daemon_name}`                             \
+               -p  daemon.err "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
+                                           `"${_ERR_SRV_PORT_IS_IN_USE}"
+
+        exit ${ret}
+    fi
 done
 
 # If there is an error -- telling the OS about this.
