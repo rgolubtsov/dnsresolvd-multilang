@@ -48,6 +48,24 @@ declare -r _MAX_PORT=49151
 declare -r _MSG_SERVER_STARTED_1="Server started on port "
 declare -r _MSG_SERVER_STARTED_2="=== Hit Ctrl+C to terminate it."
 
+# HTTP request params.
+declare -r _PRM_FMT_HTML="html"
+declare -r _PRM_FMT_JSON="json"
+
+# HTTP response headers and status codes.
+declare -r _HDR_CONTENT_TYPE_N="Content-Type: "
+declare -r _HDR_CONTENT_TYPE_V_HTML="text/html; charset=UTF-8"
+declare -r _HDR_CONTENT_TYPE_V_JSON="application/json"
+declare -r _HDR_CONTENT_LENGTH_N="Content-Length: "
+declare -r _HDR_DATE_N="Date: "
+declare -r _HDR_CACHE_CONTROL_N="Cache-Control: "
+declare -r _HDR_CACHE_CONTROL_V="no-cache, no-store, must-revalidate"
+declare -r _HDR_EXPIRES_N="Expires: "
+declare -r _HDR_EXPIRES_V="Thu, 01 Dec 1994 16:00:00 GMT"
+declare -r _HDR_PRAGMA_N="Pragma: "
+declare -r _HDR_PRAGMA_V="no-cache"
+declare -r _RSC_HTTP_200_OK="HTTP/1.1 200 OK"
+
 # Daemon name, version, and copyright banners.
 declare -r _DMN_NAME="DNS Resolver Daemon (dnsresolvd)"
 declare -r _DMN_DESCRIPTION="Performs DNS lookups for the given hostname "`
@@ -59,6 +77,32 @@ declare -r _DMN_AUTHOR="Radislav Golubtsov <ragolubtsov@my.com>"
 
 # Constant: The default hostname to look up for.
 declare -r _DEF_HOSTNAME="openbsd.org"
+
+##
+# Adds headers to the response.
+#
+# @param fmt                  The response format selector.
+# @param HDR_CONTENT_LENGTH_V The length of the response buffer.
+#
+add_response_headers() {
+    fmt=$1; HDR_CONTENT_LENGTH_V=$2
+
+      if [ ${fmt} == ${_PRM_FMT_HTML} ]; then
+        HDR_CONTENT_TYPE_V=${_HDR_CONTENT_TYPE_V_HTML}
+    elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
+        HDR_CONTENT_TYPE_V=${_HDR_CONTENT_TYPE_V_JSON}
+    fi
+
+    HDR_DATE_V=`date -Ru | sed -e "s/\+0000/GMT/g"`
+
+    # Returning the compound string containing response headers.
+    echo "${_HDR_CONTENT_TYPE_N}${HDR_CONTENT_TYPE_V}${_NEW_LINE}"`
+        `"${_HDR_CONTENT_LENGTH_N}${HDR_CONTENT_LENGTH_V}${_NEW_LINE}"`
+        `"${_HDR_DATE_N}${HDR_DATE_V}${_NEW_LINE}"`
+        `"${_HDR_CACHE_CONTROL_N}${_HDR_CACHE_CONTROL_V}${_NEW_LINE}"`
+        `"${_HDR_EXPIRES_N}${_HDR_EXPIRES_V}${_NEW_LINE}"`
+        `"${_HDR_PRAGMA_N}${_HDR_PRAGMA_V}${_NEW_LINE}"
+}
 
 # Helper function. Draws a horizontal separator banner.
 _separator_draw() { banner_text=$1 # <== C-ished "(const char *banner_text)":-)
