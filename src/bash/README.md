@@ -43,6 +43,7 @@ OpenBSD netcat (Debian patchlevel 1.105-7ubuntu1)
 ```
 
 The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to check out on how it looks in the filesystem:))
+
 ```
 $ cd src/bash
 $ ls -al
@@ -60,11 +61,35 @@ dnsresolvh: ASCII text
 
 ### Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)
 
-Install the necessary dependencies (): **TODO**
+Install the necessary dependencies (`nmap`):
 
-Now the daemon might be built. &ndash; **TODO**
+```
+$ sudo pacman -Sy nmap
+$
+$ bash --version
+GNU bash, version 5.0.7(1)-release (x86_64-pc-linux-gnu)
+...
+$
+$ ncat -h
+Ncat 7.70 ( https://nmap.org/ncat )
+...
+```
 
-Once this is done, check it out... just for fun:)) &ndash; **TODO**
+The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to check out on how it looks in the filesystem:))
+
+```
+$ ls -al
+total 28
+drwxr-xr-x  2 <username> <usergroup> 4096 Sep  5 23:10 .
+drwxr-xr-x 15 <username> <usergroup> 4096 Aug 20 22:40 ..
+-rwxr-xr-x  1 <username> <usergroup> 5324 Sep  5 23:10 dnsresolvd
+-rw-r--r--  1 <username> <usergroup> 4515 Sep  5 23:10 dnsresolvh
+-rw-r--r--  1 <username> <usergroup> 3118 Sep  5 23:10 README.md
+$
+$ file dnsresolv*
+dnsresolvd: Bourne-Again shell script, ASCII text executable
+dnsresolvh: ASCII text
+```
 
 ## Running
 
