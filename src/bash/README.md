@@ -27,11 +27,36 @@ Once this is done, check it out... just for fun:)) &ndash; **TODO**
 
 ### Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)
 
-Install the necessary dependencies (): **TODO**
+Install the necessary dependencies (`netcat-openbsd`):
 
-Now the daemon might be built. &ndash; **TODO**
+```
+$ sudo apt-get update                    && \
+  sudo apt-get install netcat-openbsd -y
+$
+$ bash --version
+GNU bash, version 4.3.48(1)-release (x86_64-pc-linux-gnu)
+...
+$
+$ nc -h
+OpenBSD netcat (Debian patchlevel 1.105-7ubuntu1)
+...
+```
 
-Once this is done, check it out... just for fun:)) &ndash; **TODO**
+The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to check out on how it looks in the filesystem:))
+```
+$ cd src/bash
+$ ls -al
+total 28
+drwxrwxr-x  2 <username> <usergroup> 4096 Sep  5 22:20 .
+drwxrwxr-x 15 <username> <usergroup> 4096 Sep  5 20:55 ..
+-rwxrwxr-x  1 <username> <usergroup> 5324 Sep  5 22:20 dnsresolvd
+-rw-rw-r--  1 <username> <usergroup> 4515 Sep  5 22:20 dnsresolvh
+-rw-rw-r--  1 <username> <usergroup> 2415 Sep  5 22:20 README.md
+$
+$ file dnsresolv*
+dnsresolvd: Bourne-Again shell script, ASCII text executable
+dnsresolvh: ASCII text
+```
 
 ### Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)
 
@@ -45,6 +70,12 @@ Once this is done, check it out... just for fun:)) &ndash; **TODO**
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-OpenBSD/amd64 | Ubuntu Server LTS x86-64 | Arch Linux: **TODO**
+OpenBSD/amd64 | Ubuntu Server LTS x86-64 | Arch Linux:
+
+```
+$ ./src/bash/dnsresolvd 8765
+Server started on port 8765
+=== Hit Ctrl+C to terminate it.
+```
 
 Example of making **GET** and **POST** requests: **TODO**
