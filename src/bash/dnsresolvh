@@ -67,6 +67,12 @@ declare -r _HDR_PRAGMA_V="no-cache"
 declare -r _HDR_SERVER_N="Server: "
 declare -r _RSC_HTTP_200_OK="HTTP/1.1 200 OK"
 
+# Response data names.
+declare -r _DAT_HOSTNAME_N="hostname"
+declare -r _DAT_ADDRESS_N="address"
+declare -r _DAT_VERSION_N="version"
+declare -r _DAT_VERSION_V="IPv"
+
 # Daemon name, version, and copyright banners.
 declare -r _DMN_NAME="DNS Resolver Daemon (dnsresolvd)"
 declare -r _DMN_DESCRIPTION="Performs DNS lookups for the given hostname "`
