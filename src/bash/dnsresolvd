@@ -46,7 +46,7 @@ elif [ ${_UNAME} == "Linux"   ]; then
 fi
 
 # Sourcing the helper script of the daemon.
-. `dirname ${BASH_SOURCE}`/dnsresolvh
+. `dirname ${BASH_SOURCE}`/dnsresolvd.h
 
 ret=${_EXIT_SUCCESS}
 
@@ -138,7 +138,11 @@ while true; do
 `"<body>${_NEW_LINE}"`
 `"<div>${hostname}"
     elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
-        resp_buffer="{\""
+        resp_buffer="${_CB1}"`
+                   `"${_DAT_HOSTNAME_N}"`
+                   `"${_DQ1}"`
+                   `"${hostname}"`
+                   `"${_DQ2}"
     fi
 
       if [ ${fmt} == ${_PRM_FMT_HTML} ]; then
@@ -147,7 +151,15 @@ while true; do
                    `"${_DAT_VERSION_V}"`
                    `"${ver}"
     elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
-        resp_buffer="${resp_buffer}not\":\"implemented"
+        resp_buffer="${resp_buffer}"`
+                   `"${_DAT_ADDRESS_N}"`
+                   `"${_DQ1}"`
+                   `"${addr}"`
+                   `"${_DQ2}"`
+                   `"${_DAT_VERSION_N}"`
+                   `"${_DQ1}"`
+                   `"${_DAT_VERSION_V}"`
+                   `"${ver}"
     fi
 
       if [ ${fmt} == ${_PRM_FMT_HTML} ]; then
@@ -156,7 +168,8 @@ while true; do
                    `"</body>${_NEW_LINE}"`
                    `"</html>${_NEW_LINE}"
     elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
-        resp_buffer="${resp_buffer}\"}"
+        resp_buffer="${resp_buffer}"`
+                   `"${_CB2}"
     fi
 
       if [ ${fmt} == ${_PRM_FMT_HTML} ]; then

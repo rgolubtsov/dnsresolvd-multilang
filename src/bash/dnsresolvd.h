@@ -25,6 +25,12 @@ declare -r _COMMA=","
 declare -r _NEW_LINE="\n"
 declare -r _PRINT_BANNER_OPT="-V"
 
+# JSON entities :-).
+declare -r _CB1="{\""
+declare -r _CB2="\"}"
+declare -r _DQ1="\":\""
+declare -r _DQ2="\",\""
+
 # Common error messages.
 declare -r _ERR_PORT_MUST_BE_POSITIVE_INT=": <port_number> must be "`
                                          `"a positive integer value, "`
