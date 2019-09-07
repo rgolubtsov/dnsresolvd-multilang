@@ -1,5 +1,5 @@
 #
-# src/bash/dnsresolvh
+# src/bash/dnsresolvd.h
 # =============================================================================
 # DNS Resolver Daemon (dnsresolvd). Version 0.1
 # =============================================================================
@@ -11,6 +11,11 @@
 #
 # (See the LICENSE file at the top of the source tree.)
 #
+
+# The helper script ("header file") for the daemon.
+# It aimed at accumulating such pieces like constants, helper functions,
+# just like it behaves in its C counterpart. Yep, that's a little funny
+# to make it named like in C, but definitely feasible nevertheless!))
 
 # Helper constants.
 declare -r _EXIT_FAILURE=1 #    Failing exit status.
