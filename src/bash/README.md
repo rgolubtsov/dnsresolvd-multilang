@@ -48,15 +48,15 @@ The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to
 $ cd src/bash
 $ ls -al
 total 28
-drwxrwxr-x  2 <username> <usergroup> 4096 Sep  5 22:20 .
+drwxrwxr-x  2 <username> <usergroup> 4096 Sep  7 22:50 .
 drwxrwxr-x 15 <username> <usergroup> 4096 Sep  5 20:55 ..
--rwxrwxr-x  1 <username> <usergroup> 5324 Sep  5 22:20 dnsresolvd
--rw-rw-r--  1 <username> <usergroup> 4515 Sep  5 22:20 dnsresolvh
--rw-rw-r--  1 <username> <usergroup> 2415 Sep  5 22:20 README.md
+-rwxrwxr-x  1 <username> <usergroup> 7224 Sep  7 22:50 dnsresolvd
+-rw-rw-r--  1 <username> <usergroup> 5154 Sep  7 22:50 dnsresolvd.h
+-rw-rw-r--  1 <username> <usergroup> 3181 Sep  7 22:50 README.md
 $
 $ file dnsresolv*
-dnsresolvd: Bourne-Again shell script, ASCII text executable
-dnsresolvh: ASCII text
+dnsresolvd:   Bourne-Again shell script, ASCII text executable
+dnsresolvd.h: ASCII text
 ```
 
 ### Building under Arch Linux (kernel 5.2.2-arch1-1-ARCH x86-64)
