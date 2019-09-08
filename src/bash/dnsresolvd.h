@@ -24,6 +24,8 @@ declare -r _EMPTY_STRING=""
 declare -r _COMMA=","
 declare -r _NEW_LINE="\n"
 declare -r _PRINT_BANNER_OPT="-V"
+declare -r _OPENBSD="OpenBSD"
+declare -r _LINUX="Linux"
 
 # JSON entities :-).
 declare -r _CB1="{\""
@@ -101,17 +103,22 @@ declare -r _DEF_HOSTNAME="openbsd.org"
 #
 # @param fmt                  The response format selector.
 # @param HDR_CONTENT_LENGTH_V The length of the response buffer.
+# @param UNAME                The .
 #
 add_response_headers() {
-    fmt=$1; HDR_CONTENT_LENGTH_V=$2
+    fmt=$1; HDR_CONTENT_LENGTH_V=$2; UNAME=$3
 
-      if [ ${fmt} == ${_PRM_FMT_HTML} ]; then
+      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
         HDR_CONTENT_TYPE_V=${_HDR_CONTENT_TYPE_V_HTML}
-    elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
+    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
         HDR_CONTENT_TYPE_V=${_HDR_CONTENT_TYPE_V_JSON}
     fi
 
-    HDR_DATE_V=`date -Ru | sed -e "s/\+0000/GMT/g"`
+      if [ "${UNAME}" == "${_OPENBSD}" ]; then
+        HDR_DATE_V=`date -u "+%a, %d %b %Y %H:%M:%S %Z" | sed -e "s/UTC/GMT/g"`
+    elif [ "${UNAME}" == "${_LINUX}"   ]; then
+        HDR_DATE_V=`date -Ru | sed -e "s/\+0000/GMT/g"`
+    fi
 
     # Returning the compound string containing response headers.
     echo "${_HDR_CONTENT_TYPE_N}${HDR_CONTENT_TYPE_V}${_NEW_LINE}"`

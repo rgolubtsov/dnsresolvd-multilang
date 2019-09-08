@@ -35,9 +35,9 @@ _netcat="nc" # --------------------------------------+
 # If we're on OpenBSD, or on Linux, let's get using  |
 # an appropriate Netcat implementation.              |
 # On Ubuntu/Debian we'll stick to `nc` by default.   |
-  if [ ${_UNAME} == "OpenBSD" ]; then #              |
-    _netcat="nc"                      # <------------+
-elif [ ${_UNAME} == "Linux"   ]; then
+  if [ "${_UNAME}" == "${_OPENBSD}" ]; then #        |
+    _netcat="nc"                            # <------+
+elif [ "${_UNAME}" == "${_LINUX}"   ]; then
     declare -r _UNAME_R=`uname -r | grep ".*-ARCH$"` # <== Arch Linux.
 
     if [ ${#_UNAME_R} -gt 0 ]; then
@@ -121,11 +121,12 @@ logger -t `basename     ${daemon_name}`                                      \
 while true; do
     hostname=${_DEF_HOSTNAME} # <== Dummy for a while... a default one.
     fmt=${_PRM_FMT_HTML}      # <== Let's stop with HTML for a while...
+    hostname="openports.se"   # <== Temp hack against testing on OpenBSD.
 
     # Performing DNS lookup for the given hostname.
     addr=`dns_lookup "${hostname}"`
 
-      if [ ${fmt} == ${_PRM_FMT_HTML} ]; then
+      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
         resp_buffer="<!DOCTYPE html>${_NEW_LINE}"`
 `"<html lang=\"en-US\" dir=\"ltr\">${_NEW_LINE}"`
 `"<head>${_NEW_LINE}"`
@@ -137,7 +138,7 @@ while true; do
 `"</head>${_NEW_LINE}"`
 `"<body>${_NEW_LINE}"`
 `"<div>${hostname}"
-    elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
+    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
         resp_buffer="${_CB1}"`
                    `"${_DAT_HOSTNAME_N}"`
                    `"${_DQ1}"`
@@ -145,12 +146,12 @@ while true; do
                    `"${_DQ2}"
     fi
 
-      if [ ${fmt} == ${_PRM_FMT_HTML} ]; then
+      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
         resp_buffer="${resp_buffer} "`
                    `"${addr} "`
                    `"${_DAT_VERSION_V}"`
                    `"${ver}"
-    elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
+    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
         resp_buffer="${resp_buffer}"`
                    `"${_DAT_ADDRESS_N}"`
                    `"${_DQ1}"`
@@ -162,24 +163,24 @@ while true; do
                    `"${ver}"
     fi
 
-      if [ ${fmt} == ${_PRM_FMT_HTML} ]; then
+      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
         resp_buffer="${resp_buffer}"`
                    `"</div>${_NEW_LINE}"`
                    `"</body>${_NEW_LINE}"`
                    `"</html>${_NEW_LINE}"
-    elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
+    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
         resp_buffer="${resp_buffer}"`
                    `"${_CB2}"
     fi
 
-      if [ ${fmt} == ${_PRM_FMT_HTML} ]; then
+      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
         resp_buffer_len=$((${#resp_buffer} - 12)) # <== 12 _NEW_LINEs in HTML.
-    elif [ ${fmt} == ${_PRM_FMT_JSON} ]; then
+    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
         resp_buffer_len=${#resp_buffer}           # <== None of them  in JSON.
     fi
 
     # Adding headers to the response.
-    resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len}`
+    resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
 
     echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
                                `"${_NEW_LINE}${resp_buffer}" | \
