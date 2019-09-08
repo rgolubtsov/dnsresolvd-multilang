@@ -103,7 +103,7 @@ declare -r _DEF_HOSTNAME="openbsd.org"
 #
 # @param fmt                  The response format selector.
 # @param HDR_CONTENT_LENGTH_V The length of the response buffer.
-# @param UNAME                The .
+# @param UNAME                The OS kernel name.
 #
 add_response_headers() {
     fmt=$1; HDR_CONTENT_LENGTH_V=$2; UNAME=$3
