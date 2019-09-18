@@ -35,6 +35,9 @@ _netcat="nc" # --------------------------------------+
 # If we're on OpenBSD, or on Linux, let's get using  |
 # an appropriate Netcat implementation.              |
 # On Ubuntu/Debian we'll stick to `nc` by default.   |
+# But on Arch Linux -- see "elif" underneath...      |
+# and please carefully read the README doc,          |
+# the relevant section.                              |
   if [ "${_UNAME}" == "${_OPENBSD}" ]; then #        |
     _netcat="nc"                            # <------+
 elif [ "${_UNAME}" == "${_LINUX}"   ]; then
@@ -116,6 +119,9 @@ logger -t `basename     ${daemon_name}`                                      \
        -p  daemon.info "${_MSG_SERVER_STARTED_1}${port_number}${_NEW_LINE}"`
                       `"${_MSG_SERVER_STARTED_2}"
 
+# Making a named pipe to communicate to Netcat bidirectionally.
+fifo=/tmp/`basename ${daemon_name}`; mkfifo ${fifo} 2>/dev/null
+
 # Starting up the daemon by executing the Netcat utility in a loop
 # against the port provided.
 while true; do
@@ -183,8 +189,8 @@ while true; do
     resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
 
     echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
-                               `"${_NEW_LINE}${resp_buffer}" | \
-    ${_netcat} -l ${port_number} 2>&1                        | \
+                               `"${_NEW_LINE}${resp_buffer}"; cat ${fifo} | \
+    ${_netcat} -l ${port_number} 2>&1                                     | \
     grep -o "${_ERR_ADDR_ALREADY_IN_USE}" 1>/dev/null
 
     if [ $? -eq 0 ]; then
