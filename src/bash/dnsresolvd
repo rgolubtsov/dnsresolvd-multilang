@@ -188,9 +188,8 @@ while true; do
     # Adding headers to the response.
     resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
 
-    echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
-                               `"${_NEW_LINE}${resp_buffer}"; cat ${fifo} | \
-    ${_netcat} -l ${port_number} 2>&1                                     | \
+    # Executing Netcat through a FIFO; analyzing errors in a subshell.
+    cat ${fifo} | ${_netcat} -l ${port_number} 2>&1 | ( \
     grep -o "${_ERR_ADDR_ALREADY_IN_USE}" 1>/dev/null
 
     if [ $? -eq 0 ]; then
@@ -206,6 +205,8 @@ while true; do
 
         exit ${ret}
     fi
+    ) | echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
+                                   `"${_NEW_LINE}${resp_buffer}" >${fifo}
 done
 
 # If there is an error -- telling the OS about this.
