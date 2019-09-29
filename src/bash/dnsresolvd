@@ -127,7 +127,7 @@ fifo=/tmp/`basename ${daemon_name}`; mkfifo ${fifo} 2>/dev/null
 while true; do
     hostname=${_DEF_HOSTNAME} # <== Dummy for a while... a default one.
     fmt=${_PRM_FMT_HTML}      # <== Let's stop with HTML for a while...
-    hostname="openports.se"   # <== Temp hack against testing on OpenBSD.
+    fmt=${_PRM_FMT_JSON}      # <== ...or with JSON, if you want it.
 
     # Performing DNS lookup for the given hostname.
     addr=`dns_lookup "${hostname}"`
