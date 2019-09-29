@@ -152,6 +152,8 @@ while true; do
                    `"${_DQ2}"
     fi
 
+    ver=4
+
       if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
         resp_buffer="${resp_buffer} "`
                    `"${addr} "`
