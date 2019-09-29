@@ -209,11 +209,6 @@ while true; do
                                    `"${_NEW_LINE}${resp_buffer}" >${fifo}
 done
 
-# If there is an error -- telling the OS about this.
-if [ $? -eq ${_EXIT_FAILURE} ]; then
-    exit    ${_EXIT_FAILURE}
-fi
-
-exit        ${_EXIT_SUCCESS}
+exit ${ret}
 
 # vim:set nu et ts=4 sw=4:
