@@ -42,11 +42,11 @@ The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to
 $ cd src/bash
 $ ls -al
 total 48
-drwxr-xr-x   2 <username>  <usergroup>   512 Sep 13 14:45 .
+drwxr-xr-x   2 <username>  <usergroup>   512 Sep 29 23:35 .
 drwxr-xr-x  15 <username>  <usergroup>   512 Sep  8 20:05 ..
--rw-r--r--   1 <username>  <usergroup>  4368 Sep 13 14:45 README.md
--rwxr-xr-x   1 <username>  <usergroup>  7348 Sep 13 14:45 dnsresolvd
--rw-r--r--   1 <username>  <usergroup>  5463 Sep 13 14:45 dnsresolvd.h
+-rw-r--r--   1 <username>  <usergroup>  4726 Sep 29 23:35 README.md
+-rwxr-xr-x   1 <username>  <usergroup>  7585 Sep 29 23:35 dnsresolvd
+-rw-r--r--   1 <username>  <usergroup>  5464 Sep 29 23:35 dnsresolvd.h
 $
 $ file dnsresolv*
 dnsresolvd:   a bash script text executable
@@ -131,4 +131,16 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
-Example of making **GET** and **POST** requests: **TODO**
+Example of making **GET** and **POST** requests:
+
+```
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" http://localhost:8765
+{"hostname":"openports.se","address":"37.49.241.43","version":"IPv4"}
+=== 200
+=== application/json
+$
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d '' http://localhost:8765
+{"hostname":"openports.se","address":"37.49.241.43","version":"IPv4"}
+=== 200
+=== application/json
+```
