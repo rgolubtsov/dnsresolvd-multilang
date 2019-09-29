@@ -96,7 +96,7 @@ declare -r _DMN_COPYRIGHT__="Copyright (C) 2017-2019"
 declare -r _DMN_AUTHOR="Radislav Golubtsov <ragolubtsov@my.com>"
 
 # Constant: The default hostname to look up for.
-declare -r _DEF_HOSTNAME="openbsd.org"
+declare -r _DEF_HOSTNAME="openports.se"
 
 ##
 # Adds headers to the response.
