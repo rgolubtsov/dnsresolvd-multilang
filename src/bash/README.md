@@ -106,13 +106,14 @@ Ncat 7.80 ( https://nmap.org/ncat )
 The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to check out on how it looks in the filesystem:))
 
 ```
+$ cd src/bash
 $ ls -al
-total 28
-drwxr-xr-x  2 <username> <usergroup> 4096 Sep  5 23:10 .
+total 32
+drwxr-xr-x  2 <username> <usergroup> 4096 Oct  3 23:10 .
 drwxr-xr-x 15 <username> <usergroup> 4096 Aug 20 22:40 ..
--rwxr-xr-x  1 <username> <usergroup> 5324 Sep  5 23:10 dnsresolvd
--rw-r--r--  1 <username> <usergroup> 4515 Sep  5 23:10 dnsresolvh
--rw-r--r--  1 <username> <usergroup> 3118 Sep  5 23:10 README.md
+-rwxr-xr-x  1 <username> <usergroup> 7585 Oct  3 23:10 dnsresolvd
+-rw-r--r--  1 <username> <usergroup> 5464 Oct  3 23:10 dnsresolvd.h
+-rw-r--r--  1 <username> <usergroup> 4742 Oct  3 23:10 README.md
 $
 $ file dnsresolv*
 dnsresolvd: Bourne-Again shell script, ASCII text executable
