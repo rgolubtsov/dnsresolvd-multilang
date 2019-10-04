@@ -18,7 +18,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 * :small_blue_diamond: **LFE ([Cowboy](https://ninenines.eu "Cowboy"))**: `src/lfe/`
 * :small_blue_diamond: **Clojure ([HTTP Kit](http://http-kit.org "HTTP Kit"))**: `src/clojure/`
 * :small_blue_diamond: **Java ([Eclipse Vert.x](http://vertx.io "Eclipse Vert.x"))**: `src/java/`
-* :cd: **Bash ([Netcat](http://nc110.sourceforge.net "Netcat: the TCP/IP swiss army"))**: `src/bash/`
+* :small_blue_diamond: **Bash ([Netcat](http://nc110.sourceforge.net "Netcat: the TCP/IP swiss army"))**: `src/bash/`
 * :small_orange_diamond: **Go ([net/http](https://golang.org/pkg/net/http/ "Package http"))**: `src/go/`
 
 ## Table of Contents
@@ -37,6 +37,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [LFE (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lfe#building)
   * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#building)
   * [Java (Eclipse Vert.x)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/java#building)
+  * [Bash (Netcat)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/bash#building)
 * **Running** (Examples of making HTTP requests against the running daemon are based on using the `curl` utility.)
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c/libmicrohttpd#running)
   * [C (GNOME libsoup)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c/libsoup#running)
@@ -51,6 +52,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [LFE (Cowboy)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/lfe#running)
   * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#running)
   * [Java (Eclipse Vert.x)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/java#running)
+  * [Bash (Netcat)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/bash#running)
 
 ---
 
