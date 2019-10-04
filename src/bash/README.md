@@ -113,11 +113,11 @@ drwxr-xr-x  2 <username> <usergroup> 4096 Oct  3 23:10 .
 drwxr-xr-x 15 <username> <usergroup> 4096 Aug 20 22:40 ..
 -rwxr-xr-x  1 <username> <usergroup> 7585 Oct  3 23:10 dnsresolvd
 -rw-r--r--  1 <username> <usergroup> 5464 Oct  3 23:10 dnsresolvd.h
--rw-r--r--  1 <username> <usergroup> 4742 Oct  3 23:10 README.md
+-rw-r--r--  1 <username> <usergroup> 4746 Oct  3 23:10 README.md
 $
 $ file dnsresolv*
-dnsresolvd: Bourne-Again shell script, ASCII text executable
-dnsresolvh: ASCII text
+dnsresolvd:   Bourne-Again shell script, ASCII text executable
+dnsresolvd.h: ASCII text
 ```
 
 ## Running
