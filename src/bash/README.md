@@ -76,11 +76,11 @@ The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to
 $ cd src/bash
 $ ls -al
 total 32
-drwxrwxr-x  2 <username> <usergroup> 4096 Oct  3 22:35 .
+drwxrwxr-x  2 <username> <usergroup> 4096 Oct  7 00:35 .
 drwxrwxr-x 15 <username> <usergroup> 4096 Sep  5 20:55 ..
--rwxrwxr-x  1 <username> <usergroup> 7585 Oct  3 22:35 dnsresolvd
--rw-rw-r--  1 <username> <usergroup> 5464 Oct  3 22:35 dnsresolvd.h
--rw-rw-r--  1 <username> <usergroup> 4726 Oct  3 22:35 README.md
+-rwxrwxr-x  1 <username> <usergroup> 7585 Oct  7 00:35 dnsresolvd
+-rw-rw-r--  1 <username> <usergroup> 5464 Oct  7 00:35 dnsresolvd.h
+-rw-rw-r--  1 <username> <usergroup> 4746 Oct  7 00:35 README.md
 $
 $ file dnsresolv*
 dnsresolvd:   Bourne-Again shell script, ASCII text executable
