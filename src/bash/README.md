@@ -42,11 +42,11 @@ The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to
 $ cd src/bash
 $ ls -al
 total 48
-drwxr-xr-x   2 <username>  <usergroup>   512 Sep 29 23:35 .
+drwxr-xr-x   2 <username>  <usergroup>   512 Oct  7 01:05 .
 drwxr-xr-x  15 <username>  <usergroup>   512 Sep  8 20:05 ..
--rw-r--r--   1 <username>  <usergroup>  4726 Sep 29 23:35 README.md
--rwxr-xr-x   1 <username>  <usergroup>  7585 Sep 29 23:35 dnsresolvd
--rw-r--r--   1 <username>  <usergroup>  5464 Sep 29 23:35 dnsresolvd.h
+-rw-r--r--   1 <username>  <usergroup>  4746 Oct  7 01:05 README.md
+-rwxr-xr-x   1 <username>  <usergroup>  7585 Oct  7 01:05 dnsresolvd
+-rw-r--r--   1 <username>  <usergroup>  5464 Oct  7 01:05 dnsresolvd.h
 $
 $ file dnsresolv*
 dnsresolvd:   a bash script text executable
