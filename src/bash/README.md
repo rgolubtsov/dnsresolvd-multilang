@@ -15,7 +15,7 @@
 
 ## Building
 
-This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, ~~and Arch Linux~~ operating systems. So let's describe each build process sequentially.
+This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
 
 ### Building under OpenBSD/amd64 6.5
 
@@ -109,11 +109,11 @@ The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to
 $ cd src/bash
 $ ls -al
 total 32
-drwxr-xr-x  2 <username> <usergroup> 4096 Oct  3 23:10 .
+drwxr-xr-x  2 <username> <usergroup> 4096 Oct  7 00:00 .
 drwxr-xr-x 15 <username> <usergroup> 4096 Aug 20 22:40 ..
--rwxr-xr-x  1 <username> <usergroup> 7585 Oct  3 23:10 dnsresolvd
--rw-r--r--  1 <username> <usergroup> 5464 Oct  3 23:10 dnsresolvd.h
--rw-r--r--  1 <username> <usergroup> 4737 Oct  3 23:10 README.md
+-rwxr-xr-x  1 <username> <usergroup> 7585 Oct  7 00:00 dnsresolvd
+-rw-r--r--  1 <username> <usergroup> 5464 Oct  7 00:00 dnsresolvd.h
+-rw-r--r--  1 <username> <usergroup> 4746 Oct  7 00:00 README.md
 $
 $ file dnsresolv*
 dnsresolvd:   Bourne-Again shell script, ASCII text executable
@@ -124,7 +124,7 @@ dnsresolvd.h: ASCII text
 
 To start up the daemon just specify a TCP port that should be used to listen on for incoming connections.
 
-OpenBSD/amd64 | Ubuntu Server LTS x86-64:
+OpenBSD/amd64 | Ubuntu Server LTS x86-64 | Arch Linux:
 
 ```
 $ ./src/bash/dnsresolvd 8765
