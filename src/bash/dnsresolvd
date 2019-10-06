@@ -28,6 +28,9 @@ dns_lookup() {
     echo "${addr}"
 }
 
+# Sourcing the helper script of the daemon.
+. `dirname ${BASH_SOURCE}`/dnsresolvd.h
+
 declare -r _UNAME=`uname`
 
 _netcat="nc" # --------------------------------------+
@@ -47,9 +50,6 @@ elif [ "${_UNAME}" == "${_LINUX}"   ]; then
         _netcat="ncat"
     fi
 fi
-
-# Sourcing the helper script of the daemon.
-. `dirname ${BASH_SOURCE}`/dnsresolvd.h
 
 ret=${_EXIT_SUCCESS}
 
