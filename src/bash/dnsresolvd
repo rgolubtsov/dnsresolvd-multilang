@@ -191,24 +191,14 @@ while true; do
     resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
 
     # Executing Netcat through a FIFO; analyzing errors in a subshell.
-    cat ${fifo} | ${_netcat} -l ${port_number} 2>&1 | ( \
-    grep -o "${_ERR_ADDR_ALREADY_IN_USE}" 1>/dev/null
+    cat ${fifo} | ${_netcat} -l ${port_number} | while read -r line; do
+        if echo ${line} | grep -q "GET "; then
+            echo ${line}
 
-    if [ $? -eq 0 ]; then
-        ret=${_EXIT_FAILURE}
-
-        >&2 echo -e           "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
-                                           `"${_ERR_SRV_PORT_IS_IN_USE}"`
-                                           `"${_NEW_LINE}"
-
-        logger -t `basename    ${daemon_name}`                             \
-               -p  daemon.err "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
-                                           `"${_ERR_SRV_PORT_IS_IN_USE}"
-
-        exit ${ret}
-    fi
-    ) | echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
-                                   `"${_NEW_LINE}${resp_buffer}" >${fifo}
+            echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
+                                       `"${_NEW_LINE}${resp_buffer}" >${fifo}
+        fi
+    done
 done
 
 exit ${ret}
