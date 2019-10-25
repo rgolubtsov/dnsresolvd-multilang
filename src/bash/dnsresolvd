@@ -125,9 +125,40 @@ fifo=/tmp/`basename ${daemon_name}`; mkfifo ${fifo} 2>/dev/null
 # Starting up the daemon by executing the Netcat utility in a loop
 # against the port provided.
 while true; do
-    hostname=${_DEF_HOSTNAME} # <== Dummy for a while... a default one.
-    fmt=${_PRM_FMT_HTML}      # <== Let's stop with HTML for a while...
-    fmt=${_PRM_FMT_JSON}      # <== ...or with JSON, if you want it.
+    # Executing Netcat through a FIFO. Parsing and validating request params.
+    cat ${fifo} | ${_netcat} -l ${port_number} | while read -r line; do
+        if echo "${line}" | grep -q "GET "; then
+            echo "${line}"
+
+            qry=${line#GET }
+            qry=${qry% HTTP/*}
+            qry=(${qry//\?/ })
+
+            if [ "${qry[1]}" != "${_EMPTY_STRING}" ]; then
+                params=(${qry[1]//\&/ })
+                param0=(${params[0]//=/ })
+                param1=(${params[1]//=/ })
+
+                  if [ "${param0[0]}" == "h" ]; then
+                    hostname=${param0[1]}
+                elif [ "${param0[0]}" == "f" ]; then
+                    fmt=${param0[1],,}
+                fi
+
+                  if [ "${param1[0]}" == "h" ]; then
+                    hostname=${param1[1]}
+                elif [ "${param1[0]}" == "f" ]; then
+                    fmt=${param1[1],,}
+                fi
+            fi
+
+            if [ "${hostname}" == "${_EMPTY_STRING}" ]; then
+                hostname=${_DEF_HOSTNAME}
+            fi
+
+            if [ "${fmt}" == "${_EMPTY_STRING}" ]; then
+                fmt=${_PRM_FMT_JSON}
+            fi
 
     # Performing DNS lookup for the given hostname.
     addr=`dns_lookup "${hostname}"`
@@ -190,15 +221,10 @@ while true; do
     # Adding headers to the response.
     resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
 
-    # Executing Netcat through a FIFO; analyzing errors in a subshell.
-    cat ${fifo} | ${_netcat} -l ${port_number} | while read -r line; do
-        if echo ${line} | grep -q "GET "; then
-            echo ${line}
-
             echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
                                        `"${_NEW_LINE}${resp_buffer}" >${fifo}
         fi
-    done
+    done # <-- Parsing and validating request params - End --------------------
 done
 
 exit ${ret}
