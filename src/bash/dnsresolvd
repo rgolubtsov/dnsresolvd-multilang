@@ -125,11 +125,31 @@ fifo=/tmp/`basename ${daemon_name}`; mkfifo ${fifo} 2>/dev/null
 # Starting up the daemon by executing the Netcat utility in a loop
 # against the port provided.
 while true; do
+# ------------- This block of code is not incorporated yet --------------------
+#   # Executing Netcat through a FIFO; analyzing errors in a subshell.
+#   cat ${fifo} | ${_netcat} -l ${port_number} 2>&1 | ( \
+#   grep -o "${_ERR_ADDR_ALREADY_IN_USE}" 1>/dev/null
+#
+#   if [ $? -eq 0 ]; then
+#       ret=${_EXIT_FAILURE}
+#
+#       >&2 echo -e           "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
+#                                          `"${_ERR_SRV_PORT_IS_IN_USE}"`
+#                                          `"${_NEW_LINE}"
+#
+#       logger -t `basename    ${daemon_name}`                             \
+#              -p  daemon.err "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
+#                                          `"${_ERR_SRV_PORT_IS_IN_USE}"
+#
+#       exit ${ret}
+#   fi
+#   ...
+#   ) | echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
+#                                  `"${_NEW_LINE}${resp_buffer}" >${fifo}
+# -----------------------------------------------------------------------------
     # Executing Netcat through a FIFO; parsing and validating request params.
     cat ${fifo} | ${_netcat} -l ${port_number} 2>&1 | while read -r line; do
         if echo "${line}" | grep -q "GET "; then
-            echo "${line}"
-
             qry=${line#GET }
             qry=${qry% HTTP/*}
             qry=(${qry//\?/ })
@@ -141,10 +161,20 @@ while true; do
 
                   if [ "${param0[0]}" == "h" ]; then
                     hostname=${param0[1]}
+#                                         ^
+#                                         |
+#                                         +-------------+
+#                                                       |
+#               $ curl 'http://localhost:<port-number>/?h=<hostname>&f=<fmt>'
+#                                                                    |
+#                                         +--------------------------+
+#                                         |
+#                                         v
                 elif [ "${param0[0]}" == "f" ]; then
                          fmt=${param0[1],,}
                 fi
 
+                # Doing the same as above but for possibly permutated params.
                   if [ "${param1[0]}" == "h" ]; then
                     hostname=${param1[1]}
                 elif [ "${param1[0]}" == "f" ]; then
@@ -153,7 +183,12 @@ while true; do
             fi
 
             if [ -z "${hostname}" ]; then hostname=${_DEF_HOSTNAME}; fi
-            if [ -z "${fmt}"      ]; then      fmt=${_PRM_FMT_JSON}; fi
+
+            if [ "${fmt}" != "${_PRM_FMT_HTML}" -a      \
+                 "${fmt}" != "${_PRM_FMT_JSON}" ]; then
+
+                fmt=${_PRM_FMT_JSON}
+            fi
 
             # Performing DNS lookup for the given hostname.
             addr=`dns_lookup "${hostname}"`
