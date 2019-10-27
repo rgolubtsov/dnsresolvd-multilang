@@ -125,8 +125,8 @@ fifo=/tmp/`basename ${daemon_name}`; mkfifo ${fifo} 2>/dev/null
 # Starting up the daemon by executing the Netcat utility in a loop
 # against the port provided.
 while true; do
-    # Executing Netcat through a FIFO. Parsing and validating request params.
-    cat ${fifo} | ${_netcat} -l ${port_number} | while read -r line; do
+    # Executing Netcat through a FIFO; parsing and validating request params.
+    cat ${fifo} | ${_netcat} -l ${port_number} 2>&1 | while read -r line; do
         if echo "${line}" | grep -q "GET "; then
             echo "${line}"
 
@@ -134,7 +134,7 @@ while true; do
             qry=${qry% HTTP/*}
             qry=(${qry//\?/ })
 
-            if [ "${qry[1]}" != "${_EMPTY_STRING}" ]; then
+            if [ -n "${qry[1]}" ]; then
                 params=(${qry[1]//\&/ })
                 param0=(${params[0]//=/ })
                 param1=(${params[1]//=/ })
@@ -142,29 +142,24 @@ while true; do
                   if [ "${param0[0]}" == "h" ]; then
                     hostname=${param0[1]}
                 elif [ "${param0[0]}" == "f" ]; then
-                    fmt=${param0[1],,}
+                         fmt=${param0[1],,}
                 fi
 
                   if [ "${param1[0]}" == "h" ]; then
                     hostname=${param1[1]}
                 elif [ "${param1[0]}" == "f" ]; then
-                    fmt=${param1[1],,}
+                         fmt=${param1[1],,}
                 fi
             fi
 
-            if [ "${hostname}" == "${_EMPTY_STRING}" ]; then
-                hostname=${_DEF_HOSTNAME}
-            fi
+            if [ -z "${hostname}" ]; then hostname=${_DEF_HOSTNAME}; fi
+            if [ -z "${fmt}"      ]; then      fmt=${_PRM_FMT_JSON}; fi
 
-            if [ "${fmt}" == "${_EMPTY_STRING}" ]; then
-                fmt=${_PRM_FMT_JSON}
-            fi
+            # Performing DNS lookup for the given hostname.
+            addr=`dns_lookup "${hostname}"`
 
-    # Performing DNS lookup for the given hostname.
-    addr=`dns_lookup "${hostname}"`
-
-      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-        resp_buffer="<!DOCTYPE html>${_NEW_LINE}"`
+              if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                resp_buffer="<!DOCTYPE html>${_NEW_LINE}"`
 `"<html lang=\"en-US\" dir=\"ltr\">${_NEW_LINE}"`
 `"<head>${_NEW_LINE}"`
 `"<meta http-equiv=\"${_HDR_CONTENT_TYPE_N::-2}\"    "`
@@ -175,51 +170,51 @@ while true; do
 `"</head>${_NEW_LINE}"`
 `"<body>${_NEW_LINE}"`
 `"<div>${hostname}"
-    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-        resp_buffer="${_CB1}"`
-                   `"${_DAT_HOSTNAME_N}"`
-                   `"${_DQ1}"`
-                   `"${hostname}"`
-                   `"${_DQ2}"
-    fi
+            elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                resp_buffer="${_CB1}"`
+                           `"${_DAT_HOSTNAME_N}"`
+                           `"${_DQ1}"`
+                           `"${hostname}"`
+                           `"${_DQ2}"
+            fi
 
-    ver=4
+            ver=4
 
-      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-        resp_buffer="${resp_buffer} "`
-                   `"${addr} "`
-                   `"${_DAT_VERSION_V}"`
-                   `"${ver}"
-    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-        resp_buffer="${resp_buffer}"`
-                   `"${_DAT_ADDRESS_N}"`
-                   `"${_DQ1}"`
-                   `"${addr}"`
-                   `"${_DQ2}"`
-                   `"${_DAT_VERSION_N}"`
-                   `"${_DQ1}"`
-                   `"${_DAT_VERSION_V}"`
-                   `"${ver}"
-    fi
+              if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                resp_buffer="${resp_buffer} "`
+                           `"${addr} "`
+                           `"${_DAT_VERSION_V}"`
+                           `"${ver}"
+            elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                resp_buffer="${resp_buffer}"`
+                           `"${_DAT_ADDRESS_N}"`
+                           `"${_DQ1}"`
+                           `"${addr}"`
+                           `"${_DQ2}"`
+                           `"${_DAT_VERSION_N}"`
+                           `"${_DQ1}"`
+                           `"${_DAT_VERSION_V}"`
+                           `"${ver}"
+            fi
 
-      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-        resp_buffer="${resp_buffer}"`
-                   `"</div>${_NEW_LINE}"`
-                   `"</body>${_NEW_LINE}"`
-                   `"</html>${_NEW_LINE}"
-    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-        resp_buffer="${resp_buffer}"`
-                   `"${_CB2}"
-    fi
+              if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                resp_buffer="${resp_buffer}"`
+                           `"</div>${_NEW_LINE}"`
+                           `"</body>${_NEW_LINE}"`
+                           `"</html>${_NEW_LINE}"
+            elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                resp_buffer="${resp_buffer}"`
+                           `"${_CB2}"
+            fi
 
-      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-        resp_buffer_len=$((${#resp_buffer} - 12)) # <== 12 _NEW_LINEs in HTML.
-    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-        resp_buffer_len=${#resp_buffer}           # <== None of them  in JSON.
-    fi
+              if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                resp_buffer_len=$((${#resp_buffer} - 12)) # <== 12 _NEW_LINEs in HTML.
+            elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                resp_buffer_len=${#resp_buffer}           # <== None of them  in JSON.
+            fi
 
-    # Adding headers to the response.
-    resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
+            # Adding headers to the response.
+            resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
 
             echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
                                        `"${_NEW_LINE}${resp_buffer}" >${fifo}
