@@ -22,7 +22,9 @@ dns_lookup() {
     hostname=$1
 
     local addr
-    addr=`ping -qc1 ${hostname}|grep PING|sed -e "s/).*//g"|sed -e "s/.*(//g"`
+
+    addr=`ping -qc1 ${hostname} 2>/dev/null | grep PING | sed -e "s/).*//g"  \
+                                                        | sed -e "s/.*(//g"`
 
     # Returning the IP address of the analyzing host/service.
     echo "${addr}"
