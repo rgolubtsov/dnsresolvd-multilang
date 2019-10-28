@@ -132,7 +132,7 @@ Server started on port 8765
 === Hit Ctrl+C to terminate it.
 ```
 
-Example of making **GET** and **POST** requests:
+Example of making **GET** ~~and **POST**~~ requests:
 
 ```
 $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" http://localhost:8765
@@ -140,8 +140,20 @@ $ curl -w "\n=== %{http_code}\n=== %{content_type}\n" http://localhost:8765
 === 200
 === application/json
 $
-$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" -d '' http://localhost:8765
-{"hostname":"openports.se","address":"37.49.241.43","version":"IPv4"}
+$ curl -w "\n=== %{http_code}\n=== %{content_type}\n" 'http://localhost:8765/?h=ibm.com&f=HTml'
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+<meta http-equiv="Content-Type"    content="text/html; charset=UTF-8"           />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"                            />
+<meta       name="viewport"        content="width=device-width,initial-scale=1" />
+<title>DNS Resolver Daemon (dnsresolvd)</title>
+</head>
+<body>
+<div>ibm.com 129.42.38.10 IPv4</div>
+</body>
+</html>
+
 === 200
-=== application/json
+=== text/html; charset=UTF-8
 ```

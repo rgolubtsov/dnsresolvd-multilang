@@ -21,7 +21,8 @@
 declare -r _EXIT_FAILURE=1 #    Failing exit status.
 declare -r _EXIT_SUCCESS=0 # Successful exit status.
 declare -r _EMPTY_STRING=""
-declare -r _COMMA=","
+declare -r _COLON_SPACE_SEP=": "
+declare -r _COMMA_SPACE_SEP=", "
 declare -r _NEW_LINE="\n"
 declare -r _PRINT_BANNER_OPT="-V"
 declare -r _OPENBSD="OpenBSD"
@@ -34,12 +35,14 @@ declare -r _DQ1="\":\""
 declare -r _DQ2="\",\""
 
 # Common error messages.
+declare -r _ERR_PREFIX="error"
 declare -r _ERR_PORT_MUST_BE_POSITIVE_INT=": <port_number> must be "`
                                          `"a positive integer value, "`
                                          `"in the range 1024-49151."
 declare -r _ERR_CANNOT_START_SERVER=": FATAL: Cannot start server "
 declare -r _ERR_SRV_PORT_IS_IN_USE="due to the port requested is in use. "`
                                   `"Exiting..."
+declare -r _ERR_COULD_NOT_LOOKUP="could not lookup hostname"
 declare -r _ERR_ADDR_ALREADY_IN_USE="Address already in use"
 
 # Print this error message when there are no any args passed.

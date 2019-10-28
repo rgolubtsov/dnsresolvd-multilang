@@ -22,7 +22,9 @@ dns_lookup() {
     hostname=$1
 
     local addr
-    addr=`ping -qc1 ${hostname}|grep PING|sed -e "s/).*//g"|sed -e "s/.*(//g"`
+
+    addr=`ping -qc1 ${hostname} 2>/dev/null | grep PING | sed -e "s/).*//g"  \
+                                                        | sed -e "s/.*(//g"`
 
     # Returning the IP address of the analyzing host/service.
     echo "${addr}"
@@ -67,7 +69,7 @@ fi
 if [ "${print_banner_opt}" == "${_PRINT_BANNER_OPT}" ]; then
     _separator_draw "${_DMN_DESCRIPTION}"
 
-    echo "${_DMN_NAME}${_COMMA} ${_DMN_VERSION_S__} ${_DMN_VERSION}
+    echo "${_DMN_NAME}${_COMMA_SPACE_SEP}${_DMN_VERSION_S__} ${_DMN_VERSION}
 ${_DMN_DESCRIPTION}
 ${_DMN_COPYRIGHT__} ${_DMN_AUTHOR}"
 
@@ -125,15 +127,76 @@ fifo=/tmp/`basename ${daemon_name}`; mkfifo ${fifo} 2>/dev/null
 # Starting up the daemon by executing the Netcat utility in a loop
 # against the port provided.
 while true; do
-    hostname=${_DEF_HOSTNAME} # <== Dummy for a while... a default one.
-    fmt=${_PRM_FMT_HTML}      # <== Let's stop with HTML for a while...
-    fmt=${_PRM_FMT_JSON}      # <== ...or with JSON, if you want it.
+# ------------- This block of code is not incorporated yet --------------------
+#   # Executing Netcat through a FIFO; analyzing errors in a subshell.
+#   cat ${fifo} | ${_netcat} -l ${port_number} 2>&1 | ( \
+#   grep -o "${_ERR_ADDR_ALREADY_IN_USE}" 1>/dev/null
+#
+#   if [ $? -eq 0 ]; then
+#       ret=${_EXIT_FAILURE}
+#
+#       >&2 echo -e           "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
+#                                          `"${_ERR_SRV_PORT_IS_IN_USE}"`
+#                                          `"${_NEW_LINE}"
+#
+#       logger -t `basename    ${daemon_name}`                             \
+#              -p  daemon.err "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
+#                                          `"${_ERR_SRV_PORT_IS_IN_USE}"
+#
+#       exit ${ret}
+#   fi
+#   ...
+#   ) | echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
+#                                  `"${_NEW_LINE}${resp_buffer}" >${fifo}
+# -----------------------------------------------------------------------------
+    # Executing Netcat through a FIFO; parsing and validating request params.
+    cat ${fifo} | ${_netcat} -l ${port_number} 2>&1 | while read -r line; do
+        if echo "${line}" | grep -q "GET "; then
+            qry=${line#GET }
+            qry=${qry% HTTP/*}
+            qry=(${qry//\?/ })
 
-    # Performing DNS lookup for the given hostname.
-    addr=`dns_lookup "${hostname}"`
+            if [ -n "${qry[1]}" ]; then
+                params=(${qry[1]//\&/ })
+                param0=(${params[0]//=/ })
+                param1=(${params[1]//=/ })
 
-      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-        resp_buffer="<!DOCTYPE html>${_NEW_LINE}"`
+                  if [ "${param0[0]}" == "h" ]; then
+                    hostname=${param0[1]}
+#                                         ^
+#                                         |
+#                                         +-------------+
+#                                                       |
+#               $ curl 'http://localhost:<port-number>/?h=<hostname>&f=<fmt>'
+#                                                                    |
+#                                         +--------------------------+
+#                                         |
+#                                         v
+                elif [ "${param0[0]}" == "f" ]; then
+                         fmt=${param0[1],,}
+                fi
+
+                # Doing the same as above but for possibly permutated params.
+                  if [ "${param1[0]}" == "h" ]; then
+                    hostname=${param1[1]}
+                elif [ "${param1[0]}" == "f" ]; then
+                         fmt=${param1[1],,}
+                fi
+            fi
+
+            if [ -z "${hostname}" ]; then hostname=${_DEF_HOSTNAME}; fi
+
+            if [ "${fmt}" != "${_PRM_FMT_HTML}" -a      \
+                 "${fmt}" != "${_PRM_FMT_JSON}" ]; then
+
+                fmt=${_PRM_FMT_JSON}
+            fi
+
+            # Performing DNS lookup for the given hostname.
+            addr=`dns_lookup "${hostname}"`
+
+              if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                resp_buffer="<!DOCTYPE html>${_NEW_LINE}"`
 `"<html lang=\"en-US\" dir=\"ltr\">${_NEW_LINE}"`
 `"<head>${_NEW_LINE}"`
 `"<meta http-equiv=\"${_HDR_CONTENT_TYPE_N::-2}\"    "`
@@ -144,71 +207,71 @@ while true; do
 `"</head>${_NEW_LINE}"`
 `"<body>${_NEW_LINE}"`
 `"<div>${hostname}"
-    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-        resp_buffer="${_CB1}"`
-                   `"${_DAT_HOSTNAME_N}"`
-                   `"${_DQ1}"`
-                   `"${hostname}"`
-                   `"${_DQ2}"
-    fi
+            elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                resp_buffer="${_CB1}"`
+                           `"${_DAT_HOSTNAME_N}"`
+                           `"${_DQ1}"`
+                           `"${hostname}"`
+                           `"${_DQ2}"
+            fi
 
-    ver=4
+            # If lookup error occurred.
+            if [ -z "${addr}" ]; then
+                  if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                    resp_buffer="${resp_buffer} "`
+                               `"${_ERR_PREFIX}"`
+                               `"${_COLON_SPACE_SEP}"`
+                               `"${_ERR_COULD_NOT_LOOKUP}"
+                elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                    resp_buffer="${resp_buffer}"`
+                               `"${_ERR_PREFIX}"`
+                               `"${_DQ1}"`
+                               `"${_ERR_COULD_NOT_LOOKUP}"
+                fi
+            else
+                ver=4 # <== No IPv6 support for now: see dns_lookup() for ref.
 
-      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-        resp_buffer="${resp_buffer} "`
-                   `"${addr} "`
-                   `"${_DAT_VERSION_V}"`
-                   `"${ver}"
-    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-        resp_buffer="${resp_buffer}"`
-                   `"${_DAT_ADDRESS_N}"`
-                   `"${_DQ1}"`
-                   `"${addr}"`
-                   `"${_DQ2}"`
-                   `"${_DAT_VERSION_N}"`
-                   `"${_DQ1}"`
-                   `"${_DAT_VERSION_V}"`
-                   `"${ver}"
-    fi
+                  if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                    resp_buffer="${resp_buffer} "`
+                               `"${addr} "`
+                               `"${_DAT_VERSION_V}"`
+                               `"${ver}"
+                elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                    resp_buffer="${resp_buffer}"`
+                               `"${_DAT_ADDRESS_N}"`
+                               `"${_DQ1}"`
+                               `"${addr}"`
+                               `"${_DQ2}"`
+                               `"${_DAT_VERSION_N}"`
+                               `"${_DQ1}"`
+                               `"${_DAT_VERSION_V}"`
+                               `"${ver}"
+                fi
+            fi
 
-      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-        resp_buffer="${resp_buffer}"`
-                   `"</div>${_NEW_LINE}"`
-                   `"</body>${_NEW_LINE}"`
-                   `"</html>${_NEW_LINE}"
-    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-        resp_buffer="${resp_buffer}"`
-                   `"${_CB2}"
-    fi
+              if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                resp_buffer="${resp_buffer}"`
+                           `"</div>${_NEW_LINE}"`
+                           `"</body>${_NEW_LINE}"`
+                           `"</html>${_NEW_LINE}"
+            elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                resp_buffer="${resp_buffer}"`
+                           `"${_CB2}"
+            fi
 
-      if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-        resp_buffer_len=$((${#resp_buffer} - 12)) # <== 12 _NEW_LINEs in HTML.
-    elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-        resp_buffer_len=${#resp_buffer}           # <== None of them  in JSON.
-    fi
+              if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                resp_buffer_len=$((${#resp_buffer} - 12)) # <== 12 _NEW_LINEs in HTML.
+            elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                resp_buffer_len=${#resp_buffer}           # <== None of them  in JSON.
+            fi
 
-    # Adding headers to the response.
-    resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
+            # Adding headers to the response.
+            resp_hdrs=`add_response_headers "${fmt}" ${resp_buffer_len} "${_UNAME}"`
 
-    # Executing Netcat through a FIFO; analyzing errors in a subshell.
-    cat ${fifo} | ${_netcat} -l ${port_number} 2>&1 | ( \
-    grep -o "${_ERR_ADDR_ALREADY_IN_USE}" 1>/dev/null
-
-    if [ $? -eq 0 ]; then
-        ret=${_EXIT_FAILURE}
-
-        >&2 echo -e           "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
-                                           `"${_ERR_SRV_PORT_IS_IN_USE}"`
-                                           `"${_NEW_LINE}"
-
-        logger -t `basename    ${daemon_name}`                             \
-               -p  daemon.err "${daemon_name}${_ERR_CANNOT_START_SERVER}"`
-                                           `"${_ERR_SRV_PORT_IS_IN_USE}"
-
-        exit ${ret}
-    fi
-    ) | echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
-                                   `"${_NEW_LINE}${resp_buffer}" >${fifo}
+            echo -en "${_RSC_HTTP_200_OK}${_NEW_LINE}${resp_hdrs}"`
+                                       `"${_NEW_LINE}${resp_buffer}" >${fifo}
+        fi
+    done # <-- Parsing and validating request params - End --------------------
 done
 
 exit ${ret}
