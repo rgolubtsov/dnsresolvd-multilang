@@ -67,7 +67,7 @@ fi
 if [ "${print_banner_opt}" == "${_PRINT_BANNER_OPT}" ]; then
     _separator_draw "${_DMN_DESCRIPTION}"
 
-    echo "${_DMN_NAME}${_COMMA} ${_DMN_VERSION_S__} ${_DMN_VERSION}
+    echo "${_DMN_NAME}${_COMMA_SPACE_SEP}${_DMN_VERSION_S__} ${_DMN_VERSION}
 ${_DMN_DESCRIPTION}
 ${_DMN_COPYRIGHT__} ${_DMN_AUTHOR}"
 
@@ -213,23 +213,38 @@ while true; do
                            `"${_DQ2}"
             fi
 
-            ver=4
+            # If lookup error occurred.
+            if [ -z "${addr}" ]; then
+                  if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                    resp_buffer="${resp_buffer} "`
+                               `"${_ERR_PREFIX}"`
+                               `"${_COLON_SPACE_SEP}"`
+                               `"${_ERR_COULD_NOT_LOOKUP}"
+                elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                    resp_buffer="${resp_buffer}"`
+                               `"${_ERR_PREFIX}"`
+                               `"${_DQ1}"`
+                               `"${_ERR_COULD_NOT_LOOKUP}"
+                fi
+            else
+                ver=4 # <== No IPv6 support for now: see dns_lookup() for ref.
 
-              if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
-                resp_buffer="${resp_buffer} "`
-                           `"${addr} "`
-                           `"${_DAT_VERSION_V}"`
-                           `"${ver}"
-            elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
-                resp_buffer="${resp_buffer}"`
-                           `"${_DAT_ADDRESS_N}"`
-                           `"${_DQ1}"`
-                           `"${addr}"`
-                           `"${_DQ2}"`
-                           `"${_DAT_VERSION_N}"`
-                           `"${_DQ1}"`
-                           `"${_DAT_VERSION_V}"`
-                           `"${ver}"
+                  if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
+                    resp_buffer="${resp_buffer} "`
+                               `"${addr} "`
+                               `"${_DAT_VERSION_V}"`
+                               `"${ver}"
+                elif [ "${fmt}" == "${_PRM_FMT_JSON}" ]; then
+                    resp_buffer="${resp_buffer}"`
+                               `"${_DAT_ADDRESS_N}"`
+                               `"${_DQ1}"`
+                               `"${addr}"`
+                               `"${_DQ2}"`
+                               `"${_DAT_VERSION_N}"`
+                               `"${_DQ1}"`
+                               `"${_DAT_VERSION_V}"`
+                               `"${ver}"
+                fi
             fi
 
               if [ "${fmt}" == "${_PRM_FMT_HTML}" ]; then
