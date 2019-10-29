@@ -8,7 +8,7 @@
 ## Table of Contents
 
 * **[Building](#building)**
-  * [Building under OpenBSD/amd64 6.5](#building-under-openbsdamd64-65)
+  * [Building under OpenBSD/amd64 6.6](#building-under-openbsdamd64-66)
   * [Building under Ubuntu Server (Ubuntu 16.04.6 LTS x86-64)](#building-under-ubuntu-server-ubuntu-16046-lts-x86-64)
   * [Building under Arch Linux (kernel 5.2.13-arch1-1-ARCH x86-64)](#building-under-arch-linux-kernel-5213-arch1-1-arch-x86-64)
 * **[Running](#running)**
@@ -17,15 +17,15 @@
 
 This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, and Arch Linux operating systems. So let's describe each build process sequentially.
 
-### Building under OpenBSD/amd64 6.5
+### Building under OpenBSD/amd64 6.6
 
-Install the necessary dependencies (`bash`); the Netcat utility (`nc`) is in the "base" set of the system (`base65.tgz`), so it doesn't need to be installed explicitly, because it is already installed and should work well:
+Install the necessary dependencies (`bash`); the Netcat utility (`nc`) is in the "base" set of the system (`base66.tgz`), so it doesn't need to be installed explicitly, because it is already installed and should work well:
 
 ```
 $ sudo pkg_add -vvvvv bash
 $
 $ bash --version
-GNU bash, version 5.0.3(1)-release (x86_64-unknown-openbsd6.5)
+GNU bash, version 5.0.11(1)-release (x86_64-unknown-openbsd6.6)
 ...
 $
 $ nc
@@ -41,12 +41,12 @@ The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to
 ```
 $ cd src/bash
 $ ls -al
-total 48
-drwxr-xr-x   2 <username>  <usergroup>   512 Oct  7 01:05 .
-drwxr-xr-x  15 <username>  <usergroup>   512 Sep  8 20:05 ..
--rw-r--r--   1 <username>  <usergroup>  4746 Oct  7 01:05 README.md
--rwxr-xr-x   1 <username>  <usergroup>  7585 Oct  7 01:05 dnsresolvd
--rw-r--r--   1 <username>  <usergroup>  5464 Oct  7 01:05 dnsresolvd.h
+total 56
+drwxr-xr-x   2 <username>  <usergroup>    512 Oct 29 22:00 .
+drwxr-xr-x  15 <username>  <usergroup>    512 Sep  8 20:05 ..
+-rw-r--r--   1 <username>  <usergroup>   5127 Oct 29 22:00 README.md
+-rwxr-xr-x   1 <username>  <usergroup>  10748 Oct 29 22:00 dnsresolvd
+-rw-r--r--   1 <username>  <usergroup>   5600 Oct 29 22:00 dnsresolvd.h
 $
 $ file dnsresolv*
 dnsresolvd:   a bash script text executable
