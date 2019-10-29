@@ -44,7 +44,7 @@ $ ls -al
 total 56
 drwxr-xr-x   2 <username>  <usergroup>    512 Oct 29 22:00 .
 drwxr-xr-x  15 <username>  <usergroup>    512 Sep  8 20:05 ..
--rw-r--r--   1 <username>  <usergroup>   5132 Oct 29 22:00 README.md
+-rw-r--r--   1 <username>  <usergroup>   5137 Oct 29 22:00 README.md
 -rwxr-xr-x   1 <username>  <usergroup>  10748 Oct 29 22:00 dnsresolvd
 -rw-r--r--   1 <username>  <usergroup>   5600 Oct 29 22:00 dnsresolvd.h
 $
@@ -80,7 +80,7 @@ drwxrwxr-x  2 <username> <usergroup>  4096 Oct 29 22:40 .
 drwxrwxr-x 15 <username> <usergroup>  4096 Sep  5 20:55 ..
 -rwxrwxr-x  1 <username> <usergroup> 10748 Oct 29 22:40 dnsresolvd
 -rw-rw-r--  1 <username> <usergroup>  5600 Oct 29 22:40 dnsresolvd.h
--rw-rw-r--  1 <username> <usergroup>  5132 Oct 29 22:40 README.md
+-rw-rw-r--  1 <username> <usergroup>  5137 Oct 29 22:40 README.md
 $
 $ file dnsresolv*
 dnsresolvd:   Bourne-Again shell script, ASCII text executable
@@ -108,12 +108,12 @@ The daemon itself doesn't need to be built. &ndash; But it's some kind of fun to
 ```
 $ cd src/bash
 $ ls -al
-total 32
-drwxr-xr-x  2 <username> <usergroup> 4096 Oct  7 00:00 .
-drwxr-xr-x 15 <username> <usergroup> 4096 Aug 20 22:40 ..
--rwxr-xr-x  1 <username> <usergroup> 7585 Oct  7 00:00 dnsresolvd
--rw-r--r--  1 <username> <usergroup> 5464 Oct  7 00:00 dnsresolvd.h
--rw-r--r--  1 <username> <usergroup> 4746 Oct  7 00:00 README.md
+total 36
+drwxr-xr-x  2 <username> <usergroup>  4096 Oct 29 23:00 .
+drwxr-xr-x 15 <username> <usergroup>  4096 Aug 20 22:40 ..
+-rwxr-xr-x  1 <username> <usergroup> 10748 Oct 29 23:00 dnsresolvd
+-rw-r--r--  1 <username> <usergroup>  5600 Oct 29 23:00 dnsresolvd.h
+-rw-r--r--  1 <username> <usergroup>  5137 Oct 29 23:00 README.md
 $
 $ file dnsresolv*
 dnsresolvd:   Bourne-Again shell script, ASCII text executable
