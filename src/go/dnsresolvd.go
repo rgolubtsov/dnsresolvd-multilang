@@ -202,7 +202,7 @@ func _cleanups_fixate(log *syslog.Writer) {
 func _separator_draw(banner_text string) {
     i := len(banner_text)
 
-    for {fmt.Printf("%c",'=');i--;if i == 0 {break}};fmt.Println(_EMPTY_STRING)
+    for { fmt.Printf("%c", '='); i--; if (i == 0) { break } }; fmt.Println()
 }
 
 // vim:set nu et ts=4 sw=4:
