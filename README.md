@@ -19,7 +19,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 * :small_blue_diamond: **Clojure ([HTTP Kit](http://http-kit.org "HTTP Kit"))**: `src/clojure/`
 * :small_blue_diamond: **Java ([Eclipse Vert.x](http://vertx.io "Eclipse Vert.x"))**: `src/java/`
 * :small_blue_diamond: **Bash ([Netcat](http://nc110.sourceforge.net "Netcat: the TCP/IP swiss army"))**: `src/bash/`
-* :small_orange_diamond: **Go ([net/http](https://golang.org/pkg/net/http/ "Package http"))**: `src/go/`
+* :cd: **Go ([net/http](https://golang.org/pkg/net/http/ "Package http"))**: `src/go/`
 
 ## Table of Contents
 
