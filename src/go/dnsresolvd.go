@@ -28,17 +28,19 @@ const _COMMA_SPACE_SEP  string = ", "
 const _NEW_LINE         string = "\n"
 const _ONE_SPACE_STRING string =  " "
 const _PRINT_BANNER_OPT string = "-V"
+const _ERR_PORT_MUST_BE_POSITIVE_INT string = ": <port_number> must be a positive integer value, in the range 1024-49151."
 const _ERR_MUST_BE_ONE_TWO_ARGS_1 string = ": There must be one or two args passed: "
 const _ERR_MUST_BE_ONE_TWO_ARGS_2 string = " args found"
 const _MSG_USAGE_TEMPLATE_1 string = "Usage: "
 const _MSG_USAGE_TEMPLATE_2 string = " <port_number> [-V]"
-const _DMN_NAME         string = "DNS Resolver Daemon (dnsresolvd)"
-const _DMN_DESCRIPTION  string = "Performs DNS lookups for the given " +
-                                 "hostname passed in an HTTP request"
-const _DMN_VERSION_S__  string = "Version"
-const _DMN_VERSION      string = "0.1"
-const _DMN_COPYRIGHT__  string = "Copyright (C) 2017-2020"
-const _DMN_AUTHOR       string = "Radislav Golubtsov <ragolubtsov@my.com>"
+const _MIN_PORT uint = 1024
+const _MAX_PORT uint = 49151
+const _DMN_NAME        string = "DNS Resolver Daemon (dnsresolvd)"
+const _DMN_DESCRIPTION string = "Performs DNS lookups for the given hostname passed in an HTTP request"
+const _DMN_VERSION_S__ string = "Version"
+const _DMN_VERSION     string = "0.1"
+const _DMN_COPYRIGHT__ string = "Copyright (C) 2017-2020"
+const _DMN_AUTHOR      string = "Radislav Golubtsov <ragolubtsov@my.com>"
 
 // The daemon entry point.
 func main() {
@@ -103,88 +105,23 @@ func main() {
         os.Exit(ret)
     }
 
-    /* Checking for port correctness. *//*
+    // Checking for port correctness.
     if ((port_number < _MIN_PORT) || (port_number > _MAX_PORT)) {
-        ret = EXIT_FAILURE;
+        ret = _EXIT_FAILURE
 
-        fprintf(stderr, _ERR_PORT_MUST_BE_POSITIVE_INT _NEW_LINE _NEW_LINE,
-                         daemon_name);
+        fmt.Fprintf(os.Stderr, daemon_name         +
+                    _ERR_PORT_MUST_BE_POSITIVE_INT + _NEW_LINE + _NEW_LINE)
 
-        syslog(LOG_ERR, _ERR_PORT_MUST_BE_POSITIVE_INT _NEW_LINE _NEW_LINE,
-                         daemon_name);
+        log.Err(               daemon_name         +
+                    _ERR_PORT_MUST_BE_POSITIVE_INT + _NEW_LINE)
 
-        fprintf(stderr, _MSG_USAGE_TEMPLATE _NEW_LINE _NEW_LINE, daemon_name);
+        fmt.Fprintf(os.Stderr, _MSG_USAGE_TEMPLATE_1 + daemon_name +
+                               _MSG_USAGE_TEMPLATE_2 + _NEW_LINE   + _NEW_LINE)
 
-        _cleanups_fixate(NULL);
+        _cleanups_fixate(log)
 
-        return ret;
-    }*/
-
-    /* Creating the HTTP server. *//*
-    dmn = soup_server_new(SOUP_SERVER_SERVER_HEADER, _DMN_NAME, NULL);
-
-    /* Creating the main loop. *//*
-    loop = g_main_loop_new(NULL, FALSE);
-
-    if ((dmn == NULL) || (loop == NULL)) {
-        ret = EXIT_FAILURE;
-
-        fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
-                        _NEW_LINE _NEW_LINE, daemon_name);
-
-        syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
-                        _NEW_LINE _NEW_LINE, daemon_name);
-
-        _cleanups_fixate(NULL);
-
-        return ret;
-    }*/
-
-    /* Attaching Unix signal handlers to ensure daemon clean shutdown. *//*
-    g_unix_signal_add(SIGINT,  (GSourceFunc) _cleanups_fixate, loop);
-    g_unix_signal_add(SIGTERM, (GSourceFunc) _cleanups_fixate, loop);*/
-
-    /*
-     * Attaching HTTP request handlers to process incoming requests
-     * and producing the response.
-     *//*
-    soup_server_add_handler(dmn, NULL, _request_handler, NULL, NULL);*/
-
-    /* Setting up the daemon to listen on all TCP IPv4 interfaces. *//*
-    if (soup_server_listen_all(dmn, port_number,
-        SOUP_SERVER_LISTEN_IPV4_ONLY, &error)) {
-
-        printf(         _MSG_SERVER_STARTED_1 _NEW_LINE _MSG_SERVER_STARTED_2 \
-                        _NEW_LINE, port_number);
-
-        syslog(LOG_INFO,_MSG_SERVER_STARTED_1 _NEW_LINE _MSG_SERVER_STARTED_2 \
-                        _NEW_LINE, port_number);*/
-
-        /* Starting up the daemon by running the main loop. *//*
-        g_main_loop_run(loop);
-    } else {
-        ret = EXIT_FAILURE;
-
-        if (strstr(error->message, _ERR_ADDR_ALREADY_IN_USE) != NULL) {
-            fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_PORT_IS_IN_USE
-                            _NEW_LINE _NEW_LINE, daemon_name);
-
-            syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_PORT_IS_IN_USE
-                            _NEW_LINE _NEW_LINE, daemon_name);
-        } else {
-            fprintf(stderr, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
-                            _NEW_LINE _NEW_LINE, daemon_name);
-
-            syslog(LOG_ERR, _ERR_CANNOT_START_SERVER _ERR_SRV_UNKNOWN_REASON
-                            _NEW_LINE _NEW_LINE, daemon_name);
-        }
-
-        g_clear_error(&error);
-
-        _cleanups_fixate(loop);
-
-        return ret;
-    }*/
+        os.Exit(ret)
+    }
 
     // Making final cleanups.
     _cleanups_fixate(log)
