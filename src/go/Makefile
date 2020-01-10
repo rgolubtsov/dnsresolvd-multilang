@@ -12,11 +12,17 @@
 # (See the LICENSE file at the top of the source tree.)
 #
 
-EXEC = dnsresolvd
+PREF = dnsresolv
+EXEC = $(PREF)d
+SRCS = $(PREF)d.go \
+       $(PREF)h.go
+
+# Specify flags and other vars here.
+GO_RUN = go run
 
 # Making the target.
-$(EXEC): $(EXEC).go
-	go run $(EXEC).go
+$(EXEC): $(SRCS)
+	$(GO_RUN) $(SRCS)
 
 .PHONY: all clean
 
