@@ -14,33 +14,14 @@
 
 package main
 
-import "os"
-import "strconv"
-import "strings"
-import "fmt"
-import "log/syslog"
-import "path/filepath"
-
-const _EXIT_FAILURE     int    =    1 //    Failing exit status.
-const _EXIT_SUCCESS     int    =    0 // Successful exit status.
-const _EMPTY_STRING     string =   ""
-const _COMMA_SPACE_SEP  string = ", "
-const _NEW_LINE         string = "\n"
-const _ONE_SPACE_STRING string =  " "
-const _PRINT_BANNER_OPT string = "-V"
-const _ERR_PORT_MUST_BE_POSITIVE_INT string = ": <port_number> must be a positive integer value, in the range 1024-49151."
-const _ERR_MUST_BE_ONE_TWO_ARGS_1 string = ": There must be one or two args passed: "
-const _ERR_MUST_BE_ONE_TWO_ARGS_2 string = " args found"
-const _MSG_USAGE_TEMPLATE_1 string = "Usage: "
-const _MSG_USAGE_TEMPLATE_2 string = " <port_number> [-V]"
-const _MIN_PORT uint = 1024
-const _MAX_PORT uint = 49151
-const _DMN_NAME        string = "DNS Resolver Daemon (dnsresolvd)"
-const _DMN_DESCRIPTION string = "Performs DNS lookups for the given hostname passed in an HTTP request"
-const _DMN_VERSION_S__ string = "Version"
-const _DMN_VERSION     string = "0.1"
-const _DMN_COPYRIGHT__ string = "Copyright (C) 2017-2020"
-const _DMN_AUTHOR      string = "Radislav Golubtsov <ragolubtsov@my.com>"
+import (
+    "os"
+    "strconv"
+    "strings"
+    "fmt"
+    "log/syslog"
+    "path/filepath"
+)
 
 // The daemon entry point.
 func main() {
@@ -127,19 +108,6 @@ func main() {
     _cleanups_fixate(log)
 
     os.Exit(ret)
-}
-
-// Helper function. Makes final buffer cleanups, closes streams, etc.
-func _cleanups_fixate(log *syslog.Writer) {
-    // Closing the system logger.
-    log.Close()
-}
-
-// Helper function. Draws a horizontal separator banner.
-func _separator_draw(banner_text string) {
-    i := len(banner_text)
-
-    for { fmt.Printf("%c", '='); i--; if (i == 0) { break } }; fmt.Println()
 }
 
 // vim:set nu et ts=4 sw=4:
