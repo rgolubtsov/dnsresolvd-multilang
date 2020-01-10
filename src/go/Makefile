@@ -14,21 +14,27 @@
 
 PREF = dnsresolv
 EXEC = $(PREF)d
+DEPS = $(EXEC).o
 SRCS = $(PREF)d.go \
        $(PREF)h.go
 
 # Specify flags and other vars here.
-GO_RUN = go run
+GO_TOOL       = go tool
+GO_COMP_FLAGS = compile -complete -o $(DEPS)
+GO_LINK_FLAGS = link -s -w        -o $(EXEC)
 
 # Making the target.
-$(EXEC): $(SRCS)
-	$(GO_RUN) $(SRCS)
+$(DEPS): $(SRCS)
+	$(GO_TOOL) $(GO_COMP_FLAGS) $(SRCS)
+
+$(EXEC): $(DEPS)
+	$(GO_TOOL) $(GO_LINK_FLAGS) $(DEPS)
 
 .PHONY: all clean
 
 all: $(EXEC)
 
 clean:
-	$(RM) $(EXEC)
+	$(RM) $(EXEC) $(DEPS)
 
 # vim:set nu ts=4 sw=4:
