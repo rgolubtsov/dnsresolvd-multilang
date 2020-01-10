@@ -46,8 +46,6 @@ func main() {
         port_number = 0
     }
 
-    fmt.Println(port_number)
-
     if (print_banner_opt == _PRINT_BANNER_OPT) {
         _separator_draw(_DMN_DESCRIPTION)
 
@@ -60,11 +58,9 @@ func main() {
     }
 
     // Opening the system logger.
-    log, e := syslog.Dial(_EMPTY_STRING,   _EMPTY_STRING,
+    log, _ := syslog.Dial(_EMPTY_STRING,   _EMPTY_STRING,
                           syslog.LOG_ERR | syslog.LOG_DAEMON,
                           filepath.Base(daemon_name))
-
-    if (e == nil) {}
 
     // Checking for args presence.
     if (argc == 0) {
