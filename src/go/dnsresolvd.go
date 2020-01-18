@@ -21,6 +21,7 @@ import (
     "fmt"
     "log/syslog"
     "path/filepath"
+    "net/http"
 )
 
 // The daemon entry point.
@@ -66,12 +67,14 @@ func main() {
     if (argc == 0) {
         ret = _EXIT_FAILURE
 
+        var argc_str string = strconv.Itoa(int(argc))
+
         fmt.Fprintf(os.Stderr, daemon_name      +
-                    _ERR_MUST_BE_ONE_TWO_ARGS_1 + strconv.Itoa(int(argc)) +
+                    _ERR_MUST_BE_ONE_TWO_ARGS_1 + argc_str  +
                     _ERR_MUST_BE_ONE_TWO_ARGS_2 + _NEW_LINE + _NEW_LINE)
 
         log.Err(               daemon_name      +
-                    _ERR_MUST_BE_ONE_TWO_ARGS_1 + strconv.Itoa(int(argc)) +
+                    _ERR_MUST_BE_ONE_TWO_ARGS_1 + argc_str  +
                     _ERR_MUST_BE_ONE_TWO_ARGS_2 + _NEW_LINE)
 
         fmt.Fprintf(os.Stderr, _MSG_USAGE_TEMPLATE_1 + daemon_name +
@@ -94,6 +97,44 @@ func main() {
 
         fmt.Fprintf(os.Stderr, _MSG_USAGE_TEMPLATE_1 + daemon_name +
                                _MSG_USAGE_TEMPLATE_2 + _NEW_LINE   + _NEW_LINE)
+
+        _cleanups_fixate(log)
+
+        os.Exit(ret)
+    }
+
+    var port_number_str string = strconv.Itoa(int(port_number))
+
+    fmt.Printf(_MSG_SERVER_STARTED_1 + port_number_str + _NEW_LINE +
+               _MSG_SERVER_STARTED_2 +                   _NEW_LINE)
+
+    log.Info(  _MSG_SERVER_STARTED_1 + port_number_str + _NEW_LINE +
+               _MSG_SERVER_STARTED_2)
+
+    // Starting up the HTTP listener on <port_number>.
+    e := http.ListenAndServe(_COLON + port_number_str, nil)
+
+    // Handling errors during start up of the listener.
+    if (e != nil) {
+        ret = _EXIT_FAILURE
+
+        if (strings.Contains(e.Error(), _ERR_ADDR_ALREADY_IN_USE)) {
+            fmt.Fprintf(os.Stderr, daemon_name   +
+                        _ERR_CANNOT_START_SERVER +
+                        _ERR_SRV_PORT_IS_IN_USE  + _NEW_LINE + _NEW_LINE)
+
+            log.Err(               daemon_name   +
+                        _ERR_CANNOT_START_SERVER +
+                        _ERR_SRV_PORT_IS_IN_USE  + _NEW_LINE)
+        } else {
+            fmt.Fprintf(os.Stderr, daemon_name   +
+                        _ERR_CANNOT_START_SERVER +
+                        _ERR_SRV_UNKNOWN_REASON  + _NEW_LINE + _NEW_LINE)
+
+            log.Err(               daemon_name   +
+                        _ERR_CANNOT_START_SERVER +
+                        _ERR_SRV_UNKNOWN_REASON  + _NEW_LINE)
+        }
 
         _cleanups_fixate(log)
 

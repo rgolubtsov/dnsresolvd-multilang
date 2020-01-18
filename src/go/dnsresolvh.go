@@ -28,6 +28,7 @@ const (
     _NEW_LINE         string = "\n"
     _ONE_SPACE_STRING string =  " "
     _PRINT_BANNER_OPT string = "-V"
+    _COLON            string =  ":"
 )
 
 // Common error messages.
@@ -35,6 +36,11 @@ const (
     _ERR_PORT_MUST_BE_POSITIVE_INT string = ": <port_number> must be "   +
                                             "a positive integer value, " +
                                             "in the range 1024-49151."
+    _ERR_CANNOT_START_SERVER       string = ": FATAL: Cannot start server "
+    _ERR_SRV_UNKNOWN_REASON        string = "for an unknown reason. Exiting..."
+    _ERR_SRV_PORT_IS_IN_USE        string = "due to the port requested " +
+                                            "is in use. Exiting..."
+    _ERR_ADDR_ALREADY_IN_USE       string = "address already in use"
 )
 
 // Print this error message when there are no any args passed.
@@ -55,6 +61,10 @@ const _MIN_PORT uint = 1024
 
 // Constant: The maximum port number allowed.
 const _MAX_PORT uint = 49151
+
+// Common notification messages.
+const _MSG_SERVER_STARTED_1 string = "Server started on port "
+const _MSG_SERVER_STARTED_2 string = "=== Hit Ctrl+C to terminate it."
 
 // Daemon name, version, and copyright banners.
 const (
