@@ -28,6 +28,7 @@ const (
     _NEW_LINE         string = "\n"
     _ONE_SPACE_STRING string =  " "
     _PRINT_BANNER_OPT string = "-V"
+    _COLON            string =  ":"
 )
 
 // Common error messages.
@@ -55,6 +56,10 @@ const _MIN_PORT uint = 1024
 
 // Constant: The maximum port number allowed.
 const _MAX_PORT uint = 49151
+
+// Common notification messages.
+const _MSG_SERVER_STARTED_1 string = "Server started on port "
+const _MSG_SERVER_STARTED_2 string = "=== Hit Ctrl+C to terminate it."
 
 // Daemon name, version, and copyright banners.
 const (

@@ -21,6 +21,7 @@ import (
     "fmt"
     "log/syslog"
     "path/filepath"
+    "net/http"
 )
 
 // The daemon entry point.
@@ -66,12 +67,14 @@ func main() {
     if (argc == 0) {
         ret = _EXIT_FAILURE
 
+        var argc_str string = strconv.Itoa(int(argc))
+
         fmt.Fprintf(os.Stderr, daemon_name      +
-                    _ERR_MUST_BE_ONE_TWO_ARGS_1 + strconv.Itoa(int(argc)) +
+                    _ERR_MUST_BE_ONE_TWO_ARGS_1 + argc_str  +
                     _ERR_MUST_BE_ONE_TWO_ARGS_2 + _NEW_LINE + _NEW_LINE)
 
         log.Err(               daemon_name      +
-                    _ERR_MUST_BE_ONE_TWO_ARGS_1 + strconv.Itoa(int(argc)) +
+                    _ERR_MUST_BE_ONE_TWO_ARGS_1 + argc_str  +
                     _ERR_MUST_BE_ONE_TWO_ARGS_2 + _NEW_LINE)
 
         fmt.Fprintf(os.Stderr, _MSG_USAGE_TEMPLATE_1 + daemon_name +
@@ -98,6 +101,21 @@ func main() {
         _cleanups_fixate(log)
 
         os.Exit(ret)
+    }
+
+    var port_number_str string = strconv.Itoa(int(port_number))
+
+    fmt.Printf(_MSG_SERVER_STARTED_1 + port_number_str + _NEW_LINE +
+               _MSG_SERVER_STARTED_2 +                   _NEW_LINE)
+
+    log.Info(  _MSG_SERVER_STARTED_1 + port_number_str + _NEW_LINE +
+               _MSG_SERVER_STARTED_2)
+
+    // Creating the HTTP server.
+    e := http.ListenAndServe(_COLON + port_number_str, nil)
+
+    if (e != nil) {
+        fmt.Println(e)
     }
 
     // Making final cleanups.
