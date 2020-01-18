@@ -25,6 +25,7 @@ src/c/libmicrohttpd/dnsresolvd
 src/c/libsoup/dnsresolvd
 src/vala/dnsresolvd
 src/genie/dnsresolvd
+src/go/dnsresolvd
 
 # === Node/Erlang modules =====================================================
 node_modules/
