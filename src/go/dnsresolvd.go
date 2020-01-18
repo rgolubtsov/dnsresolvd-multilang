@@ -111,11 +111,34 @@ func main() {
     log.Info(  _MSG_SERVER_STARTED_1 + port_number_str + _NEW_LINE +
                _MSG_SERVER_STARTED_2)
 
-    // Creating the HTTP server.
+    // Starting up the HTTP listener on <port_number>.
     e := http.ListenAndServe(_COLON + port_number_str, nil)
 
+    // Handling errors during start up of the listener.
     if (e != nil) {
-        fmt.Println(e)
+        ret = _EXIT_FAILURE
+
+        if (strings.Contains(e.Error(), _ERR_ADDR_ALREADY_IN_USE)) {
+            fmt.Fprintf(os.Stderr, daemon_name   +
+                        _ERR_CANNOT_START_SERVER +
+                        _ERR_SRV_PORT_IS_IN_USE  + _NEW_LINE + _NEW_LINE)
+
+            log.Err(               daemon_name   +
+                        _ERR_CANNOT_START_SERVER +
+                        _ERR_SRV_PORT_IS_IN_USE  + _NEW_LINE)
+        } else {
+            fmt.Fprintf(os.Stderr, daemon_name   +
+                        _ERR_CANNOT_START_SERVER +
+                        _ERR_SRV_UNKNOWN_REASON  + _NEW_LINE + _NEW_LINE)
+
+            log.Err(               daemon_name   +
+                        _ERR_CANNOT_START_SERVER +
+                        _ERR_SRV_UNKNOWN_REASON  + _NEW_LINE)
+        }
+
+        _cleanups_fixate(log)
+
+        os.Exit(ret)
     }
 
     // Making final cleanups.

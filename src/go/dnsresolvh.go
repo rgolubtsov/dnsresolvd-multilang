@@ -36,6 +36,11 @@ const (
     _ERR_PORT_MUST_BE_POSITIVE_INT string = ": <port_number> must be "   +
                                             "a positive integer value, " +
                                             "in the range 1024-49151."
+    _ERR_CANNOT_START_SERVER       string = ": FATAL: Cannot start server "
+    _ERR_SRV_UNKNOWN_REASON        string = "for an unknown reason. Exiting..."
+    _ERR_SRV_PORT_IS_IN_USE        string = "due to the port requested " +
+                                            "is in use. Exiting..."
+    _ERR_ADDR_ALREADY_IN_USE       string = "address already in use"
 )
 
 // Print this error message when there are no any args passed.
