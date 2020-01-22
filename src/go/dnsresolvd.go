@@ -111,6 +111,39 @@ func main() {
     log.Info(  _MSG_SERVER_STARTED_1 + port_number_str + _NEW_LINE +
                _MSG_SERVER_STARTED_2)
 
+    // Defining the default request handler.
+    _request_handler := func(resp http.ResponseWriter, req *http.Request) {
+        var resp_buffer string = _EMPTY_STRING
+
+        var hostname string = _DEF_HOSTNAME
+
+        resp_buffer = "<!DOCTYPE html>"                                                   + _NEW_LINE +
+"<html lang=\"en-US\" dir=\"ltr\">"                                                       + _NEW_LINE +
+"<head>"                                                                                  + _NEW_LINE +
+"<meta http-equiv=\"" + _HDR_CONTENT_TYPE_N      +                     "\"    content=\"" +
+                        _HDR_CONTENT_TYPE_V_HTML +                     "\"           />"  + _NEW_LINE +
+"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"                            />"  + _NEW_LINE +
+"<meta       name=\"viewport\"        content=\"width=device-width,initial-scale=1\" />"  + _NEW_LINE +
+"<title>" + _DMN_NAME + "</title>"                                                        + _NEW_LINE +
+"</head>"                                                                                 + _NEW_LINE +
+"<body>"                                                                                  + _NEW_LINE +
+"<div>"   +  hostname + _ONE_SPACE_STRING
+
+        resp_buffer += req.Method
+
+        resp_buffer += "</div>"  + _NEW_LINE +
+                       "</body>" + _NEW_LINE +
+                       "</html>" + _NEW_LINE
+
+        fmt.Fprintf(resp, resp_buffer)
+    }
+
+    /*
+     * Attaching HTTP request handlers to process incoming requests
+     * and producing the response.
+     */
+    http.HandleFunc("/", _request_handler)
+
     // Starting up the HTTP listener on <port_number>.
     e := http.ListenAndServe(_COLON + port_number_str, nil)
 

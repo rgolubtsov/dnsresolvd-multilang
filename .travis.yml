@@ -66,6 +66,19 @@ script:
     ## Going one level up.
     - cd .. && ls -al
 
+    ## Building the DNS Resolver Daemon as the net/http/Go impl.
+    - cd go && ls -al
+            && make clean
+            && make clean
+            && ls -al
+            && make all
+            && make all
+            && ls -al
+            && echo
+
+    ## Returning to the previous working dir.
+    - cd - && ls -al
+
     ## Going one level up.
     - cd .. && ls -al
 
