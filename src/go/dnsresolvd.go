@@ -127,7 +127,9 @@ func main() {
 "<title>" + _DMN_NAME + "</title>"                                                        + _NEW_LINE +
 "</head>"                                                                                 + _NEW_LINE +
 "<body>"                                                                                  + _NEW_LINE +
-"<div>"   +  hostname + _ONE_SPACE_STRING;
+"<div>"   +  hostname + _ONE_SPACE_STRING
+
+        resp_buffer += req.Method
 
         resp_buffer += "</div>"  + _NEW_LINE +
                        "</body>" + _NEW_LINE +
