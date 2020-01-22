@@ -66,6 +66,19 @@ const _MAX_PORT uint = 49151
 const _MSG_SERVER_STARTED_1 string = "Server started on port "
 const _MSG_SERVER_STARTED_2 string = "=== Hit Ctrl+C to terminate it."
 
+// HTTP response headers.
+const (
+    _HDR_CONTENT_TYPE_N      string = "Content-Type"
+    _HDR_CONTENT_TYPE_V_HTML string = "text/html; charset=UTF-8"
+    _HDR_CONTENT_TYPE_V_JSON string = "application/json"
+    _HDR_CACHE_CONTROL_N     string = "Cache-Control"
+    _HDR_CACHE_CONTROL_V     string = "no-cache, no-store, must-revalidate"
+    _HDR_EXPIRES_N           string = "Expires"
+    _HDR_EXPIRES_V           string = "Thu, 01 Dec 1994 16:00:00 GMT"
+    _HDR_PRAGMA_N            string = "Pragma"
+    _HDR_PRAGMA_V            string = "no-cache"
+)
+
 // Daemon name, version, and copyright banners.
 const (
     _DMN_NAME        string = "DNS Resolver Daemon (dnsresolvd)"
@@ -76,6 +89,9 @@ const (
     _DMN_COPYRIGHT__ string = "Copyright (C) 2017-2020"
     _DMN_AUTHOR      string = "Radislav Golubtsov <ragolubtsov@my.com>"
 )
+
+// Constant: The default hostname to look up for.
+const _DEF_HOSTNAME string = "openbsd.org"
 
 // Helper function. Makes final buffer cleanups, closes streams, etc.
 func _cleanups_fixate(log *syslog.Writer) {
