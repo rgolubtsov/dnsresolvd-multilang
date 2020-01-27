@@ -113,9 +113,38 @@ func main() {
 
     // Defining the default request handler.
     _request_handler := func(resp http.ResponseWriter, req *http.Request) {
+        var mtd string = req.Method
+
         var resp_buffer string = _EMPTY_STRING
 
         var hostname string = _DEF_HOSTNAME
+        var frt      string = _PRM_FMT_JSON
+
+        // --------------------------------------------------------------------
+        // --- Parsing and validating request params - Begin ------------------
+        // --------------------------------------------------------------------
+               if (mtd == http.MethodGet ) {
+            qry_ary := strings.Split(req.URL.RawQuery, _AMPER)
+
+            fmt.Println(qry_ary)
+
+            for i := 0; i < len(qry_ary); i++ {
+                       if (strings.HasPrefix(     qry_ary[i], "h=")) {
+                    hostname = strings.TrimPrefix(qry_ary[i], "h=")
+
+                    fmt.Println(hostname)
+                } else if (strings.HasPrefix(     qry_ary[i], "f=")) {
+                    frt      = strings.TrimPrefix(qry_ary[i], "f=")
+
+                    fmt.Println(frt)
+                }
+            }
+        } else if (mtd == http.MethodPost) {
+            fmt.Println(mtd)
+        }
+        // --------------------------------------------------------------------
+        // --- Parsing and validating request params - End --------------------
+        // --------------------------------------------------------------------
 
         resp_buffer = "<!DOCTYPE html>"                                                   + _NEW_LINE +
 "<html lang=\"en-US\" dir=\"ltr\">"                                                       + _NEW_LINE +
@@ -129,7 +158,7 @@ func main() {
 "<body>"                                                                                  + _NEW_LINE +
 "<div>"   +  hostname + _ONE_SPACE_STRING
 
-        resp_buffer += req.Method
+        resp_buffer += mtd
 
         resp_buffer += "</div>"  + _NEW_LINE +
                        "</body>" + _NEW_LINE +
