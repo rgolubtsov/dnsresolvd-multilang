@@ -26,6 +26,7 @@ const (
     _EMPTY_STRING     string =   ""
     _COMMA_SPACE_SEP  string = ", "
     _NEW_LINE         string = "\n"
+    _AMPER            string =  "&"
     _ONE_SPACE_STRING string =  " "
     _PRINT_BANNER_OPT string = "-V"
     _COLON            string =  ":"
@@ -65,6 +66,12 @@ const _MAX_PORT uint = 49151
 // Common notification messages.
 const _MSG_SERVER_STARTED_1 string = "Server started on port "
 const _MSG_SERVER_STARTED_2 string = "=== Hit Ctrl+C to terminate it."
+
+// HTTP request params.
+const (
+    _PRM_FMT_HTML string = "html"
+    _PRM_FMT_JSON string = "json"
+)
 
 // HTTP response headers.
 const (

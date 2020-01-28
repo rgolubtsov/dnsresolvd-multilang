@@ -22,6 +22,7 @@ import (
     "log/syslog"
     "path/filepath"
     "net/http"
+    "io/ioutil"
 )
 
 // The daemon entry point.
@@ -113,9 +114,25 @@ func main() {
 
     // Defining the default request handler.
     _request_handler := func(resp http.ResponseWriter, req *http.Request) {
+        var mtd string = req.Method
+
+        var params []string
+
         var resp_buffer string = _EMPTY_STRING
 
-        var hostname string = _DEF_HOSTNAME
+               if (mtd == http.MethodGet ) {
+            params = strings.Split(req.URL.RawQuery, _AMPER)
+        } else if (mtd == http.MethodPost) {
+            req_body, _ := ioutil.ReadAll(req.Body)
+            params = strings.Split(string(req_body), _AMPER)
+        }
+
+        fmt.Println(params)
+
+        hostname, frt := _parse_req_params(params)
+
+        fmt.Println(hostname)
+        fmt.Println(frt)
 
         resp_buffer = "<!DOCTYPE html>"                                                   + _NEW_LINE +
 "<html lang=\"en-US\" dir=\"ltr\">"                                                       + _NEW_LINE +
@@ -129,7 +146,7 @@ func main() {
 "<body>"                                                                                  + _NEW_LINE +
 "<div>"   +  hostname + _ONE_SPACE_STRING
 
-        resp_buffer += req.Method
+        resp_buffer += mtd
 
         resp_buffer += "</div>"  + _NEW_LINE +
                        "</body>" + _NEW_LINE +
@@ -178,6 +195,63 @@ func main() {
     _cleanups_fixate(log)
 
     os.Exit(ret)
+}
+
+// Parses and validates request params.
+func _parse_req_params(params []string) (string, string) {
+    var hostname, frt string
+
+    // ------------------------------------------------------------------------
+    // --- Parsing and validating request params - Begin ----------------------
+    // ------------------------------------------------------------------------
+    for i := 0; i < len(params); i++ {
+               if (strings.HasPrefix(     params[i], "h=")) {
+            hostname = strings.TrimPrefix(params[i], "h=") // <---------+
+        } else if (strings.HasPrefix(     params[i], "f=")) { //        |
+            frt      = strings.TrimPrefix(params[i], "f=") // <-----+   |
+        }                                                     //    |   |
+    } /*                                    +-----------------------+---+
+                                            |                       |   |
+                                            |            +----------+   |
+                                            |            |          |   |
+    $ curl 'http://localhost:<port-number>/?h=<hostname>&f=<fmt>'   |   |
+    $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number> |   |
+               |            |                                       |   |
+               |            +---------------------------------------+   |
+               |                                                        |
+               +--------------------------------------------------------+ */
+
+    if (hostname == _EMPTY_STRING) {
+        hostname  = _DEF_HOSTNAME
+    }
+
+    if (frt      == _EMPTY_STRING) {
+        frt       = _PRM_FMT_JSON
+    } else {
+        frt       = strings.ToLower(frt)
+
+        frt_ := []string {
+            _PRM_FMT_HTML,
+            _PRM_FMT_JSON,
+        }
+
+        var _frt bool = false
+
+        for i := 0; i < len(frt_); i++ {
+            if (frt == frt_[i]) {
+               _frt = true; break
+            }
+        }
+
+        if (!_frt) {
+            frt   = _PRM_FMT_JSON
+        }
+    }
+    // ------------------------------------------------------------------------
+    // --- Parsing and validating request params - End ------------------------
+    // ------------------------------------------------------------------------
+
+    return hostname, frt
 }
 
 // vim:set nu et ts=4 sw=4:
