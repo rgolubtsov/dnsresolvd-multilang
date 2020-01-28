@@ -206,11 +206,20 @@ func _parse_req_params(params []string) (string, string) {
     // ------------------------------------------------------------------------
     for i := 0; i < len(params); i++ {
                if (strings.HasPrefix(     params[i], "h=")) {
-            hostname = strings.TrimPrefix(params[i], "h=")
-        } else if (strings.HasPrefix(     params[i], "f=")) {
-            frt      = strings.TrimPrefix(params[i], "f=")
-        }
-    }
+            hostname = strings.TrimPrefix(params[i], "h=") // <---------+
+        } else if (strings.HasPrefix(     params[i], "f=")) { //        |
+            frt      = strings.TrimPrefix(params[i], "f=") // <-----+   |
+        }                                                     //    |   |
+    } /*                                    +-----------------------+---+
+                                            |                       |   |
+                                            |            +----------+   |
+                                            |            |          |   |
+    $ curl 'http://localhost:<port-number>/?h=<hostname>&f=<fmt>'   |   |
+    $ curl -d 'h=<hostname>&f=<fmt>' http://localhost:<port_number> |   |
+               |            |                                       |   |
+               |            +---------------------------------------+   |
+               |                                                        |
+               +--------------------------------------------------------+ */
 
     if (hostname == _EMPTY_STRING) {
         hostname  = _DEF_HOSTNAME
