@@ -201,15 +201,18 @@ func main() {
 func _parse_and_validate(params []string) (string, string) {
     var hostname, frt string
 
+    const _h string = "h="
+    const _f string = "f="
+
     // ------------------------------------------------------------------------
     // --- Parsing and validating request params - Begin ----------------------
     // ------------------------------------------------------------------------
     for i := 0; i < len(params); i++ {
-               if (strings.HasPrefix(     params[i], "h=")) {
-            hostname = strings.TrimPrefix(params[i], "h=") // <---------+
-        } else if (strings.HasPrefix(     params[i], "f=")) { //        |
-            frt      = strings.TrimPrefix(params[i], "f=") // <-----+   |
-        }                                                     //    |   |
+               if (strings.HasPrefix(     params[i], _h)) {
+            hostname = strings.TrimPrefix(params[i], _h) // <-----------+
+        } else if (strings.HasPrefix(     params[i], _f)) { //          |
+            frt      = strings.TrimPrefix(params[i], _f) // <-------+   |
+        }                                                   //      |   |
     } /*                                    +-----------------------+---+
                                             |                       |   |
                                             |            +----------+   |
