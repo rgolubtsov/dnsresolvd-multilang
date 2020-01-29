@@ -129,7 +129,7 @@ func main() {
 
         fmt.Println(params)
 
-        hostname, frt := _parse_req_params(params)
+        hostname, frt := _parse_and_validate(params)
 
         fmt.Println(hostname)
         fmt.Println(frt)
@@ -198,7 +198,7 @@ func main() {
 }
 
 // Parses and validates request params.
-func _parse_req_params(params []string) (string, string) {
+func _parse_and_validate(params []string) (string, string) {
     var hostname, frt string
 
     // ------------------------------------------------------------------------
