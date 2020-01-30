@@ -23,6 +23,7 @@ import (
     "path/filepath"
     "net/http"
     "io/ioutil"
+    "encoding/json"
     "net"
 )
 
@@ -119,6 +120,18 @@ func main() {
 
         var params []string
 
+        type json_object_s struct {
+            Hostname string `json:"hostname"`
+            Address  string `json:"address"`
+            Version  string `json:"version"`
+        }
+
+        type json_object_e struct {
+            Hostname string `json:"hostname"`
+            Error    string `json:"error"`
+        }
+
+        var jobj []byte
         var resp_buffer string = _EMPTY_STRING
 
                if (mtd == http.MethodGet ) {
@@ -134,7 +147,9 @@ func main() {
         // Performing DNS lookup for the given hostname.
         addr, ver := dns_lookup(hostname)
 
-               if (frt == _PRM_FMT_HTML) {
+        ver_str := strconv.Itoa(int(ver))
+
+        if (frt == _PRM_FMT_HTML) {
             resp_buffer = "<!DOCTYPE html>"                                                   + _NEW_LINE +
 "<html lang=\"en-US\" dir=\"ltr\">"                                                       + _NEW_LINE +
 "<head>"                                                                                  + _NEW_LINE +
@@ -146,15 +161,33 @@ func main() {
 "</head>"                                                                                 + _NEW_LINE +
 "<body>"                                                                                  + _NEW_LINE +
 "<div>"   +  hostname + _ONE_SPACE_STRING
-        } else if (frt == _PRM_FMT_JSON) {
         }
 
-               if (frt == _PRM_FMT_HTML) {
-            resp_buffer += addr              +
-                           _ONE_SPACE_STRING +
-                           _DAT_VERSION_V    +
-                           strconv.Itoa(int(ver))
-        } else if (frt == _PRM_FMT_JSON) {
+        // If lookup error occurred.
+        if (addr == _ERR_PREFIX) {
+                   if (frt == _PRM_FMT_HTML) {
+                resp_buffer += _ERR_PREFIX       +
+                               _COLON_SPACE_SEP  +
+                               _ERR_COULD_NOT_LOOKUP
+            } else if (frt == _PRM_FMT_JSON) {
+                jobj, _ = json.Marshal(json_object_e {
+                    hostname,
+                    _ERR_COULD_NOT_LOOKUP,
+                })
+            }
+        } else {
+                   if (frt == _PRM_FMT_HTML) {
+                resp_buffer += addr              +
+                               _ONE_SPACE_STRING +
+                               _DAT_VERSION_V    +
+                               ver_str
+            } else if (frt == _PRM_FMT_JSON) {
+                jobj, _ = json.Marshal(json_object_s {
+                    hostname,
+                    addr,
+                    _DAT_VERSION_V + ver_str,
+                })
+            }
         }
 
                if (frt == _PRM_FMT_HTML) {
@@ -162,7 +195,11 @@ func main() {
                            "</body>" + _NEW_LINE +
                            "</html>" + _NEW_LINE
         } else if (frt == _PRM_FMT_JSON) {
+            resp_buffer  = string(jobj)
         }
+
+        // Adding headers to the response.
+        add_response_headers(resp.Header(), frt)
 
         fmt.Fprintf(resp, resp_buffer)
     }
@@ -209,7 +246,7 @@ func main() {
     os.Exit(ret)
 }
 
-// Parses and validates request params.
+// Helper function. Parses and validates request params.
 func _parse_and_validate(params []string) (string, string) {
     var hostname, frt string
 
@@ -225,7 +262,7 @@ func _parse_and_validate(params []string) (string, string) {
         } else if (strings.HasPrefix(     params[i], _f)) { //          |
             frt      = strings.TrimPrefix(params[i], _f) // <-------+   |
         }                                                   //      |   |
-    } /*                                    +-----------------------+---+
+    }   /*                                  +-----------------------+---+
                                             |                       |   |
                                             |            +----------+   |
                                             |            |          |   |
