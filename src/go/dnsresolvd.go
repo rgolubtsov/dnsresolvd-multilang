@@ -209,7 +209,7 @@ func main() {
     os.Exit(ret)
 }
 
-// Parses and validates request params.
+// Helper function. Parses and validates request params.
 func _parse_and_validate(params []string) (string, string) {
     var hostname, frt string
 
@@ -225,7 +225,7 @@ func _parse_and_validate(params []string) (string, string) {
         } else if (strings.HasPrefix(     params[i], _f)) { //          |
             frt      = strings.TrimPrefix(params[i], _f) // <-------+   |
         }                                                   //      |   |
-    } /*                                    +-----------------------+---+
+    }   /*                                  +-----------------------+---+
                                             |                       |   |
                                             |            +----------+   |
                                             |            |          |   |
