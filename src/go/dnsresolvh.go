@@ -24,6 +24,7 @@ const (
     _EXIT_FAILURE     int    =    1 //    Failing exit status.
     _EXIT_SUCCESS     int    =    0 // Successful exit status.
     _EMPTY_STRING     string =   ""
+    _COLON_SPACE_SEP  string = ": "
     _COMMA_SPACE_SEP  string = ", "
     _NEW_LINE         string = "\n"
     _AMPER            string =  "&"
@@ -42,6 +43,7 @@ const (
     _ERR_SRV_UNKNOWN_REASON        string = "for an unknown reason. Exiting..."
     _ERR_SRV_PORT_IS_IN_USE        string = "due to the port requested " +
                                             "is in use. Exiting..."
+    _ERR_COULD_NOT_LOOKUP          string = "could not lookup hostname"
     _ERR_ADDR_ALREADY_IN_USE       string = "address already in use"
 )
 
