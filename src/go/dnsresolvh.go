@@ -34,6 +34,7 @@ const (
 
 // Common error messages.
 const (
+    _ERR_PREFIX                    string = "error"
     _ERR_PORT_MUST_BE_POSITIVE_INT string = ": <port_number> must be "   +
                                             "a positive integer value, " +
                                             "in the range 1024-49151."
@@ -84,6 +85,14 @@ const (
     _HDR_EXPIRES_V           string = "Thu, 01 Dec 1994 16:00:00 GMT"
     _HDR_PRAGMA_N            string = "Pragma"
     _HDR_PRAGMA_V            string = "no-cache"
+)
+
+// Response data names.
+const (
+    _DAT_HOSTNAME_N string = "hostname"
+    _DAT_ADDRESS_N  string = "address"
+    _DAT_VERSION_N  string = "version"
+    _DAT_VERSION_V  string = "IPv"
 )
 
 // Daemon name, version, and copyright banners.

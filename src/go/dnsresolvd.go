@@ -23,6 +23,7 @@ import (
     "path/filepath"
     "net/http"
     "io/ioutil"
+    "net"
 )
 
 // The daemon entry point.
@@ -127,14 +128,14 @@ func main() {
             params = strings.Split(string(req_body), _AMPER)
         }
 
-        fmt.Println(params)
+        // Parsing and validating request params.
+        hostname, frt := _parse_and_validate(params)
 
-        hostname, frt := _parse_req_params(params)
+        // Performing DNS lookup for the given hostname.
+        addr, ver := dns_lookup(hostname)
 
-        fmt.Println(hostname)
-        fmt.Println(frt)
-
-        resp_buffer = "<!DOCTYPE html>"                                                   + _NEW_LINE +
+               if (frt == _PRM_FMT_HTML) {
+            resp_buffer = "<!DOCTYPE html>"                                                   + _NEW_LINE +
 "<html lang=\"en-US\" dir=\"ltr\">"                                                       + _NEW_LINE +
 "<head>"                                                                                  + _NEW_LINE +
 "<meta http-equiv=\"" + _HDR_CONTENT_TYPE_N      +                     "\"    content=\"" +
@@ -145,12 +146,23 @@ func main() {
 "</head>"                                                                                 + _NEW_LINE +
 "<body>"                                                                                  + _NEW_LINE +
 "<div>"   +  hostname + _ONE_SPACE_STRING
+        } else if (frt == _PRM_FMT_JSON) {
+        }
 
-        resp_buffer += mtd
+               if (frt == _PRM_FMT_HTML) {
+            resp_buffer += addr              +
+                           _ONE_SPACE_STRING +
+                           _DAT_VERSION_V    +
+                           strconv.Itoa(int(ver))
+        } else if (frt == _PRM_FMT_JSON) {
+        }
 
-        resp_buffer += "</div>"  + _NEW_LINE +
-                       "</body>" + _NEW_LINE +
-                       "</html>" + _NEW_LINE
+               if (frt == _PRM_FMT_HTML) {
+            resp_buffer += "</div>"  + _NEW_LINE +
+                           "</body>" + _NEW_LINE +
+                           "</html>" + _NEW_LINE
+        } else if (frt == _PRM_FMT_JSON) {
+        }
 
         fmt.Fprintf(resp, resp_buffer)
     }
@@ -198,18 +210,21 @@ func main() {
 }
 
 // Parses and validates request params.
-func _parse_req_params(params []string) (string, string) {
+func _parse_and_validate(params []string) (string, string) {
     var hostname, frt string
+
+    const _h string = "h="
+    const _f string = "f="
 
     // ------------------------------------------------------------------------
     // --- Parsing and validating request params - Begin ----------------------
     // ------------------------------------------------------------------------
     for i := 0; i < len(params); i++ {
-               if (strings.HasPrefix(     params[i], "h=")) {
-            hostname = strings.TrimPrefix(params[i], "h=") // <---------+
-        } else if (strings.HasPrefix(     params[i], "f=")) { //        |
-            frt      = strings.TrimPrefix(params[i], "f=") // <-----+   |
-        }                                                     //    |   |
+               if (strings.HasPrefix(     params[i], _h)) {
+            hostname = strings.TrimPrefix(params[i], _h) // <-----------+
+        } else if (strings.HasPrefix(     params[i], _f)) { //          |
+            frt      = strings.TrimPrefix(params[i], _f) // <-------+   |
+        }                                                   //      |   |
     } /*                                    +-----------------------+---+
                                             |                       |   |
                                             |            +----------+   |
@@ -252,6 +267,40 @@ func _parse_req_params(params []string) (string, string) {
     // ------------------------------------------------------------------------
 
     return hostname, frt
+}
+
+/**
+ * Performs DNS lookup action for the given hostname,
+ * i.e. (in this case) IP address retrieval by hostname.
+ *
+ * @param hostname The effective hostname to look up for.
+ *
+ * @return The IP address of the analyzing host/service
+ *         and the corresponding IP version (family)
+ *         used to look up in DNS:
+ *         <code>4</code> for IPv4-only hosts,
+ *         <code>6</code> for IPv6-capable hosts.
+ */
+func dns_lookup(hostname string) (string, uint) {
+    var addr string
+    var ver  uint
+
+    addrs, e := net.LookupHost(hostname)
+
+    if ((e == nil) || (len(addrs) > 0)) {
+        addr = addrs[0]
+
+        if (strings.Contains(addr, _COLON)) {
+            ver = 6
+        } else {
+            ver = 4
+        }
+    } else {
+        addr = _ERR_PREFIX
+        ver  = 0
+    }
+
+    return addr, ver
 }
 
 // vim:set nu et ts=4 sw=4:
