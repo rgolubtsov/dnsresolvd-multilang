@@ -128,13 +128,8 @@ func main() {
             params = strings.Split(string(req_body), _AMPER)
         }
 
-        fmt.Println(params)
-
         // Parsing and validating request params.
         hostname, frt := _parse_and_validate(params)
-
-        fmt.Println(hostname)
-        fmt.Println(frt)
 
         // Performing DNS lookup for the given hostname.
         addr, ver := dns_lookup(hostname)
@@ -303,12 +298,7 @@ func dns_lookup(hostname string) (string, uint) {
     } else {
         addr = _ERR_PREFIX
         ver  = 0
-
-        fmt.Println(e)
     }
-
-    fmt.Println(addr)
-    fmt.Println(ver)
 
     return addr, ver
 }
