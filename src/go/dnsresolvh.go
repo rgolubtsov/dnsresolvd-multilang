@@ -15,8 +15,9 @@
 package main
 
 import (
-    "fmt"
+    "net/http"
     "log/syslog"
+    "fmt"
 )
 
 // Helper constants.
@@ -110,6 +111,27 @@ const (
 
 // Constant: The default hostname to look up for.
 const _DEF_HOSTNAME string = "openbsd.org"
+
+/**
+ * Adds headers to the response.
+ *
+ * @param headers The HTTP header object.
+ * @param frt     The response format selector.
+ */
+func add_response_headers(headers http.Header, frt string) {
+    var _HDR_CONTENT_TYPE_V string = _EMPTY_STRING
+
+           if (frt == _PRM_FMT_HTML) {
+        _HDR_CONTENT_TYPE_V = _HDR_CONTENT_TYPE_V_HTML
+    } else if (frt == _PRM_FMT_JSON) {
+        _HDR_CONTENT_TYPE_V = _HDR_CONTENT_TYPE_V_JSON
+    }
+
+    headers.Add(_HDR_CONTENT_TYPE_N,  _HDR_CONTENT_TYPE_V )
+    headers.Add(_HDR_CACHE_CONTROL_N, _HDR_CACHE_CONTROL_V)
+    headers.Add(_HDR_EXPIRES_N,       _HDR_EXPIRES_V      )
+    headers.Add(_HDR_PRAGMA_N,        _HDR_PRAGMA_V       )
+}
 
 // Helper function. Makes final buffer cleanups, closes streams, etc.
 func _cleanups_fixate(log *syslog.Writer) {

@@ -198,6 +198,9 @@ func main() {
             resp_buffer  = string(jobj)
         }
 
+        // Adding headers to the response.
+        add_response_headers(resp.Header(), frt)
+
         fmt.Fprintf(resp, resp_buffer)
     }
 
