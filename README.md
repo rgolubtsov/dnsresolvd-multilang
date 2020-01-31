@@ -38,6 +38,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#building)
   * [Java (Eclipse Vert.x)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/java#building)
   * [Bash (Netcat)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/bash#building)
+  * [Go (net/http)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/go#building)
 * **Running** (Examples of making HTTP requests against the running daemon are based on using the `curl` utility.)
   * [C (GNU libmicrohttpd)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c/libmicrohttpd#running)
   * [C (GNOME libsoup)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/c/libsoup#running)
@@ -53,6 +54,7 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
   * [Clojure (HTTP Kit)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/clojure#running)
   * [Java (Eclipse Vert.x)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/java#running)
   * [Bash (Netcat)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/bash#running)
+  * [Go (net/http)](https://github.com/rgolubtsov/dnsresolvd-multilang/tree/master/src/go#running)
 
 ---
 
