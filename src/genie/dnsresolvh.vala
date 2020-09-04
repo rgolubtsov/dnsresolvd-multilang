@@ -7,7 +7,7 @@
  * passed in an HTTP request, with the focus on its implementation
  * using various programming languages. (libsoup-boosted impl.)
  * ============================================================================
- * Copyright (C) 2017-2019 Radislav (Radicchio) Golubtsov
+ * Copyright (C) 2017-2020 Radislav (Radicchio) Golubtsov
  *
  * (See the LICENSE file at the top of the source tree.)
  */
@@ -87,7 +87,7 @@ class AUX {
                                         + "hostname passed in an HTTP request";
     public const string DMN_VERSION_S__ = "Version";
     public const string DMN_VERSION     = "0.1";
-    public const string DMN_COPYRIGHT__ = "Copyright (C) 2017-2019";
+    public const string DMN_COPYRIGHT__ = "Copyright (C) 2017-2020";
     public const string DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
 
     /** Constant: The default hostname to look up for. */

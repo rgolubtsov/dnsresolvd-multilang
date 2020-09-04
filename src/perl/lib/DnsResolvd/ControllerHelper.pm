@@ -7,7 +7,7 @@
 # passed in an HTTP request, with the focus on its implementation
 # using various programming languages. (Mojolicious-boosted impl.)
 # =============================================================================
-# Copyright (C) 2017-2019 Radislav (Radicchio) Golubtsov
+# Copyright (C) 2017-2020 Radislav (Radicchio) Golubtsov
 #
 # (See the LICENSE file at the top of the source tree.)
 #
@@ -97,7 +97,7 @@ use constant {
                       . "passed in an HTTP request",
     _DMN_VERSION_S__ => "Version",
     _DMN_VERSION     => "0.1",
-    _DMN_COPYRIGHT__ => "Copyright (C) 2017-2019",
+    _DMN_COPYRIGHT__ => "Copyright (C) 2017-2020",
     _DMN_AUTHOR      => "Radislav Golubtsov <ragolubtsov\@my.com>",
 };
 
