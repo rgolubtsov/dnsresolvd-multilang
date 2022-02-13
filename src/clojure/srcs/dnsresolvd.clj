@@ -35,19 +35,19 @@
     (:import [java.net Inet6Address])
 )
 
-;##
-; Performs DNS lookup action for the given hostname,
-; i.e. (in this case) IP address retrieval by hostname.
-;
-; Args:
-;     hostname: The effective hostname to look up for.
-;
-; Returns:
-;     The list containing IP address of the analyzing host/service
-;     and corresponding IP version (family) used to look up in DNS:
-;     "4" for IPv4-only hosts, "6" for IPv6-capable hosts.
-;
-(defn dns-lookup [hostname]
+(defn dns-lookup
+    "Performs DNS lookup action for the given hostname,
+    i.e. (in this case) IP address retrieval by hostname.
+
+    Args:
+        hostname: The effective hostname to look up for.
+
+    Returns:
+        The list containing IP address of the analyzed host/service
+        and a corresponding IP version (family) used to look up in DNS:
+        "4" for IPv4-only hosts, "6" for IPv6-capable hosts.
+    " [hostname]
+
     ; Trying to get an A record (IPv4) for the host or its AAAA record (IPv6).
     (try
         (let [hostent (InetAddress/getByName hostname)]
@@ -72,7 +72,7 @@
         req: The incoming HTTP request object.
 
     Returns:
-        TODO: TBD.
+        The HTTP status code, response headers, and a body of the response.
     " [req]
 
     (let [mtd (get req :request-method)]
@@ -190,7 +190,8 @@
             (write-str resp-buffer0)
     )]
 
-    ; Returning HTTP status code, response headers, and a body of the response.
+    ; Returning the HTTP status code, response headers,
+    ; and a body of the response.
     (with-channel req channel (send! channel { ; <== Async mode !
         :status  (AUX/RSC-HTTP-200-OK)
         :headers (AUX/add-response-headers fmt)
@@ -213,7 +214,7 @@
               as the first element.
 
     Returns:
-        The exit code indicating the daemon overall execution status.
+        The exit code indicating the daemon overall termination status.
     " [args]
 
     (let [port-number (nth args 0)]
