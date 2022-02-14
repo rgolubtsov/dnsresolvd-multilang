@@ -7,7 +7,7 @@
 ; passed in an HTTP request, with the focus on its implementation
 ; using various programming languages. (Cowboy-boosted impl.)
 ; =============================================================================
-; Copyright (C) 2017-2020 Radislav (Radicchio) Golubtsov
+; Copyright (C) 2017-2022 Radislav (Radicchio) Golubtsov
 ;
 ; (See the LICENSE file at the top of the source tree.)
 ;
@@ -163,7 +163,7 @@
                                  "hostname passed in an HTTP request"))
 (defmacro DMN-VERSION-S-- () "Version"                                )
 (defmacro DMN-VERSION     () "0.1"                                    )
-(defmacro DMN-COPYRIGHT-- () "Copyright (C) 2017-2020"                )
+(defmacro DMN-COPYRIGHT-- () "Copyright (C) 2017-2022"                )
 (defmacro DMN-AUTHOR      () "Radislav Golubtsov <ragolubtsov@my.com>")
 
 ;; Constant: The default hostname to look up for.

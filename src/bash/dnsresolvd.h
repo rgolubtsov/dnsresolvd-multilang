@@ -7,7 +7,7 @@
 # passed in an HTTP request, with the focus on its implementation
 # using various programming languages. (Netcat-boosted impl.)
 # =============================================================================
-# Copyright (C) 2017-2020 Radislav (Radicchio) Golubtsov
+# Copyright (C) 2017-2022 Radislav (Radicchio) Golubtsov
 #
 # (See the LICENSE file at the top of the source tree.)
 #
@@ -95,7 +95,7 @@ declare -r _DMN_DESCRIPTION="Performs DNS lookups for the given hostname "`
                            `"passed in an HTTP request"
 declare -r _DMN_VERSION_S__="Version"
 declare -r _DMN_VERSION="0.1"
-declare -r _DMN_COPYRIGHT__="Copyright (C) 2017-2020"
+declare -r _DMN_COPYRIGHT__="Copyright (C) 2017-2022"
 declare -r _DMN_AUTHOR="Radislav Golubtsov <ragolubtsov@my.com>"
 
 # Constant: The default hostname to look up for.
