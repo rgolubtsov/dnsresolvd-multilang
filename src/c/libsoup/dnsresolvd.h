@@ -97,7 +97,7 @@
 #define _DMN_VERSION_S__ "Version"
 #define _DMN_VERSION     "0.1"
 #define _DMN_COPYRIGHT__ "Copyright (C) 2017-2022"
-#define _DMN_AUTHOR      "Radislav Golubtsov <ragolubtsov@my.com>"
+#define _DMN_AUTHOR      "Radislav Golubtsov <radicchio@vk.com>"
 
 /** Constant: The default hostname to look up for. */
 #define _DEF_HOSTNAME "openbsd.org"

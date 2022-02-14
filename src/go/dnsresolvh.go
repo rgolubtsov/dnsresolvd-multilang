@@ -106,7 +106,7 @@ const (
     _DMN_VERSION_S__ string = "Version"
     _DMN_VERSION     string = "0.1"
     _DMN_COPYRIGHT__ string = "Copyright (C) 2017-2022"
-    _DMN_AUTHOR      string = "Radislav Golubtsov <ragolubtsov@my.com>"
+    _DMN_AUTHOR      string = "Radislav Golubtsov <radicchio@vk.com>"
 )
 
 // Constant: The default hostname to look up for.

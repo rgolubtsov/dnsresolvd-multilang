@@ -164,7 +164,7 @@
 (defmacro DMN-VERSION-S-- () "Version"                                )
 (defmacro DMN-VERSION     () "0.1"                                    )
 (defmacro DMN-COPYRIGHT-- () "Copyright (C) 2017-2022"                )
-(defmacro DMN-AUTHOR      () "Radislav Golubtsov <ragolubtsov@my.com>")
+(defmacro DMN-AUTHOR      () "Radislav Golubtsov <radicchio@vk.com>"  )
 
 ;; Constant: The default hostname to look up for.
 (defmacro DEF-HOSTNAME () "openbsd.org")

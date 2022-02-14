@@ -100,7 +100,7 @@ local _h = {}
     _h._DMN_VERSION_S__ = "Version"
     _h._DMN_VERSION     = "0.1"
     _h._DMN_COPYRIGHT__ = "Copyright (C) 2017-2022"
-    _h._DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>"
+    _h._DMN_AUTHOR      = "Radislav Golubtsov <radicchio@vk.com>"
 
     -- Constant: The default hostname to look up for.
     _h._DEF_HOSTNAME = "openbsd.org"

@@ -99,7 +99,7 @@ public class ControllerHelper {
     public static final String DMN_VERSION_S__ = "Version";
     public static final String DMN_VERSION     = "0.1";
     public static final String DMN_COPYRIGHT__ = "Copyright (C) 2017-2022";
-    public static final String DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
+    public static final String DMN_AUTHOR      = "Radislav Golubtsov <radicchio@vk.com>";
 
     /** Constant: The default hostname to look up for. */
     public static final String DEF_HOSTNAME = "openbsd.org";

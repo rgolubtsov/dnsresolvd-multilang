@@ -109,7 +109,7 @@ var __DNSRESOLVD_H = function() {
     this._DMN_VERSION_S__ = "Version";
     this._DMN_VERSION     = "0.1";
     this._DMN_COPYRIGHT__ = "Copyright (C) 2017-2022";
-    this._DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
+    this._DMN_AUTHOR      = "Radislav Golubtsov <radicchio@vk.com>";
 
     /** Constant: The default hostname to look up for. */
     this._DEF_HOSTNAME = "openbsd.org";

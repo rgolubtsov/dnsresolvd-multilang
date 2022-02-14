@@ -89,7 +89,7 @@ class ControllerHelper:
     _DMN_VERSION_S__ =  "Version"
     _DMN_VERSION     =  "0.1"
     _DMN_COPYRIGHT__ =  "Copyright (C) 2017-2022"
-    _DMN_AUTHOR      =  "Radislav Golubtsov <ragolubtsov@my.com>"
+    _DMN_AUTHOR      =  "Radislav Golubtsov <radicchio@vk.com>"
 
     ## Constant: The default hostname to look up for.
     _DEF_HOSTNAME = "openbsd.org"

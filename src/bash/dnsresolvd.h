@@ -96,7 +96,7 @@ declare -r _DMN_DESCRIPTION="Performs DNS lookups for the given hostname "`
 declare -r _DMN_VERSION_S__="Version"
 declare -r _DMN_VERSION="0.1"
 declare -r _DMN_COPYRIGHT__="Copyright (C) 2017-2022"
-declare -r _DMN_AUTHOR="Radislav Golubtsov <ragolubtsov@my.com>"
+declare -r _DMN_AUTHOR="Radislav Golubtsov <radicchio@vk.com>"
 
 # Constant: The default hostname to look up for.
 declare -r _DEF_HOSTNAME="openports.se"

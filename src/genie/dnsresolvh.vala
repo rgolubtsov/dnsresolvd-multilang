@@ -88,7 +88,7 @@ class AUX {
     public const string DMN_VERSION_S__ = "Version";
     public const string DMN_VERSION     = "0.1";
     public const string DMN_COPYRIGHT__ = "Copyright (C) 2017-2022";
-    public const string DMN_AUTHOR      = "Radislav Golubtsov <ragolubtsov@my.com>";
+    public const string DMN_AUTHOR      = "Radislav Golubtsov <radicchio@vk.com>";
 
     /** Constant: The default hostname to look up for. */
     public const string DEF_HOSTNAME = "openbsd.org";

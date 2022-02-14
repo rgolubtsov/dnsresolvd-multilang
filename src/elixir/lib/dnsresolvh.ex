@@ -94,7 +94,7 @@ defmodule AUX do
     def _DMN_VERSION_S__, do: "Version"
     def _DMN_VERSION    , do: "0.1"
     def _DMN_COPYRIGHT__, do: "Copyright (C) 2017-2022"
-    def _DMN_AUTHOR     , do: "Radislav Golubtsov <ragolubtsov@my.com>"
+    def _DMN_AUTHOR     , do: "Radislav Golubtsov <radicchio@vk.com>"
 
     ## Constant: The default hostname to look up for.
     def _DEF_HOSTNAME, do: "openbsd.org"
