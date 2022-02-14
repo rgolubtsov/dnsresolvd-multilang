@@ -18,7 +18,7 @@
 %%
 %% @param Args The list of command-line arguments.
 %%
-%% @returns The exit code indicating the daemon overall execution status.
+%% @returns The exit code indicating the daemon overall termination status.
 main(Args) ->
     Ret_ = ?_EXIT_SUCCESS,
 

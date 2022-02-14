@@ -407,7 +407,7 @@ int main(int argc, char *const *argv) {
  * i.e. (in this case) IP address retrieval by hostname.
  *
  * @param addr_ver The pointer to a structure containing IP address
- *                 of the analyzing host/service and corresponding
+ *                 of the analyzed host/service and a corresponding
  *                 IP version (family) used to look up in DNS:
  *                 <code>4</code> for IPv4-only hosts,
  *                 <code>6</code> for IPv6-capable hosts.

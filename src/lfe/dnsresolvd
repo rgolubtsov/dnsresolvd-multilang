@@ -15,7 +15,7 @@
 #|
  | @param args The list of command-line arguments.
  |
- | @returns The exit code indicating the daemon overall execution status.
+ | @returns The exit code indicating the daemon overall termination status.
  |#
 (defun main (args)
     "The daemon entry point."

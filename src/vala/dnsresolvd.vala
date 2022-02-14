@@ -20,8 +20,8 @@ class DnsResolvd : Soup.Server {
      *
      * @param hostname The effective hostname to look up for.
      *
-     * @return The array containing IP address of the analyzing host/service
-     *         and corresponding IP version (family) used to look up in DNS:
+     * @return The array containing IP address of the analyzed host/service
+     *         and a corresponding IP version (family) used to look up in DNS:
      *         <code>4</code> for IPv4-only hosts,
      *         <code>6</code> for IPv6-capable hosts.
      */

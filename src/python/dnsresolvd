@@ -27,7 +27,7 @@ def main(argc, argv):
         argv: The list   of command-line arguments.
 
     Returns:
-        The exit code indicating the daemon overall execution status.
+        The exit code indicating the daemon overall termination status.
     """
 
     # Instantiating the controller helper class.

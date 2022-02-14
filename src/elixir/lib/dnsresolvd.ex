@@ -287,8 +287,8 @@ defmodule ReqHandler do
     #     hostname: The effective hostname to look up for.
     #
     # Returns:
-    #     The tuple containing IP address of the analyzing host/service
-    #     and corresponding IP version (family) used to look up in DNS:
+    #     The tuple containing IP address of the analyzed host/service
+    #     and a corresponding IP version (family) used to look up in DNS:
     #     "4" for IPv4-only hosts, "6" for IPv6-capable hosts.
     #
     defp dns_lookup(hostname) do

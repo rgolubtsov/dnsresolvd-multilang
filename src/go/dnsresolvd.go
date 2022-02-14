@@ -312,7 +312,7 @@ func _parse_and_validate(params []string) (string, string) {
  *
  * @param hostname The effective hostname to look up for.
  *
- * @return The IP address of the analyzing host/service
+ * @return The IP address of the analyzed host/service
  *         and the corresponding IP version (family)
  *         used to look up in DNS:
  *         <code>4</code> for IPv4-only hosts,

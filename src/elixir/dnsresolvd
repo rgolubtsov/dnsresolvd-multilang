@@ -23,7 +23,7 @@ defmodule Main do
         `argv`: The list   of command-line arguments.
 
     **Returns:**<br />
-        The exit code indicating the daemon overall execution status.
+        The exit code indicating the daemon overall termination status.
     """
     def main(argc, argv) do
         daemon_name = Path.basename(__ENV__.file)

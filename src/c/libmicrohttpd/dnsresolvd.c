@@ -543,7 +543,7 @@ void _request_finalizer(       void                        *cls,
  * @param addr     The buffer to store the IP address retrieved.
  * @param hostname The effective hostname to look up for.
  *
- * @return The IP address of the analyzing host/service.
+ * @return The IP address of the analyzed host/service.
  */
 char *dns_lookup(char *addr, const char *hostname) {
     struct hostent *hent;

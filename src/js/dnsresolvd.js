@@ -34,7 +34,7 @@ var aux = new __DNSRESOLVD_H();
  * @param port_number The server port number to listen on.
  * @param daemon_name The daemon name (executable/script name).
  *
- * @return The status code indicating the daemon overall execution outcome.
+ * @return The status code indicating the daemon overall termination outcome.
  */
 var dns_lookup = function(_ret, port_number, daemon_name) {
     var ret = _ret;
