@@ -1,7 +1,7 @@
 #
 # src/bash/dnsresolvd.h
 # =============================================================================
-# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# DNS Resolver Daemon (dnsresolvd). Version 0.9.9
 # =============================================================================
 # A daemon that performs DNS lookups for the given hostname
 # passed in an HTTP request, with the focus on its implementation
@@ -94,7 +94,7 @@ declare -r _DMN_NAME="DNS Resolver Daemon (dnsresolvd)"
 declare -r _DMN_DESCRIPTION="Performs DNS lookups for the given hostname "`
                            `"passed in an HTTP request"
 declare -r _DMN_VERSION_S__="Version"
-declare -r _DMN_VERSION="0.1"
+declare -r _DMN_VERSION="0.9.9"
 declare -r _DMN_COPYRIGHT__="Copyright (C) 2017-2022"
 declare -r _DMN_AUTHOR="Radislav Golubtsov <radicchio@vk.com>"
 

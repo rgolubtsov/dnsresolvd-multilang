@@ -1,7 +1,7 @@
 --[[
  * src/lua/dnsresolvh.lua
  * ============================================================================
- * DNS Resolver Daemon (dnsresolvd). Version 0.1
+ * DNS Resolver Daemon (dnsresolvd). Version 0.9.9
  * ============================================================================
  * A daemon that performs DNS lookups for the given hostname
  * passed in an HTTP request, with the focus on its implementation
@@ -98,7 +98,7 @@ local _h = {}
     _h._DMN_DESCRIPTION = "Performs DNS lookups for the given hostname "
                        .. "passed in an HTTP request"
     _h._DMN_VERSION_S__ = "Version"
-    _h._DMN_VERSION     = "0.1"
+    _h._DMN_VERSION     = "0.9.9"
     _h._DMN_COPYRIGHT__ = "Copyright (C) 2017-2022"
     _h._DMN_AUTHOR      = "Radislav Golubtsov <radicchio@vk.com>"
 

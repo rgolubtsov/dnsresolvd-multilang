@@ -1,7 +1,7 @@
 #
 # src/perl/lib/DnsResolvd/ControllerHelper.pm
 # =============================================================================
-# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# DNS Resolver Daemon (dnsresolvd). Version 0.9.9
 # =============================================================================
 # A daemon that performs DNS lookups for the given hostname
 # passed in an HTTP request, with the focus on its implementation
@@ -96,7 +96,7 @@ use constant {
     _DMN_DESCRIPTION => "Performs DNS lookups for the given hostname "
                       . "passed in an HTTP request",
     _DMN_VERSION_S__ => "Version",
-    _DMN_VERSION     => "0.1",
+    _DMN_VERSION     => "0.9.9",
     _DMN_COPYRIGHT__ => "Copyright (C) 2017-2022",
     _DMN_AUTHOR      => "Radislav Golubtsov <ragolubtsov\@my.com>",
 };

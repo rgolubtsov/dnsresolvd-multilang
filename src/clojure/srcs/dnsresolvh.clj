@@ -1,7 +1,7 @@
 ;
 ; src/clojure/src/dnsresolvh.clj
 ; =============================================================================
-; DNS Resolver Daemon (dnsresolvd). Version 0.1
+; DNS Resolver Daemon (dnsresolvd). Version 0.9.9
 ; =============================================================================
 ; A daemon that performs DNS lookups for the given hostname
 ; passed in an HTTP request, with the focus on its implementation
@@ -87,7 +87,7 @@
 (defmacro DMN-DESCRIPTION [](str "Performs DNS lookups for the given "
                                  "hostname passed in an HTTP request"))
 (defmacro DMN-VERSION-S-- [] "Version"                                )
-(defmacro DMN-VERSION     [] "0.1"                                    )
+(defmacro DMN-VERSION     [] "0.9.9"                                  )
 (defmacro DMN-COPYRIGHT-- [] "Copyright (C) 2017-2022"                )
 (defmacro DMN-AUTHOR      [] "Radislav Golubtsov <radicchio@vk.com>"  )
 

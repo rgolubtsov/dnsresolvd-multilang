@@ -1,7 +1,7 @@
 /*
  * src/genie/dnsresolvh.vala
  * ============================================================================
- * DNS Resolver Daemon (dnsresolvd). Version 0.1
+ * DNS Resolver Daemon (dnsresolvd). Version 0.9.9
  * ============================================================================
  * A daemon that performs DNS lookups for the given hostname
  * passed in an HTTP request, with the focus on its implementation
@@ -86,7 +86,7 @@ class AUX {
     public const string DMN_DESCRIPTION = "Performs DNS lookups for the given "
                                         + "hostname passed in an HTTP request";
     public const string DMN_VERSION_S__ = "Version";
-    public const string DMN_VERSION     = "0.1";
+    public const string DMN_VERSION     = "0.9.9";
     public const string DMN_COPYRIGHT__ = "Copyright (C) 2017-2022";
     public const string DMN_AUTHOR      = "Radislav Golubtsov <radicchio@vk.com>";
 

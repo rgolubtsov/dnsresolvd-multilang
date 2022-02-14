@@ -1,7 +1,7 @@
 /*
  * src/c/libmicrohttpd/dnsresolvd.h
  * ============================================================================
- * DNS Resolver Daemon (dnsresolvd). Version 0.1
+ * DNS Resolver Daemon (dnsresolvd). Version 0.9.9
  * ============================================================================
  * A daemon that performs DNS lookups for the given hostname
  * passed in an HTTP request, with the focus on its implementation
@@ -87,7 +87,7 @@
 #define _DMN_DESCRIPTION "Performs DNS lookups for the given hostname " \
                          "passed in an HTTP request"
 #define _DMN_VERSION_S__ "Version"
-#define _DMN_VERSION     "0.1"
+#define _DMN_VERSION     "0.9.9"
 #define _DMN_COPYRIGHT__ "Copyright (C) 2017-2022"
 #define _DMN_AUTHOR      "Radislav Golubtsov <radicchio@vk.com>"
 

@@ -1,7 +1,7 @@
 [indent=4]
 /* src/vala/dnsresolvh.gs
  * ============================================================================
- * DNS Resolver Daemon (dnsresolvd). Version 0.1
+ * DNS Resolver Daemon (dnsresolvd). Version 0.9.9
  * ============================================================================
  * A daemon that performs DNS lookups for the given hostname
  * passed in an HTTP request, with the focus on its implementation
@@ -86,7 +86,7 @@ class AUX
     const DMN_DESCRIPTION : string = ("Performs DNS lookups for the given "
                                    +  "hostname passed in an HTTP request")
     const DMN_VERSION_S__ : string =  "Version"
-    const DMN_VERSION     : string =  "0.1"
+    const DMN_VERSION     : string =  "0.9.9"
     const DMN_COPYRIGHT__ : string =  "Copyright (C) 2017-2022"
     const DMN_AUTHOR      : string =  "Radislav Golubtsov <radicchio@vk.com>"
 

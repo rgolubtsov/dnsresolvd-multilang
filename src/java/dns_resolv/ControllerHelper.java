@@ -1,7 +1,7 @@
 /*
  * src/java/dns_resolv/ControllerHelper.java
  * ============================================================================
- * DNS Resolver Daemon (dnsresolvd). Version 0.1
+ * DNS Resolver Daemon (dnsresolvd). Version 0.9.9
  * ============================================================================
  * A daemon that performs DNS lookups for the given hostname
  * passed in an HTTP request, with the focus on its implementation
@@ -97,7 +97,7 @@ public class ControllerHelper {
     public static final String DMN_DESCRIPTION = "Performs DNS lookups for the given "
                                                + "hostname passed in an HTTP request";
     public static final String DMN_VERSION_S__ = "Version";
-    public static final String DMN_VERSION     = "0.1";
+    public static final String DMN_VERSION     = "0.9.9";
     public static final String DMN_COPYRIGHT__ = "Copyright (C) 2017-2022";
     public static final String DMN_AUTHOR      = "Radislav Golubtsov <radicchio@vk.com>";
 

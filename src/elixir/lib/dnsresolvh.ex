@@ -1,7 +1,7 @@
 #
 # src/elixir/lib/dnsresolvh.ex
 # =============================================================================
-# DNS Resolver Daemon (dnsresolvd). Version 0.1
+# DNS Resolver Daemon (dnsresolvd). Version 0.9.9
 # =============================================================================
 # A daemon that performs DNS lookups for the given hostname
 # passed in an HTTP request, with the focus on its implementation
@@ -92,7 +92,7 @@ defmodule AUX do
     def _DMN_DESCRIPTION, do: "Performs DNS lookups for the given "
                           <>  "hostname passed in an HTTP request"
     def _DMN_VERSION_S__, do: "Version"
-    def _DMN_VERSION    , do: "0.1"
+    def _DMN_VERSION    , do: "0.9.9"
     def _DMN_COPYRIGHT__, do: "Copyright (C) 2017-2022"
     def _DMN_AUTHOR     , do: "Radislav Golubtsov <radicchio@vk.com>"
 
