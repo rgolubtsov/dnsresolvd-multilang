@@ -58,4 +58,4 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 
 ---
 
-**TODO:** Provide a brief description of the project and other related sections (overview, design, etc.) just like in [this readme doc](https://github.com/rgolubtsov/virtblkiosim/blob/master/README.md "VIRTual BLocK IO SIMulating (virtblkiosim)") or whatsoever. :cd:
+**TODO:** Provide a brief description of the project and other related sections (overview, design, etc.) just like in [this readme doc](https://github.com/rgolubtsov/virtblkiosim/blob/master/README.md "VIRTual BLocK IO SIMulating (virtblkiosim)"), or in [this readme doc](https://github.com/rgolubtsov/transroutownish-proto-bus-spring-boot/blob/main/README.md "Trans-RoutE-Townish (transroutownish) - Urban bus routing microservice prototype"), or whatsoever. :cd:
