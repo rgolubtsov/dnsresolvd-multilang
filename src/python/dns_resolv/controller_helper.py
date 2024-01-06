@@ -7,7 +7,7 @@
 # passed in an HTTP request, with the focus on its implementation
 # using various programming languages. (Twisted-boosted impl.)
 # =============================================================================
-# Copyright (C) 2017-2023 Radislav (Radicchio) Golubtsov
+# Copyright (C) 2017-2024 Radislav (Radicchio) Golubtsov
 #
 # (See the LICENSE file at the top of the source tree.)
 #
@@ -88,7 +88,7 @@ class ControllerHelper:
                      +  "passed in an HTTP request")
     _DMN_VERSION_S__ =  "Version"
     _DMN_VERSION     =  "0.9.9"
-    _DMN_COPYRIGHT__ =  "Copyright (C) 2017-2023"
+    _DMN_COPYRIGHT__ =  "Copyright (C) 2017-2024"
     _DMN_AUTHOR      =  "Radislav Golubtsov <radicchio@vk.com>"
 
     ## Constant: The default hostname to look up for.

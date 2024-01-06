@@ -7,7 +7,7 @@
  * passed in an HTTP request, with the focus on its implementation
  * using various programming languages. (Vertosphere-boosted impl.)
  * ============================================================================
- * Copyright (C) 2017-2023 Radislav (Radicchio) Golubtsov
+ * Copyright (C) 2017-2024 Radislav (Radicchio) Golubtsov
  *
  * (See the LICENSE file at the top of the source tree.)
  */
@@ -98,7 +98,7 @@ public class ControllerHelper {
                                                + "hostname passed in an HTTP request";
     public static final String DMN_VERSION_S__ = "Version";
     public static final String DMN_VERSION     = "0.9.9";
-    public static final String DMN_COPYRIGHT__ = "Copyright (C) 2017-2023";
+    public static final String DMN_COPYRIGHT__ = "Copyright (C) 2017-2024";
     public static final String DMN_AUTHOR      = "Radislav Golubtsov <radicchio@vk.com>";
 
     /** Constant: The default hostname to look up for. */

@@ -7,7 +7,7 @@
  * passed in an HTTP request, with the focus on its implementation
  * using various programming languages. (net/http-boosted impl.)
  * ============================================================================
- * Copyright (C) 2017-2023 Radislav (Radicchio) Golubtsov
+ * Copyright (C) 2017-2024 Radislav (Radicchio) Golubtsov
  *
  * (See the LICENSE file at the top of the source tree.)
  */
@@ -105,7 +105,7 @@ const (
                               "hostname passed in an HTTP request"
     _DMN_VERSION_S__ string = "Version"
     _DMN_VERSION     string = "0.9.9"
-    _DMN_COPYRIGHT__ string = "Copyright (C) 2017-2023"
+    _DMN_COPYRIGHT__ string = "Copyright (C) 2017-2024"
     _DMN_AUTHOR      string = "Radislav Golubtsov <radicchio@vk.com>"
 )
 

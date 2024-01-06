@@ -7,7 +7,7 @@
 # passed in an HTTP request, with the focus on its implementation
 # using various programming languages. (Cowboy-boosted impl.)
 # =============================================================================
-# Copyright (C) 2017-2023 Radislav (Radicchio) Golubtsov
+# Copyright (C) 2017-2024 Radislav (Radicchio) Golubtsov
 #
 # (See the LICENSE file at the top of the source tree.)
 #
@@ -93,7 +93,7 @@ defmodule AUX do
                           <>  "hostname passed in an HTTP request"
     def _DMN_VERSION_S__, do: "Version"
     def _DMN_VERSION    , do: "0.9.9"
-    def _DMN_COPYRIGHT__, do: "Copyright (C) 2017-2023"
+    def _DMN_COPYRIGHT__, do: "Copyright (C) 2017-2024"
     def _DMN_AUTHOR     , do: "Radislav Golubtsov <radicchio@vk.com>"
 
     ## Constant: The default hostname to look up for.
