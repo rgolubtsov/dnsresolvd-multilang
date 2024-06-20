@@ -13,7 +13,7 @@
 
 ## Building
 
-This daemon implementation is known to be built and run successfully on OpenBSD, Ubuntu Server, and Arch Linux operating systems.
+This daemon implementation might be built and run successfully on OpenBSD, Ubuntu Server, and Arch Linux operating systems.
 
 ### Building under OpenBSD/amd64 6.3
 

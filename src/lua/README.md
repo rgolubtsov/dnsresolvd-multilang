@@ -13,7 +13,7 @@
 
 ## Building
 
-This daemon implementation is known to be built and run successfully on ~~OpenBSD, Ubuntu Server, and~~ Arch Linux operating systems. So let's describe each build process sequentially.
+This daemon implementation might be built and run successfully on ~~OpenBSD, Ubuntu Server, and~~ Arch Linux operating systems. So let's describe each build process sequentially.
 
 ### Building under Arch Linux (kernel 4.16.13-2-ARCH x86-64)
 
