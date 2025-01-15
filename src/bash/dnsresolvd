@@ -7,7 +7,7 @@
 # passed in an HTTP request, with the focus on its implementation
 # using various programming languages. (Netcat-boosted impl.)
 # =============================================================================
-# Copyright (C) 2017-2024 Radislav (Radicchio) Golubtsov
+# Copyright (C) 2017-2025 Radislav (Radicchio) Golubtsov
 #
 # (See the LICENSE file at the top of the source tree.)
 #
