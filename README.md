@@ -1,9 +1,9 @@
-# DNS Resolver Daemon (dnsresolvd) [![Build Status](https://travis-ci.org/rgolubtsov/dnsresolvd-multilang.svg?branch=master)](https://travis-ci.org/rgolubtsov/dnsresolvd-multilang)
+# DNS Resolver Daemon (dnsresolvd)
 
 **A daemon that performs DNS lookups for the given hostname passed in an HTTP request,
 <br />with the focus on its implementation using various programming languages**
 
-The following implementations are on the workbench (:small_blue_diamond: &ndash; complete, :small_orange_diamond: &ndash; planned/postponed, :cd: &ndash; in progress):
+The following implementations are on the workbench:
 
 * :small_blue_diamond: **C ([GNU libmicrohttpd](https://gnu.org/software/libmicrohttpd "GNU libmicrohttpd"))**: `src/c/libmicrohttpd/`
 * :small_blue_diamond: **C ([GNOME libsoup](https://developer.gnome.org/libsoup "GNOME libsoup"))**: `src/c/libsoup/`
@@ -58,4 +58,4 @@ The following implementations are on the workbench (:small_blue_diamond: &ndash;
 
 ---
 
-**TODO:** Provide a brief description of the project and other related sections (overview, design, etc.) just like in [this readme doc](https://github.com/rgolubtsov/virtblkiosim/blob/master/README.md "VIRTual BLocK IO SIMulating (virtblkiosim)"), or in [this readme doc](https://github.com/rgolubtsov/transroutownish-proto-bus-spring-boot/blob/main/README.md "Trans-RoutE-Townish (transroutownish) - Urban bus routing microservice prototype"), or whatsoever. :cd:
+:floppy_disk:
